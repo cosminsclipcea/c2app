@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKY DOME C2 · Comandă și Control Anti-UAS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --bg-primary: #060a0f;
+  --bg-secondary: #0a1018;
+  --bg-panel: #0d1520;
+  --bg-card: #111d2b;
+  --bg-hover: #162336;
+  --border: #1a3050;
+  --border-bright: #1e4a80;
+  --accent: #00d4ff;
+  --accent-dim: #0097c4;
+  --accent-glow: rgba(0,212,255,0.15);
+  --green: #00ff9d;
+  --green-dim: #00b870;
+  --yellow: #ffd700;
+  --orange: #ff8c00;
+  --red: #ff3355;
+  --red-dim: #cc1133;
+  --text-primary: #e2eaf5;
+  --text-secondary: #7a9fc0;
+  --text-dim: #3d6080;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-ui: 'Rajdhani', sans-serif;
+  --font-display: 'Orbitron', monospace;
+  --scanline: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.015) 2px, rgba(0,212,255,0.015) 4px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  display: flex;
+  align-items: center;
+  height: 62px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  gap: 20px;
+  z-index: 200;
+  position: relative;
+}
+#topbar .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 3px;
+  white-space: nowrap;
+  text-shadow: 0 0 20px var(--accent);
+}
+#topbar .logo svg { width: 28px; height: 28px; }
+#topbar .logo img { height: 54px; width: auto; display: block; object-fit: contain; }
+.divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
+.sys-status {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);
+}
+.pulse { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
+.pulse.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.pulse.yellow { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); animation: pulse 1s infinite; }
+.pulse.red { background: var(--red); box-shadow: 0 0 8px var(--red); animation: pulse .5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.top-nav { display: flex; gap: 4px; margin-left: 8px; }
+.nav-btn {
+  padding: 5px 14px; font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+  background: transparent; border: 1px solid transparent;
+  color: var(--text-secondary); transition: all .2s; border-radius: 2px;
+}
+.nav-btn:hover { color: var(--text-primary); border-color: var(--border); background: var(--bg-hover); }
+.nav-btn.active { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+.nav-btn.adsb-on { color: #060a0f; background: var(--orange); border-color: var(--orange); font-weight: 700; box-shadow: 0 0 10px rgba(255,140,0,0.4); }
+
+.spacer { flex: 1; }
+
+.utc-clock {
+  font-family: var(--font-mono); font-size: 12px; color: var(--accent);
+  text-align: right; line-height: 1.4;
+}
+.utc-clock .date { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; }
+
+.threat-indicator {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 12px; border-radius: 2px;
+  font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; border: 1px solid;
+  transition: all .5s;
+}
+.threat-indicator.green { color: var(--green); border-color: var(--green-dim); background: rgba(0,255,157,0.06); }
+.threat-indicator.yellow { color: var(--yellow); border-color: #aa8800; background: rgba(255,215,0,0.06); }
+.threat-indicator.red { color: var(--red); border-color: var(--red-dim); background: rgba(255,51,85,0.1); animation: borderPulse .5s infinite; }
+.threat-indicator.orange { color: var(--orange); border-color: #aa5500; background: rgba(255,140,0,0.08); }
+@keyframes borderPulse { 0%,100%{box-shadow: 0 0 8px rgba(255,51,85,0.4)} 50%{box-shadow: 0 0 20px rgba(255,51,85,0.8)} }
+
+/* ── MAIN LAYOUT ── */
+#main {
+  display: grid;
+  grid-template-columns: 280px 1fr 300px;
+  height: calc(100vh - 62px);
+  overflow: hidden;
+}
+
+/* ── LEFT PANEL ── */
+#left-panel {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#left-panel::-webkit-scrollbar { width: 4px; }
+#left-panel::-webkit-scrollbar-track { background: var(--bg-primary); }
+#left-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.section-collapsed { display: none; }
+.panel-section {
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+}
+.section-title {
+  font-family: var(--font-display); font-size: 9px; letter-spacing: 2px;
+  color: var(--text-secondary); text-transform: uppercase; font-weight: 500;
+}
+.section-body { padding: 10px; }
+
+/* Sensor cards */
+.sensor-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 2px; padding: 10px; margin-bottom: 8px;
+  cursor: pointer; transition: all .2s; position: relative; overflow: hidden;
+}
+.sensor-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--border); transition: background .2s;
+}
+.sensor-card.active::before { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.sensor-card.standby::before { background: var(--yellow); }
+.sensor-card.offline::before { background: var(--text-dim); }
+.sensor-card:hover { border-color: var(--border-bright); background: var(--bg-hover); }
+.sensor-name { font-weight: 700; font-size: 12px; letter-spacing: 1px; color: var(--text-primary); }
+.sensor-type { font-family: var(--font-mono); font-size: 10px; color: var(--accent-dim); margin-top: 2px; }
+.sensor-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 8px;
+}
+.sensor-stat { font-family: var(--font-mono); font-size: 9px; }
+.sensor-stat .label { color: var(--text-dim); }
+.sensor-stat .value { color: var(--text-secondary); }
+.sensor-status-badge {
+  display: inline-block; font-family: var(--font-mono); font-size: 9px;
+  padding: 1px 6px; border-radius: 2px; float: right; letter-spacing: 1px;
+}
+.sensor-status-badge.active { background: rgba(0,255,157,0.1); color: var(--green); border: 1px solid var(--green-dim); }
+.sensor-status-badge.standby { background: rgba(255,215,0,0.1); color: var(--yellow); border: 1px solid #aa8800; }
+.sensor-status-badge.offline { background: rgba(61,96,128,0.2); color: var(--text-dim); border: 1px solid var(--text-dim); }
+
+/* Draggable scroll area */
+.scroll-area { overflow-y: auto; flex: 1; }
+.scroll-area::-webkit-scrollbar { width: 4px; }
+.scroll-area::-webkit-scrollbar-track { background: var(--bg-primary); }
+.scroll-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── CENTER / MAP ── */
+#center { display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+#map-container {
+  flex: 1;
+  position: relative;
+  background: var(--bg-primary);
+}
+#map { width: 100%; height: 100%; filter: brightness(1.6) contrast(1.1); }
+
+/* Map Leaflet dark override */
+.leaflet-container { background: #06080d; font-family: var(--font-ui); }
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--accent) !important;
+  border-color: var(--border) !important;
+}
+.leaflet-control-zoom a:hover { background: var(--bg-hover) !important; }
+
+/* Map overlay tools */
+#map-toolbar {
+  position: absolute; top: 10px; left: 10px; z-index: 400;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.map-tool-btn {
+  width: 34px; height: 34px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary); transition: all .2s; font-size: 14px;
+}
+.map-tool-btn:hover { background: var(--bg-hover); color: var(--accent); border-color: var(--accent-dim); }
+.map-tool-btn.active { background: var(--accent-glow); color: var(--accent); border-color: var(--accent); }
+.map-tool-btn svg { width: 16px; height: 16px; }
+
+#map-mode-label {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  z-index: 400; background: var(--bg-card); border: 1px solid var(--border);
+  padding: 5px 16px; font-family: var(--font-mono); font-size: 10px;
+  color: var(--accent); letter-spacing: 2px; pointer-events: none;
+  display: none;
+}
+#map-mode-label.visible { display: block; }
+
+/* Grid overlay */
+.map-grid-overlay {
+  position: absolute; inset: 0; z-index: 300; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Coverage ring legend */
+#map-legend {
+  position: absolute; bottom: 10px; right: 10px; z-index: 400;
+  background: rgba(6,10,15,0.85); border: 1px solid var(--border);
+  padding: 8px 12px; font-family: var(--font-mono); font-size: 9px;
+  color: var(--text-secondary); min-width: 140px;
+}
+.legend-title { color: var(--accent); font-size: 9px; letter-spacing: 2px; margin-bottom: 6px; }
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── BOTTOM BAR ── */
+#bottom-bar {
+  height: 130px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  overflow: hidden;
+}
+.stat-tile {
+  background: var(--bg-panel);
+  padding: 10px 14px;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.stat-tile::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, transparent, var(--accent-dim), transparent);
+  opacity: 0; transition: opacity .3s;
+}
+.stat-tile:hover::after { opacity: 1; }
+.stat-label { font-family: var(--font-display); font-size: 8px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+.stat-value { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+.stat-value.green { color: var(--green); }
+.stat-value.yellow { color: var(--yellow); }
+.stat-value.red { color: var(--red); }
+.stat-sub { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); }
+
+/* ── RIGHT PANEL ── */
+#right-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* Event log */
+.event-log { flex: 1; overflow-y: auto; padding: 6px; }
+.event-log::-webkit-scrollbar { width: 3px; }
+.event-log::-webkit-scrollbar-thumb { background: var(--border); }
+
+.event-entry {
+  display: grid; grid-template-columns: 60px 1fr;
+  gap: 6px; padding: 5px 4px;
+  border-bottom: 1px solid rgba(26,48,80,0.4);
+  animation: fadeIn .3s ease;
+}
+@keyframes fadeIn { from{ opacity:0; transform: translateY(-4px); } to{ opacity:1; transform:none; } }
+.event-time { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); white-space: nowrap; }
+.event-msg { font-size: 11px; line-height: 1.4; }
+.event-msg.info { color: var(--text-secondary); }
+.event-msg.warn { color: var(--yellow); }
+.event-msg.alert { color: var(--orange); }
+.event-msg.critical { color: var(--red); font-weight: 600; }
+.event-msg.success { color: var(--green); }
+
+/* Protection plan panel */
+#plan-panel {
+  border-top: 1px solid var(--border);
+  max-height: 280px; overflow-y: auto;
+  padding: 10px;
+  background: var(--bg-secondary);
+}
+#plan-panel::-webkit-scrollbar { width: 3px; }
+#plan-panel::-webkit-scrollbar-thumb { background: var(--border); }
+.plan-empty { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+.plan-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 2px; padding: 8px 10px; margin-bottom: 6px;
+  font-size: 11px; position: relative; cursor: pointer;
+  transition: all .2s;
+}
+.plan-item:hover { border-color: var(--border-bright); }
+.plan-item .plan-sensor { font-family: var(--font-display); font-size: 9px; color: var(--accent); letter-spacing: 1px; }
+.plan-item .plan-desc { color: var(--text-secondary); margin-top: 3px; font-size: 10px; line-height: 1.5; }
+.plan-item .plan-coords { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); margin-top: 4px; }
+.plan-item .plan-remove {
+  position: absolute; top: 6px; right: 8px; cursor: pointer;
+  color: var(--text-dim); font-size: 14px; line-height: 1;
+  transition: color .2s;
+}
+.plan-item .plan-remove:hover { color: var(--red); }
+
+/* AI Integration Buttons */
+.ai-btn {
+  font-family: var(--font-display); font-size: 9px; letter-spacing: 1px;
+  padding: 4px 8px; background: var(--accent-glow); color: var(--accent);
+  border: 1px solid var(--accent-dim); border-radius: 4px; cursor: pointer; transition: all 0.2s;
+}
+.ai-btn:hover { background: var(--accent); color: var(--bg-primary); }
+
+/* Modal */
+#modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(3,6,10,0.85); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+}
+#modal-overlay.visible { display: flex; }
+#modal {
+  background: var(--bg-panel); border: 1px solid var(--border-bright);
+  width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+  border-radius: 2px;
+  box-shadow: 0 0 60px rgba(0,212,255,0.1);
+  animation: modalIn .2s ease;
+}
+@keyframes modalIn { from{ opacity:0; transform: scale(.97); } to{ opacity:1; transform:none; } }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+.modal-title { font-family: var(--font-display); font-size: 12px; letter-spacing: 3px; color: var(--accent); }
+.modal-close {
+  cursor: pointer; color: var(--text-secondary); font-size: 20px; line-height: 1;
+  transition: color .2s;
+}
+.modal-close:hover { color: var(--red); }
+.modal-body { padding: 16px 18px; }
+.modal-coords { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 14px; }
+.field-group { margin-bottom: 14px; }
+.field-label { font-family: var(--font-display); font-size: 9px; letter-spacing: 2px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+select, input, textarea {
+  width: 100%; background: var(--bg-secondary); border: 1px solid var(--border);
+  color: var(--text-primary); padding: 7px 10px; font-family: var(--font-ui); font-size: 12px;
+  border-radius: 2px; transition: border-color .2s; outline: none;
+}
+select:focus, input:focus, textarea:focus { border-color: var(--accent-dim); }
+select option { background: var(--bg-secondary); }
+textarea { resize: vertical; min-height: 70px; }
+.sensor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sensor-checkbox-card {
+  background: var(--bg-card); border: 1px solid var(--border); padding: 8px;
+  cursor: pointer; transition: all .2s; border-radius: 2px;
+}
+.sensor-checkbox-card:hover { border-color: var(--border-bright); }
+.sensor-checkbox-card.selected { border-color: var(--accent-dim); background: var(--accent-glow); }
+.sensor-checkbox-card .sc-name { font-weight: 700; font-size: 11px; }
+.sensor-checkbox-card .sc-type { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); margin-top: 2px; }
+.sensor-checkbox-card .sc-range { font-family: var(--font-mono); font-size: 9px; color: var(--accent-dim); margin-top: 4px; }
+.btn-row { display: flex; gap: 8px; margin-top: 18px; }
+.btn {
+  flex: 1; padding: 9px; font-family: var(--font-display); font-size: 10px;
+  letter-spacing: 2px; font-weight: 700; cursor: pointer; border-radius: 2px;
+  text-transform: uppercase; border: 1px solid; transition: all .2s;
+}
+.btn-primary { background: rgba(0,212,255,0.12); color: var(--accent); border-color: var(--accent-dim); }
+.btn-primary:hover { background: rgba(0,212,255,0.25); box-shadow: 0 0 16px rgba(0,212,255,0.2); }
+.btn-secondary { background: transparent; color: var(--text-secondary); border-color: var(--border); }
+.btn-secondary:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+.btn-danger { background: rgba(255,51,85,0.1); color: var(--red); border-color: var(--red-dim); }
+.btn-danger:hover { background: rgba(255,51,85,0.2); }
+
+/* Sensor detail modal */
+.sensor-detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(26,48,80,0.4); }
+.sd-key { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+.sd-val { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); text-align: right; }
+
+/* Coverage ring radius selector */
+.radius-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.radius-btn {
+  padding: 4px 10px; font-family: var(--font-mono); font-size: 10px;
+  cursor: pointer; border: 1px solid var(--border); background: var(--bg-card);
+  color: var(--text-secondary); border-radius: 2px; transition: all .2s;
+}
+.radius-btn.sel { border-color: var(--accent-dim); color: var(--accent); background: var(--accent-glow); }
+
+/* Coverage summary */
+.coverage-bar {
+  height: 4px; background: var(--border); border-radius: 2px;
+  margin-top: 6px; overflow: hidden;
+}
+.coverage-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--green-dim), var(--green)); transition: width .5s; }
+
+/* Notification toast */
+#toast-container {
+  position: fixed; top: 60px; right: 16px; z-index: 2000;
+  display: flex; flex-direction: column; gap: 6px; pointer-events: none;
+}
+.toast {
+  background: var(--bg-panel); border: 1px solid var(--border-bright);
+  padding: 10px 14px; border-radius: 2px; font-size: 11px;
+  color: var(--text-primary); max-width: 280px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  animation: toastIn .3s ease forwards;
+  pointer-events: auto;
+}
+.toast.green { border-color: var(--green-dim); }
+.toast.red { border-color: var(--red-dim); }
+.toast.yellow { border-color: #aa8800; }
+@keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+@keyframes toastOut { from{opacity:1;transform:none} to{opacity:0;transform:translateX(20px)} }
+
+/* Radar sweep animation on sensor icons */
+@keyframes radarSweep { to{ transform: rotate(360deg); } }
+
+/* ── ANIMATED COVERAGE RINGS ── */
+@keyframes ringPulseDetect {
+  to { stroke-dashoffset: -40; }
+}
+@keyframes ringPulseMit {
+  0%, 100% { stroke-opacity: 0.8; fill-opacity: 0.12; }
+  50%  { stroke-opacity: 0.4; fill-opacity: 0.04; }
+}
+.ring-detect {
+  animation: ringPulseDetect 1.5s linear infinite !important;
+  stroke-dasharray: 12 8 !important;
+}
+.ring-mit {
+  animation: ringPulseMit 3s ease-in-out infinite !important;
+}
+/* NFZ polygon subtle pulse */
+.nfz-polygon {
+  animation: ringPulseMit 4s ease-in-out infinite !important;
+}
+
+/* ── RESPONSIVE MOBILE ── */
+@media (max-width: 1200px) {
+  #main { grid-template-columns: 240px 1fr 260px; }
+}
+@media (max-width: 900px) {
+  #main { display: block; position: relative; overflow: hidden; }
+  #left-panel, #center, #right-panel {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 100%;
+    background: var(--bg-panel);
+  }
+  #left-panel, #right-panel { display: none; z-index: 50; overflow-y: auto; padding-bottom: 20px; }
+  #center { display: flex; flex-direction: column; z-index: 10; background: var(--bg-primary); }
+
+  #topbar { overflow-x: auto; scrollbar-width: none; padding-right: 20px; }
+  #topbar::-webkit-scrollbar { display: none; }
+  #topbar .logo img { height: 36px !important; }
+
+  #bottom-bar { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 110px; scrollbar-width: none; }
+  #bottom-bar::-webkit-scrollbar { display: none; }
+  .stat-tile { flex: 0 0 140px; scroll-snap-align: start; border-right: 1px solid var(--border); border-bottom: none; }
+
+  .sensor-grid { grid-template-columns: 1fr; }
+  #modal { width: 95vw; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<div id="topbar">
+  <div class="logo" style="padding:0;">
+    <img src="logo-opto-white 1.png" alt="Optoelectronica" style="height: 54px; width: auto; display: block; object-fit: contain;" />
+  </div>
+  <div class="divider"></div>
+  <div class="sys-status"><div id="sys-pulse" class="pulse green"></div>SISTEME NOMINALE</div>
+  <div class="divider"></div>
+  <div class="sys-status" id="active-sensors-bar"><div class="pulse green"></div><span id="active-count">0</span> / <span id="total-count">0</span> SENZORI ACTIVI</div>
+  <div class="divider"></div>
+  <div class="top-nav">
+    <div class="nav-btn active" id="nav-map" onclick="setView('map',this)">CONȘTIINȚĂ SITUAȚIONALĂ</div>
+    <div class="nav-btn" id="nav-sensors" onclick="setView('sensors',this)">MGMT SENZORI</div>
+    <div class="nav-btn" id="nav-plan" onclick="setView('plan',this)">PLAN PROTECȚIE</div>
+    <div class="nav-btn" id="nav-log" onclick="setView('log',this)">JURNAL</div>
+    <div class="divider" style="margin:0 4px; height:20px; align-self:center;"></div>
+    <div class="nav-btn" id="btn-adsb" onclick="toggleADSB()" style="color:var(--orange); border-color:rgba(255,140,0,0.4);" title="Afișează Trafic Civil (ADS-B)">ADS-B: OFF</div>
+  </div>
+  <div class="spacer"></div>
+  <div id="threat-badge" class="threat-indicator green">AMENINȚARE: SCĂZUTĂ</div>
+  <div class="divider"></div>
+  <div class="utc-clock">
+    <div id="clock-time">--:--:--Z</div>
+    <div class="date" id="clock-date">----</div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div id="main">
+
+  <!-- LEFT PANEL: SENSORS -->
+  <div id="left-panel">
+
+    <!-- D-FEND SOLUTIONS -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('dfend-body','dfend-icon')">
+        <div class="section-title">D-FEND SOLUTIONS · ENFORCEAIR</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">3 UNITĂȚI</div>
+          <div id="dfend-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="dfend-body" style="padding:8px 8px 0;">
+      <div class="sensor-card active" onclick="focusSensor('EA-PLUS-01')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">EnforceAir (Flagship)</div>
+        <div class="sensor-type">PRELUARE CIBERNETICĂ RF</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">4.5km</span></div>
+          <div class="sensor-stat"><span class="label">MITIGARE: </span><span class="value">4.0km</span></div>
+          <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+          <div class="sensor-stat"><span class="label">ȚINTĂ: </span><span class="value">PRELUARE</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('EA2-01')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">EnforceAir2 (Multiuse)</div>
+        <div class="sensor-type">PRELUARE CIBERNETICĂ · RF NON-CINETIC</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">400MHz-6GHz</span></div>
+          <div class="sensor-stat"><span class="label">PUTERE: </span><span class="value">170W</span></div>
+          <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+          <div class="sensor-stat"><span class="label">UTILIZARE: </span><span class="value">PACHET SOF</span></div>
+        </div>
+      </div>
+      <div class="sensor-card standby" onclick="focusSensor('EA2-02')">
+        <span class="sensor-status-badge standby">AȘTEPTARE</span>
+        <div class="sensor-name">EnforceAir2 (Backpack)</div>
+        <div class="sensor-type">PRELUARE CIBERNETICĂ · PORTABIL</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">400MHz-6GHz</span></div>
+          <div class="sensor-stat"><span class="label">MOD: </span><span class="value">ÎN MIȘCARE</span></div>
+          <div class="sensor-stat"><span class="label">TEMP: </span><span class="value">-30°C/+50°C</span></div>
+          <div class="sensor-stat"><span class="label">STARE: </span><span class="value">AȘTEPTARE</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKYLOCK LEGACY -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('skylock-body','skylock-icon')">
+        <div class="section-title">SKYLOCK C-UAS · AVNON GROUP</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">2 UNITĂȚI</div>
+          <div id="skylock-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="skylock-body" style="padding:8px 8px 0;">
+      <div class="sensor-card active" onclick="focusSensor('SL-DOME-01')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Skylock Dome-01</div>
+        <div class="sensor-type">RADAR · CAMERE EO/IR · BRUIAJ</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+          <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">PORNIT</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('SL-DF-01')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Skylock Dir.Finder-01</div>
+        <div class="sensor-type">DETECTOR RF · LOCALIZARE OPERATOR</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">5km</span></div>
+          <div class="sensor-stat"><span class="label">ANTENE: </span><span class="value">24×DIR</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°AZ</span></div>
+          <div class="sensor-stat"><span class="label">IDENTIF: </span><span class="value">ACTIV</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKYLOCK RADAR SYSTEMS -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('radar-body','radar-icon')">
+        <div class="section-title">SKYLOCK · SISTEME RADAR</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">3 UNITĂȚI</div>
+          <div id="radar-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="radar-body" style="padding:8px 8px 0;">
+      <div class="sensor-card active" onclick="focusSensor('RADAR-5K')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Radar 5K (3D MIMO)</div>
+        <div class="sensor-type">BANDA X FMCW · SUPRAVEGHERE 3D</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">5.0km</span></div>
+          <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">BANDA X</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">RCS: </span><span class="value">0.01m²</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('RADAR-3K')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Radar 3K (4D ESA)</div>
+        <div class="sensor-type">BANDA KU ESA · MULTI-CANAL</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
+          <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">BANDA KU</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">PRECIZIE AZ: </span><span class="value">&lt;0.5°</span></div>
+        </div>
+      </div>
+      <div class="sensor-card standby" onclick="focusSensor('RADAR-1K')">
+        <span class="sensor-status-badge standby">AȘTEPTARE</span>
+        <div class="sensor-name">Radar 1K (Tactic)</div>
+        <div class="sensor-type">24 GHz · COMPACT · CĂUTARE-URMĂRIRE</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">1.2km</span></div>
+          <div class="sensor-stat"><span class="label">GREUTATE: </span><span class="value">1.25kg</span></div>
+          <div class="sensor-stat"><span class="label">URMĂRIRI: </span><span class="value">20 ȚINTE</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP67</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKYLOCK RF DETECTION -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('rfdet-body','rfdet-icon')">
+        <div class="section-title">SKYLOCK · DETECȚIE RF</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">2 UNITĂȚI</div>
+          <div id="rfdet-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="rfdet-body" style="padding:8px 8px 0;">
+      <div class="sensor-card active" onclick="focusSensor('RF-LRF')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Detector LRF 10km</div>
+        <div class="sensor-type">RF RAZĂ LUNGĂ · 70MHz-6GHz</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">10.0km</span></div>
+          <div class="sensor-stat"><span class="label">PREC. DF: </span><span class="value">7.5°RMS</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">AI: </span><span class="value">PORNIT</span></div>
+        </div>
+      </div>
+      <div class="sensor-card standby" onclick="focusSensor('RF-WOLFPACK')">
+        <span class="sensor-status-badge standby">AȘTEPTARE</span>
+        <div class="sensor-name">Detector RF WolfPack</div>
+        <div class="sensor-type">SDR COMPACT · GĂSIRE DIRECȚIE</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">4.0km</span></div>
+          <div class="sensor-stat"><span class="label">PREC. DF: </span><span class="value">&lt;5°RMS</span></div>
+          <div class="sensor-stat"><span class="label">GREUTATE: </span><span class="value">5.0kg</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP67</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKYLOCK EO/IR SYSTEMS -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('eoir-body','eoir-icon')">
+        <div class="section-title">SKYLOCK · SISTEME EO/IR</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">4 UNITĂȚI</div>
+          <div id="eoir-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="eoir-body" style="padding:8px 8px 0;">
+      <div class="sensor-card active" onclick="focusSensor('EO-225')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Cameră EO/IR 225mm</div>
+        <div class="sensor-type">TERMAL NERĂCIT · ZI 1080P</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">1.5km</span></div>
+          <div class="sensor-stat"><span class="label">ZOOM: </span><span class="value">9x/33x</span></div>
+          <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">640×480</span></div>
+          <div class="sensor-stat"><span class="label">OPERARE: </span><span class="value">24/7</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('EO-785')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Cameră EO/IR 785mm</div>
+        <div class="sensor-type">TERMAL RĂCIT InSb · SENS. ÎNALTĂ</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">3.0km</span></div>
+          <div class="sensor-stat"><span class="label">ZOOM: </span><span class="value">18x/33x</span></div>
+          <div class="sensor-stat"><span class="label">NETd: </span><span class="value">30mK</span></div>
+          <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">640×512</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('EO-700')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Cameră EO/IR 700mm</div>
+        <div class="sensor-type">IR RĂCIT · URMĂRIRE RAZĂ LUNGĂ</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">6.1km</span></div>
+          <div class="sensor-stat"><span class="label">CLASIF: </span><span class="value">3.3km</span></div>
+          <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">1280×720</span></div>
+          <div class="sensor-stat"><span class="label">MIL: </span><span class="value">810G</span></div>
+        </div>
+      </div>
+      <div class="sensor-card standby" onclick="focusSensor('EO-1000')">
+        <span class="sensor-status-badge standby">AȘTEPTARE</span>
+        <div class="sensor-name">Cameră EO/IR 1000mm</div>
+        <div class="sensor-type">DETECTOR CMT · RAZĂ ULTRA LUNGĂ</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">5.0km</span></div>
+          <div class="sensor-stat"><span class="label">ZOOM: </span><span class="value">12x/60x</span></div>
+          <div class="sensor-stat"><span class="label">NETd: </span><span class="value">27.5mK</span></div>
+          <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">1280×720</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKYLOCK EFFECTORS -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('effector-body','effector-icon')">
+        <div class="section-title">SKYLOCK · EFECTORI</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">5 UNITĂȚI</div>
+          <div id="effector-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="effector-body" style="padding:8px 8px 0;">
+      <div class="sensor-card standby" onclick="focusSensor('JAM-DIR')">
+        <span class="sensor-status-badge standby">AȘTEPTARE</span>
+        <div class="sensor-name">Bruiaj RF 5km Dir.</div>
+        <div class="sensor-type">BRUIAJ RF DIRECȚIONAL · MIL</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">5.0km</span></div>
+          <div class="sensor-stat"><span class="label">PUTERE: </span><span class="value">10W×6</span></div>
+          <div class="sensor-stat"><span class="label">MIL: </span><span class="value">810G</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP65</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('SPOOFER-L1')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Spoofer GNSS L1/L2</div>
+        <div class="sensor-type">MANIPULARE GNSS · GPS/GLONASS</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">L1/L2</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP67</span></div>
+          <div class="sensor-stat"><span class="label">PUTERE: </span><span class="value">100W</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('SKYBEAM-01')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">SkyBeam Portabil</div>
+        <div class="sensor-type">BRUIAJ PORTABIL · MANUAL</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">3.0km</span></div>
+          <div class="sensor-stat"><span class="label">GREUTATE: </span><span class="value">6.0kg</span></div>
+          <div class="sensor-stat"><span class="label">BATERIE: </span><span class="value">1 ORĂ</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP65</span></div>
+        </div>
+      </div>
+      <div class="sensor-card standby" onclick="focusSensor('INTERCEPTOR-01')">
+        <span class="sensor-status-badge standby">AȘTEPTARE</span>
+        <div class="sensor-name">Interceptor Drone</div>
+        <div class="sensor-type">DRONĂ-vs-DRONĂ · AUTONOM</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">RAZĂ: </span><span class="value">15.0km</span></div>
+          <div class="sensor-stat"><span class="label">VITEZĂ: </span><span class="value">270km/h</span></div>
+          <div class="sensor-stat"><span class="label">AUTONOMIE: </span><span class="value">20 MIN</span></div>
+          <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('PORT-DOME-01')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Dom Portabil</div>
+        <div class="sensor-type">DETECȚIE RF + BRUIAJ · ALL-IN-ONE</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
+          <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">3.0km</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP66</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OJMA SYSTEMS -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('ojma-body','ojma-icon')">
+        <div class="section-title">OJMA · SISTEME C-UAS</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">3 UNITĂȚI</div>
+          <div id="ojma-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="ojma-body" style="padding:8px 8px 0;">
+      <div class="sensor-card active" onclick="focusSensor('RF-OMNISHIELD')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Detector RF OmniShield</div>
+        <div class="sensor-type">RF PASIV · AI · GĂSIRE DIRECȚIE</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
+          <div class="sensor-stat"><span class="label">PREC. DF: </span><span class="value">7.5°RMS</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">AI: </span><span class="value">PORNIT</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('JAM-OMNI')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">Bruiaj Omni 3-5km</div>
+        <div class="sensor-type">BRUIAJ RF 360° · AUTO/MANUAL</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">3-5km</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP66</span></div>
+        </div>
+      </div>
+      <div class="sensor-card standby" onclick="focusSensor('SPOOFER-5K')">
+        <span class="sensor-status-badge standby">AȘTEPTARE</span>
+        <div class="sensor-name">Spoofer GNSS 5km</div>
+        <div class="sensor-type">RESPINGERE / NFZ · OJMA</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">5.0km</span></div>
+          <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+          <div class="sensor-stat"><span class="label">INVAZIE: </span><span class="value">&lt;10s</span></div>
+          <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP65</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTOELECTRONICA SKYDOME -->
+    <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
+      <div class="section-header" onclick="toggleSection('opto-body','opto-icon')">
+        <div class="section-title">OPTOELECTRONICA · SKY DOME</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">2 UNITĂȚI</div>
+          <div id="opto-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+        </div>
+      </div>
+    </div>
+    <div id="opto-body" style="padding:8px 8px 4px;">
+      <div class="sensor-card active" onclick="focusSensor('SKYDOME-C4I')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">SkyDome C4I</div>
+        <div class="sensor-type">COMANDĂ ȘI CONTROL · C4ISR</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">CPU: </span><span class="value">i5</span></div>
+          <div class="sensor-stat"><span class="label">RAM: </span><span class="value">16GB</span></div>
+          <div class="sensor-stat"><span class="label">OS: </span><span class="value">LINUX</span></div>
+          <div class="sensor-stat"><span class="label">API: </span><span class="value">SDK</span></div>
+        </div>
+      </div>
+      <div class="sensor-card active" onclick="focusSensor('SKYDEFENDER-5K')">
+        <span class="sensor-status-badge active">ACTIV</span>
+        <div class="sensor-name">SkyDefender 5km</div>
+        <div class="sensor-type">C-UAS ALL-IN-ONE · MULTI-STRAT</div>
+        <div class="sensor-meta">
+          <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">5.0km</span></div>
+          <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">5.0km</span></div>
+          <div class="sensor-stat"><span class="label">STRAT: </span><span class="value">MULTI</span></div>
+          <div class="sensor-stat"><span class="label">OPERARE: </span><span class="value">24/7</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CENTER: MAP -->
+  <div id="center">
+    <div id="map-container">
+      <div class="map-grid-overlay"></div>
+      <div id="map"></div>
+      <div id="map-toolbar">
+        <div class="map-tool-btn active" id="tool-view" onclick="setTool('view')" title="Mod Vizualizare">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4 3 1 8 1 8s3 5 7 5 7-5 7-5-3-5-7-5zm0 8a3 3 0 110-6 3 3 0 010 6z"/></svg>
+        </div>
+        <div class="map-tool-btn" id="tool-pin" onclick="STATE.directPlacementSensorId=null; setTool('pin')" title="Plasează Pin / Plan Acoperire">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 00-5 5c0 3.5 5 9 5 9s5-5.5 5-9a5 5 0 00-5-5zm0 7a2 2 0 110-4 2 2 0 010 4z"/></svg>
+        </div>
+        <div class="map-tool-btn" id="tool-zone" onclick="setTool('zone')" title="Desenează Zonă Interzisă">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-4.95 2.636l9.314 9.314a6 6 0 01-9.314-9.314zm1.414-1.414a6 6 0 019.314 9.314L4.464 2.222z"/></svg>
+        </div>
+        <div class="map-tool-btn" id="tool-measure" onclick="setTool('measure')" title="Măsoară Distanța">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v3H1V2zm0 9h14v3H1v-3zm2-4.5h10V8H3V6.5z"/></svg>
+        </div>
+        <div class="map-tool-btn" onclick="clearAllLayers()" title="Șterge Toate Marcajele">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 4l1 10h10L14 4H2zm3 2h2l.5 6H5L5 6zm4 0h2l-.5 6H9V6zM1 2h14v2H1V2zm4-2h6v1H5V0z"/></svg>
+        </div>
+        <div id="nfz-finish-btn" class="map-tool-btn" onclick="finalizeNoFlyZone()" title="Finalizează Zona Interzisă" style="display:none;background:rgba(255,51,85,0.15);border-color:#ff3355;color:#ff3355;">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5l-11 11M4 2h8v2H4zm8 0v8h-2V4zm-8 8H2V4h2v8zm8 0v2H4v-2h8z"/><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2"/></svg>
+          ✓
+        </div>
+      </div>
+      <div id="map-mode-label">CLICK HARTĂ PENTRU SENZOR</div>
+      <div id="map-legend">
+        <div class="legend-title">STRATURI ACOPERIRE</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,51,85,0.3);border:1px solid #ff3355;"></div><span>Zonă Detecție</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(0,255,157,0.3);border:1px solid #00ff9d;"></div><span>Zonă Protecție</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,51,85,0.3);border:1px solid #ff3355;"></div><span>Zonă Interzisă</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(0,255,157,0.3);border:1px solid #00ff9d;"></div><span>Activ Protejat</span></div>
+      </div>
+    </div>
+
+    <!-- BOTTOM STATS -->
+    <div id="bottom-bar">
+      <div class="stat-tile">
+        <div class="stat-label">Senzori Activi</div>
+        <div class="stat-value green" id="stat-sensors">0</div>
+        <div class="stat-sub" id="stat-sensors-sub">din 0 operaționali</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Acoperire Zonă</div>
+        <div class="stat-value" id="stat-coverage">0%</div>
+        <div class="coverage-bar"><div class="coverage-fill" id="coverage-fill" style="width:0%"></div></div>
+        <div class="stat-sub" id="stat-coverage-km">0 km²</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Elemente Plan</div>
+        <div class="stat-value yellow" id="stat-plans">0</div>
+        <div class="stat-sub">locații fixate</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Amenințări Detectate</div>
+        <div class="stat-value red" id="stat-threats">0</div>
+        <div class="stat-sub" id="stat-threats-sub">nicio amenințare activă</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Timp Funcționare</div>
+        <div class="stat-value" id="stat-uptime">00:00:00</div>
+        <div class="stat-sub">HH:MM:SS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: EVENT LOG + PLAN -->
+  <div id="right-panel">
+    <div id="right-log-container" style="flex: 1; display: flex; flex-direction: column;">
+        <div class="panel-section">
+          <div class="section-header">
+            <div class="section-title">JURNAL EVENIMENTE</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="ai-btn" onclick="generateAIAnalysis()" title="Analiză Tactica cu IA">ANALIZĂ ✨</button>
+              <div class="pulse green" id="log-pulse"></div>
+              <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);" id="log-count">0 EVENIMENTE</div>
+            </div>
+          </div>
+        </div>
+        <div class="event-log" id="event-log"></div>
+    </div>
+    
+    <div id="right-plan-container" style="display: none; flex: 1; flex-direction: column;">
+        <div class="panel-section" style="border-bottom:none;">
+          <div class="section-header" onclick="togglePlanPanel()">
+            <div class="section-title">PLAN PROTECȚIE · <span id="plan-count">0</span> ELEMENTE</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <button class="ai-btn" onclick="generateMissionReport(event)" title="Generare Raport Misiune">RAPORT ✨</button>
+                <div style="font-family:var(--font-mono);font-size:9px;color:var(--accent); cursor:pointer;" id="plan-toggle-icon">▾</div>
+            </div>
+          </div>
+        </div>
+        <div id="plan-panel">
+          <div class="plan-empty" id="plan-empty">
+            📍 UTILIZAȚI INSTRUMENTUL PIN PENTRU<br>A ADĂUGA LOCAȚII ÎN PLANUL DE PROTECȚIE
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- SENSOR PLACEMENT MODAL -->
+<div id="modal-overlay" onclick="closeModalOutside(event)">
+  <div id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">DESFĂȘURARE SENZOR · PLAN PROTECȚIE</div>
+      <div class="modal-close" onclick="closeModal()">×</div>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- Filled dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+// ─────────────────────────── GEMINI API CONFIG ───────────────────────────
+const apiKey = ""; // API key will be provided at runtime
+
+// Exponential backoff for API retries
+async function fetchWithRetry(url, options, maxRetries = 5) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok) return await response.json();
+      if (response.status !== 429 && response.status < 500) break;
+    } catch (e) {}
+    await new Promise(res => setTimeout(res, Math.pow(2, i) * 1000));
+  }
+  throw new Error("Eroare la apelarea Gemini API. Vă rugăm să încercați mai târziu.");
+}
+
+async function callGemini(userQuery, systemPrompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  const payload = {
+    contents: [{ parts: [{ text: userQuery }] }],
+    systemInstruction: { parts: [{ text: systemPrompt }] }
+  };
+  
+  return await fetchWithRetry(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
+
+// ─────────────────────────── AI FEATURES ───────────────────────────
+async function generateAIAnalysis() {
+  const logs = Array.from(document.querySelectorAll('.event-msg')).slice(0, 15).map(el => el.textContent).join('\n');
+  if (!logs) {
+    toast("Nu există destule date în jurnal pentru analiză.", "warn");
+    return;
+  }
+
+  showAIProgress("Analiză tactică în curs...");
+  
+  const systemPrompt = "Ești un expert militar în sisteme Counter-UAS (C-UAS). Analizează logurile curente și amplasarea senzorilor pentru a identifica vulnerabilități și a sugera măsuri de securitate imediate. Răspunde în limba română, folosind un ton profesional și concis.";
+  const query = `Loguri curente:\n${logs}\n\nStare sistem: ${document.getElementById('threat-badge').textContent}. Analizează amenințările și propune acțiuni.`;
+
+  try {
+    const result = await callGemini(query, systemPrompt);
+    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Nu s-a putut genera analiza.";
+    displayAIResult("Analiză Tactica IA ✨", text);
+  } catch (err) {
+    toast(err.message, "red");
+  }
+}
+
+async function generateMissionReport(event) {
+  if (event) event.stopPropagation(); // Previne declanșarea toggle-ului pentru panel
+  const planItems = STATE.planItems.map(item => `${item.name} (${item.typeLabel}) - Senzori: ${item.sensors.length}`).join('\n');
+  if (planItems.length === 0) {
+    toast("Adăugați puncte în plan pentru a genera un raport.", "warn");
+    return;
+  }
+
+  showAIProgress("Generare raport misiune...");
+  
+  const systemPrompt = "Ești un ofițer de securitate superior. Generează un raport de misiune executiv pe baza planului de protecție furnizat. Include un rezumat al capabilităților și o evaluare a riscului. Răspunde în limba română, folosind un ton profesional.";
+  const query = `Plan de protecție:\n${planItems}\n\nAcoperire curentă: ${document.getElementById('stat-coverage').textContent}. Generează un raport formal.`;
+
+  try {
+    const result = await callGemini(query, systemPrompt);
+    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Nu s-a putut genera raportul.";
+    displayAIResult("Raport Executiv IA ✨", text);
+  } catch (err) {
+    toast(err.message, "red");
+  }
+}
+
+function showAIProgress(msg) {
+  document.getElementById('modal-title').textContent = "IA PRELUCREAZĂ DATELE";
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex; flex-direction:column; align-items:center; padding:20px; text-align:center;">
+        <div style="width:40px; height:40px; border:3px solid var(--accent-glow); border-top:3px solid var(--accent); border-radius:50%; animation: radarSweep 1s linear infinite; margin-bottom:15px;"></div>
+        <div style="font-family:var(--font-mono); font-size:12px; color:var(--accent);">${msg}</div>
+    </div>
+  `;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function displayAIResult(title, text) {
+  document.getElementById('modal-title').textContent = title;
+  const formattedText = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  document.getElementById('modal-body').innerHTML = `
+    <div style="font-size:12px; color:var(--text-primary); line-height:1.6; max-height:400px; overflow-y:auto; padding:10px; background:rgba(0,0,0,0.3); border-radius:4px; border:1px solid var(--border);">
+        ${formattedText}
+    </div>
+    <div class="btn-row" style="margin-top:15px;">
+        <button class="btn btn-primary" onclick="closeModal()">AM ÎNȚELES</button>
+    </div>
+  `;
+}
+
+// ─────────────────────────── STATE ───────────────────────────
+const STATE = {
+  view: 'map',
+  tool: 'view',
+  planItems: [],
+  mapLayers: [],
+  eventCount: 0,
+  uptimeSeconds: 0,
+  threatLevel: 'low',
+  pendingLatlng: null,
+  adsbActive: false,
+  directPlacementSensorId: null, // Adăugat pentru plasarea rapidă a senzorilor
+};
+
+let rogueDrone = {
+  id: 'UAS-UNK-99', lat: 44.4050, lng: 26.0200, heading: 75, speed: 0.00015, alt: '120m', marker: null, interval: null, status: 'undetected'
+};
+
+// Dicționar de traduceri pentru status
+const statusRO = {
+  active: 'ACTIV',
+  standby: 'AȘTEPTARE',
+  offline: 'DECONECTAT'
+};
+
+const SENSORS = {
+  // ── D-FEND SOLUTIONS ──
+  'EA-PLUS-01': {
+    name: 'EnforceAir (Flagship)', vendor: 'D-FEND SOLUTIONS',
+    type: 'Preluare Cibernetică RF', detRange: 4500, mitRange: 4000,
+    cover: '360° Omni', mode: 'AUTO', status: 'active',
+    desc: 'Soluția flagship D-Fend Solutions. Execută preluarea controlului cibernetic prin radiofrecvență (RF) a dronelor neautorizate pentru aterizare sigură. Detectare și mitigare end-to-end, fără alarme false. Nu utilizează bruiaj (non-jamming), permițând dronelor autorizate din zonă să funcționeze neîntrerupt.',
+    color: '#00d4ff',
+    specs: [['Frecvențe Operare', '400MHz - 6Ghz'], ['Metodă Mitigare', 'Cyber Takeover / Aterizare Sigură'], ['Alarme False', 'Zero (Identificare precisă)'], ['Interferență', 'Fără bruiaj, Non-cinetic']]
+  },
+  'EA2-01': {
+    name: 'EnforceAir2 (Multiuse)', vendor: 'D-FEND SOLUTIONS',
+    type: 'Preluare Cibernetică · RF Non-Cinetic', detRange: 4500, mitRange: 4000,
+    cover: '360° Omni', mode: 'AUTO', status: 'active',
+    desc: 'Sistem Cyber C-UAS generația a 2-a cu Flexibilitate Operațională Integrată (SOF). Oferă detecție precisă fără alarme false, urmărire GPS, extragere ID dronă (Marcă, Model, Serie) și locația pilotului (fără a depinde de recepția telecomenzii). Execută "preluare cibernetică" pentru deviere spre zone sigure.',
+    color: '#00aeff',
+    specs: [['Frecvențe Operare', '400MHz - 6GHz'], ['Putere Transmisie', 'Până la 36 dBm'], ['Consum Curent', '150W (Detecție) / 170W (Mitigare)'], ['Dimensiuni SDR', '39 x 52 x 12 cm'], ['Greutate SDR', '12.8 kg / 28.2 lb'], ['Standarde Mediu', 'MIL STD 810H, MIL STD 461'], ['Protecție IP', 'IP67'], ['Temp. Operare', '-30°C până la +50°C']]
+  },
+  'EA2-02': {
+    name: 'EnforceAir2 (Backpack)', vendor: 'D-FEND SOLUTIONS',
+    type: 'Preluare Cibernetică · Portabil (Rucsac)', detRange: 4500, mitRange: 3000,
+    cover: '360° Omni', mode: 'MANUAL', status: 'standby',
+    desc: 'Opțiune de desfășurare tip rucsac disimulat pentru forțe tactice. Asigură protecție unică în mișcare. Include funcționalitate completă de detecție și mitigare cibernetică, menținând cel mai bun echilibru SWAP (Mărime, Greutate, Putere) din clasa sa.',
+    color: '#0077cc',
+    specs: [['Tip Desfășurare', 'Rucsac Covert / Tactic în mișcare'], ['Frecvențe Operare', '400MHz - 6GHz'], ['Metodă Mitigare', 'Cyber Takeover / Aterizare Sigură'], ['Standarde Mediu', 'MIL STD 810H, MIL STD 461'], ['Protecție IP', 'IP67'], ['Temp. Operare', '-30°C până la +50°C']]
+  },
+  // ── SKYLOCK LEGACY ──
+  'SL-DOME-01': {
+    name: 'Skylock Dome-01', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Radar · Camere EO/IR · Bruiaj', detRange: 3000, mitRange: 2000,
+    cover: '360°', mode: 'AUTO', status: 'active',
+    desc: 'Protecție completă de tip dom cu dispozitive de monitorizare optică și termică, urmărire radar și neutralizare integrată prin bruiaj.',
+    color: '#00ff9d',
+  },
+  'SL-DF-01': {
+    name: 'Skylock Dir.Finder-01', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Detector RF · Localizare Operator', detRange: 5000, mitRange: 0,
+    cover: '360° Az / 0-30° El', mode: 'AUTO', status: 'active',
+    desc: '24 de antene direcționale pentru localizarea și urmărirea operatorului. Identifică frecvența dronei, puterea de transmisie. Permite urmărirea legală prin dovezi criminalistice.',
+    color: '#ffd700',
+  },
+  // ── SKYLOCK RADAR SYSTEMS ──
+  'RADAR-5K': {
+    name: 'Radar 5K (3D MIMO)', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Banda X FMCW · Supraveghere Aeriană 3D', detRange: 5000, mitRange: 0,
+    cover: '360° (4×90° fațete)', mode: 'AUTO', status: 'active',
+    desc: 'Radar 3D MIMO X-band FMCW. Detecție până la 5km (0.01 RCS). Micro-Doppler pentru drone cu viteză redusă/zbor la punct fix. Putere 80W/19dBW. IP66/67. Desfășurare rapidă < 30 min. 53kg pe fațetă. -20°C până la +50°C.',
+    color: '#00d4ff',
+    specs: [['Arhitectură','3D MIMO'],['Tip Radar','FMCW'],['Bandă Frecv.','Banda X 9.8–9.9 GHz'],['Rază Detecție (0.01RCS)','Până la 5 km'],['Putere Ieșire','80 W / 19 dBW'],['Câmp Vizual (FOV)','90°/20° pe fațetă'],['Protecție IP','IP66/IP67'],['Dimensiuni','645×360×180 mm'],['Greutate','53 kg/fațetă']],
+  },
+  'RADAR-3K': {
+    name: 'Radar 3K (4D ESA)', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Banda Ku ESA · Multi-Canal', detRange: 3000, mitRange: 0,
+    cover: '360° (4×130° fațete)', mode: 'AUTO', status: 'active',
+    desc: 'Radar 4D ESA, multi-canal bandă Ku. Detecție până la 3km (0.01 RCS). Acuratețe azimut < 0.5°. Răcire pasivă, IP66. -40°C până la +65°C. 17.8kg pe fațetă.',
+    color: '#0097c4',
+    specs: [['Arhitectură','4D ESA'],['Bandă Frecv.','Banda Ku 15.4–16.6 GHz'],['Rază Detecție (0.01RCS)','Până la 3 km'],['Acuratețe Az/El','< 0.5°'],['Câmp Vizual (FOV)','130°Az × 90°El/fațetă'],['Protecție IP','IP66'],['Consum','< 250 W max'],['Greutate','17.8 kg/fațetă']],
+  },
+  'RADAR-1K': {
+    name: 'Radar 1K (Tactic)', vendor: 'SKYLOCK · AVNON GROUP',
+    type: '3D Tactic · 24 GHz · Căutare-Urmărire', detRange: 1200, mitRange: 0,
+    cover: '120°Az × 80°El', mode: 'AUTO', status: 'standby',
+    desc: 'Radar tactic ultra-compact (1.25kg). Multi-canal 24.45-24.65 GHz. Căutare și urmărire simultană (10Hz). Urmărește până la 20 de ținte simultan. Ținte noi < 1 sec. IP67, -40°C până la +75°C.',
+    color: '#0077bb',
+    specs: [['Rază (Phantom 4)','900 m'],['Rază (Matrice 600)','> 1.2 km'],['Câmp Vizual (FOV)','120°Az × 80°El'],['Ținte Maxime','20 simultan'],['Actualizare Urmărire','Până la 10 Hz'],['Dimensiuni','20.3×16.3×4 cm'],['Greutate','1.25 kg'],['Protecție IP','IP67'],['Temp. Operare','-40°C până la +75°C']],
+  },
+  // ── SKYLOCK RF DETECTION ──
+  'RF-LRF': {
+    name: 'Detector LRF 10km', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'RF Rază Lungă · 70MHz-6GHz · Găsire Direcție', detRange: 10000, mitRange: 0,
+    cover: '360° Az / ±90° El', mode: 'AUTO', status: 'active',
+    desc: 'Detecție RF cu rază lungă până la 10km. Găsirea direcției pentru WiFi. Suportă LightBridge, OcuSync 1/2/3, WiFi, Zigbee, BT, FPV. Bază AI pentru drone DIY. Listă Albă/Neagră. IP66.',
+    color: '#ffaa00',
+    specs: [['Gama de Frecvențe','70 MHz – 6 GHz'],['Acuratețe DF','7.5° RMS'],['Rază Detecție','Până la 10 km'],['Protocoale','LightBridge, OcuSync, WiFi, BT'],['Modulații','OFDM, DSSS, FHSS, GFSK…'],['Protecție IP','IP66'],['Greutate','9.5 kg'],['Dimensiuni','318mm × 337mm']],
+  },
+  'RF-WOLFPACK': {
+    name: 'Detector RF WolfPack', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'SDR Compact · 70MHz-6GHz · Găsire Direcție', detRange: 4000, mitRange: 0,
+    cover: 'OMNIDIRECȚIONAL', mode: 'AUTO', status: 'standby',
+    desc: 'Detector radio definit software compact (5kg). Găsirea direcției < 5° RMS. Până la 4km în medii cu zgomot redus. Timp de detecție < 10 sec. IP67. -30°C până la +60°C. Consum 35W.',
+    color: '#cc8800',
+    specs: [['Benzi Frecv.','433/868/915 MHz, 1.2/2.4/5.2/5.8 GHz'],['Platformă','SDR 70 MHz – 6 GHz'],['Acuratețe DF','< 5° RMS'],['Timp Detecție','< 10 sec'],['Rază Detecție','Până la 4 km (LOS)'],['Consum','35 W'],['Protecție IP','IP67'],['Temp. Operare','-30°C până la +60°C'],['Greutate','5 kg']],
+  },
+  // ── SKYLOCK EO/IR SYSTEMS ──
+  'EO-225': {
+    name: 'Cameră EO/IR 225mm', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Termal Nerăcit VOx · 1080p Lumină Scăzută', detRange: 1500, mitRange: 0,
+    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'active',
+    desc: 'Microbolometru VOx nerăcit. 640x480 / 17μm. Zoom motorizat 9x. NETd 50mK. Cameră de zi CMOS 1080p lumină scăzută, zoom 33x. Urmărește DJI Phantom 4 până la 1.5km. Operare 24/7.',
+    color: '#00ff9d',
+    specs: [['Detector','Microbolometru VOx Nerăcit'],['Rezoluție','640 × 480'],['Dimensiune Pixel','17 μm'],['Distanță Focală','25 - 225 mm'],['Zoom Termal','9× Motorizat'],['NETd','≤ 50 mK (f/1.0)'],['Cameră de Zi','1080p, zoom 33×'],['Rază Urmărire (P4)','până la 1.5 km']],
+  },
+  'EO-785': {
+    name: 'Cameră EO/IR 785mm', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Termal Răcit InSb · Sensibilitate Înaltă', detRange: 3000, mitRange: 0,
+    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'active',
+    desc: 'Detector InSb răcit. 640x512 / 15μm. Zoom motorizat 18x. NETd 30mK. Cameră de zi CMOS 1080p lumină scăzută, zoom 33x. Urmărește Phantom 4 până la 3km. Performanță standard militar.',
+    color: '#00cc88',
+    specs: [['Detector','InSb Răcit'],['Rezoluție','640 × 512'],['Dimensiune Pixel','15 μm'],['Distanță Focală','43.6 - 785 mm'],['Zoom Termal','18× Motorizat'],['NETd','≤ 30 mK'],['Cameră de Zi','1080p, zoom 33×'],['Rază Urmărire (P4)','până la 3 km']],
+  },
+  'EO-700': {
+    name: 'Cameră EO/IR 700mm', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'IR RĂCIT · URMĂRIRE RAZĂ LUNGĂ', detRange: 6100, mitRange: 0,
+    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'active',
+    desc: 'Infraroșu răcit de înaltă sensibilitate. 1280x720 / 10μm. Distanță focală 60-690mm. Urmărește DJI Inspire până la 6.1km, clasifică la 3.3km. MIL-STD-810G. Greutate 40kg. -20°C până la +40°C.',
+    color: '#00aa77',
+    specs: [['Detector','IR Răcit Sensibilitate Înaltă'],['Rezoluție','1280 × 720'],['Dimensiune Pixel','10 μm'],['Distanță Focală','60 - 690 mm'],['HFOV','1.06° - 12.2°'],['Urmărire (DJI Inspire)','6.1 km'],['Clasificare','3.3 km'],['Standard MIL','MIL-STD-810G'],['Greutate','40 kg']],
+  },
+  'EO-1000': {
+    name: 'Cameră EO/IR 1000mm', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Detector CMT · Rază Ultra Lungă', detRange: 5000, mitRange: 0,
+    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'standby',
+    desc: 'Detector CMT. 1280x720 / 12μm. Zoom motorizat 12x pe termal, NETd 27.5mK. Zoom optic 60x pe camera de zi. Urmărește Phantom 4 până la 5km. Rază focală 80-960mm.',
+    color: '#008866',
+    specs: [['Detector','CMT'],['Rezoluție','1280 × 720'],['Dimensiune Pixel','12 μm'],['Distanță Focală','80 - 960 mm'],['Zoom Termal','12× Motorizat'],['NETd','Tipic 27.5 mK'],['Cameră de Zi','1080p, zoom 60×'],['Rază Urmărire (P4)','până la 5 km']],
+  },
+  // ── EFFECTORS ──
+  'JAM-OMNI': {
+    name: 'Bruiaj Omni 3-5km', vendor: 'OJMA · C-UAS SYSTEMS',
+    type: 'Bruiaj RF 360° · Auto/Manual', detRange: 0, mitRange: 5000,
+    cover: '360°', mode: 'AUTO', status: 'active',
+    desc: 'Echipament de bruiaj RF omnidirecțional. 2.4GHz 120W, 5.8GHz 100W, 900MHz 20W, 433MHz 20W + GNSS L1 20W / L2 20W. Rază de bruiaj 3-5km. IP66. MIL-STD-810G. Moduri auto/manual. Neutralizare < 5 sec.',
+    color: '#ff3355',
+    specs: [['Frecvență 2.4 GHz','120 W'],['Frecvență 5.8 GHz','100 W'],['Frecvență 900 MHz','20 W'],['Frecvență 433 MHz','20 W'],['GNSS L1','20 W'],['GNSS L2','20 W'],['Acoperire','360°'],['Rază Bruiaj','3 – 5 km'],['Protecție IP','IP66'],['Greutate','25 kg']]
+  },
+  'JAM-DIR': {
+    name: 'Bruiaj RF 5km Dir.', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Bruiaj RF Direcțional · MIL-STD', detRange: 0, mitRange: 5000,
+    cover: 'DIRECȚIONAL', mode: 'MANUAL', status: 'standby',
+    desc: 'Sistem de bruiaj RF direcțional. Sintetizat DDS & PLL. Control de la distanță TCP/IP. Benzi: 428-437, 868-928, 1150-1300, 1559-1610, 2400-2500, 5725-5850 MHz (10W fiecare). MIL-STD-810G. IP65.',
+    color: '#cc1133',
+    specs: [['Modulație','Zgomot pseudo-aleator (PRN)'],['Sursă Semnal','Sintetizat DDS & PLL'],['Control Distanță','TCP/IP'],['Consum','192 W'],['Benzi Frecv. × 10W','428-437 / 868-928 / 1150-1300 / 1559-1610 / 2400-2500 / 5725-5850 MHz'],['Distanță Bruiaj','5 km (direcțional)'],['Standard MIL','MIL-STD-810G'],['Protecție IP','IP65'],['Greutate','16 kg']],
+  },
+  'SPOOFER-L1': {
+    name: 'Spoofer GNSS L1/L2', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Manipulare GNSS · L1/L2/L5', detRange: 0, mitRange: 3000,
+    cover: '360°', mode: 'AUTO', status: 'active',
+    desc: 'Manipulare GNSS împotriva tuturor receptoarelor GNSS. L1: GPS, GLONASS, BEIDOU, GALILEO. Opțional L2/L5. Eficient împotriva roiurilor, dronelor invizibile, dronelor 4G/5G. Emisii zero pe comunicațiile de urgență/celulare. IP67, răcire pasivă.',
+    color: '#ff8c00',
+    specs: [['Frecv. Eficiente','L1: GPS, GLONASS, BEIDOU, GALILEO'],['Opțional','L2 sau L5'],['Coexistență','Emisii zero pt. urgențe/celular'],['Răcire','Pasivă'],['Protecție IP','IP67'],['Temp. Operare','-20°C până la +55°C'],['Putere Ieșire','28 VDC / 100 W'],['Dimensiuni','300×300×94 mm'],['Greutate','9.6 kg']],
+  },
+  'SPOOFER-5K': {
+    name: 'Spoofer GNSS 5km', vendor: 'OJMA · C-UAS SYSTEMS',
+    type: 'Respingere GNSS / Simulare NFZ', detRange: 0, mitRange: 5000,
+    cover: '360°', mode: 'AUTO', status: 'standby',
+    desc: 'Manipulare GNSS cu respingere (push-back) și simulare Zonă Interzisă de Zbor (NFZ). Eficient până la 5km (push-back). Invazie de semnal < 10s. Funcționează contra roiurilor, dronelor invizibile, 4G/5G, atacurilor din direcții multiple. IP65, -30°C până la +55°C, ≤100W.',
+    color: '#ff6600',
+    specs: [['Frecvență Lucru','L1 (1.5 GHz)'],['Unghi Apărare','Complet 360°'],['Moduri','Respingere, Simulare NFZ'],['Distanță Eficientă','Până la 5 km'],['Timp Invazie Semnal','< 10 sec'],['Protecție IP','IP65'],['Temp. Operare','-30°C până la +55°C'],['Consum','≤ 100 W'],['Greutate','≤ 20 kg']],
+  },
+  'SKYBEAM-01': {
+    name: 'Armă Portabilă SkyBeam', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Armă Anti-Dronă Portabilă', detRange: 0, mitRange: 3000,
+    cover: 'DIRECȚIONAL', mode: 'MANUAL', status: 'active',
+    desc: 'Armă anti-dronă portabilă. 6kg total. Bruiază 400MHz, 900MHz, 2.4GHz, 5.8GHz, GNSS L1/L2. Bruiaj selectiv pe benzi. Rază până la 3km. Baterie 1 oră. IP65. Ideală pentru poliție, armată, siguranță publică.',
+    color: '#ff4400',
+    specs: [['Frecvențe Bruiaj','400 MHz, 900 MHz, 2.4 GHz, 5.8 GHz'],['GNSS','L1 1.5 GHz, L2 1.2 GHz'],['Benzi Selective','GPS / Comm / GPS+Comm'],['Rază Eficientă','Până la 3 km'],['Autonomie Baterie','Până la 1 oră'],['Ciclu Lucru','100% continuu'],['Protecție IP','IP65'],['Temp. Operare','-20°C până la +40°C'],['Greutate','6 kg']],
+  },
+  'INTERCEPTOR-01': {
+    name: 'Interceptor Drone', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Dronă-vs-DRONĂ · Cinetic Autonom', detRange: 0, mitRange: 15000,
+    cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'standby',
+    desc: 'Dronă de interceptare autonomă. Viteză max 270 km/h. Rază operațională 15km de la locul lansării. Autonomie 20min / 8min la viteză maximă. Operează în vânturi de până la 85km/h. -20°C până la +55°C. Structură PETG-CF.',
+    color: '#ff2200',
+    specs: [['Propulsie','Multirotor electric'],['Viteză Maximă','270 km/h'],['Rază Operațională','15 km de la lansare'],['Autonomie','20 min'],['Autonomie Viteză Max','8 min'],['Altitudine Maximă','4 500 m'],['Operare la Vânt','Până la 85 km/h'],['Temp. Operare','-20°C până la +55°C'],['Greutate','5 kg'],['Structură','PETG-CF']],
+  },
+  'PORT-DOME-01': {
+    name: 'Dom Portabil', vendor: 'SKYLOCK · AVNON GROUP',
+    type: 'Detecție RF + Bruiaj 360° · All-in-One', detRange: 3000, mitRange: 3000,
+    cover: '360°', mode: 'AUTO', status: 'active',
+    desc: 'Unitate portabilă completă (all-in-one). Detector RF (70MHz-6GHz, DF 7.5° RMS, 3km) integrat cu bruiaj 360° (2.4GHz 120W, 5.8GHz 100W, GNSS L1/L2). IP66. Desfășurare rapidă. Configurații de Bază/Standard/Premium.',
+    color: '#ff5533',
+    specs: [['Rază Detecție RF','Până la 3 km'],['Acuratețe DF','7.5° RMS'],['Acoperire Bruiaj','360°'],['Rază Bruiaj','Până la 3 km'],['Frecvențe Bruiaj (Bază)','2.4 GHz 120W, 5.8 GHz 100W, 900 MHz 20W'],['GNSS (Standard+)','L1 20W, L2 20W'],['Protecție IP','IP66'],['Greutate','RF: 9.5 kg / Bruiaj: 12 kg']],
+  },
+  // ── OPTOELECTRONICA ──
+  'SKYDOME-C4I': {
+    name: 'SkyDome C4I', vendor: 'OPTOELECTRONICA-2001 S.A.',
+    type: 'Platformă Comandă și Control · C4ISR', detRange: 0, mitRange: 0,
+    cover: 'REȚEA', mode: 'AUTO', status: 'active',
+    desc: 'Platformă C4I integrată pentru sistemul SkyDome. Intel Core i5, 16GB RAM, 256GB SSD. OS Linux. Alerte în timp real, fuziune de date de la senzori, AI/ML. SDK/API pentru integrarea senzorilor suplimentari. Management Listă Albă/Neagră.',
+    color: '#aa44ff',
+    specs: [['Procesor','Intel Core i5'],['Memorie','16 GB RAM'],['Stocare','256 GB SSD'],['OS','Linux'],['GPU','Integrat Intel'],['Dimensiuni','36 × 178 × 183 mm'],['Greutate','1.30 kg'],['Integrare','SDK/API'],['Facilități','Listă Albă/Neagră, AI/ML']],
+  },
+  'SKYDEFENDER-5K': {
+    name: 'SkyDefender 5km', vendor: 'OPTOELECTRONICA-2001 S.A.',
+    type: 'C-UAS All-in-One · Multi-Strat 5km', detRange: 5000, mitRange: 5000,
+    cover: '360°', mode: 'AUTO', status: 'active',
+    desc: 'Soluție completă integrată Sky Dome. C-UAS multistrat: Detecție RF (3km), radar 5K, radar 1K, spoofer GNSS, tracker EO/IR 225mm, armă portabilă SkyBeam, bruiaj RF 3km + 5km, comandă și control C4I. Apărare autonomă 24/7.',
+    color: '#cc33ff',
+    specs: [['Include','Detecție RF 360 3km'],['','Radar 5km (3D MIMO)'],['','Radar 1km (Tactic)'],['','Spoofer GNSS'],['','Tracker EO/IR 225mm'],['','Armă Portabilă SkyBeam'],['','Bruiaj RF 3km'],['','Bruiaj RF 5km'],['','SkyDome C4I'],['Preț Total','USD 1,869,000']],
+  },
+};
+
+// ─────────────────────────── MAP INIT ───────────────────────────
+let map;
+
+function initApp() {
+  if (typeof L === 'undefined') {
+    setTimeout(initApp, 100);
+    return;
+  }
+
+  map = L.map('map', {
+    center: [44.4268, 26.1025],
+    zoom: 13,
+    zoomControl: true,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map);
+
+  setTimeout(() => {
+    const attr = document.querySelector('.leaflet-control-attribution');
+    if (attr) { attr.style.background='rgba(6,10,15,0.7)'; attr.style.color='#3d6080'; attr.style.fontSize='8px'; }
+  }, 500);
+
+  map.on('click', (e) => {
+    if (STATE.tool === 'pin') {
+      if (STATE.directPlacementSensorId) {
+        placeDirectSensor(STATE.directPlacementSensorId, e.latlng);
+        STATE.directPlacementSensorId = null;
+        setTool('view');
+      } else {
+        STATE.pendingLatlng = e.latlng;
+        openPinModal(e.latlng);
+      }
+    } else if (STATE.tool === 'zone') {
+      addNoFlyZone(e.latlng);
+    } else if (STATE.tool === 'measure') {
+      handleMeasure(e.latlng);
+    }
+  });
+
+  map.on('dblclick', (e) => {
+    if (STATE.tool === 'zone' && nfzPoints.length >= 2) {
+      L.DomEvent.stop(e); finalizeNoFlyZone();
+    }
+  });
+
+  startRogueDrone();
+  updateStats();
+  logEvent('Sistem SKY DOME C2 inițializat · Comandă și Control Anti-UAS ONLINE', 'success');
+  logEvent('D-Fend Solutions: EnforceAir PLUS, EnforceAir2 ×2 · ÎNREGISTRAT', 'info');
+  logEvent('Skylock C-UAS: Dome, Dir.Finder · ÎNREGISTRAT', 'info');
+  logEvent('Skylock Sisteme Radar: 5K MIMO, 3K ESA, 1K Tactic · ÎNREGISTRAT', 'info');
+  logEvent('Skylock Detecție RF: LRF 10km, WolfPack · ÎNREGISTRAT', 'info');
+  logEvent('Skylock EO/IR: camere 225mm, 785mm, 700mm, 1000mm · ÎNREGISTRAT', 'info');
+  logEvent('Skylock Efectori: Bruiaj Direcțional, Spoofer L1, SkyBeam, Interceptor, PortDome · ÎNREGISTRAT', 'info');
+  logEvent('OJMA C-UAS: OmniShield, Bruiaj Omni, Spoofer 5K · ÎNREGISTRAT', 'info');
+  logEvent('Optoelectronica: SkyDome C4I, SkyDefender 5km · ÎNREGISTRAT', 'info');
+  logEvent('Total: 23 sisteme înregistrate · Hartă gata · Folosiți PIN pentru plan protecție', 'success');
+
+  setInterval(fetchADSB, 10000);
+  setTimeout(() => { simEvent(); setInterval(simEvent, 12000); }, 2000);
+
+  // Set initial view on mobile to ensure layout triggers correctly
+  if (window.innerWidth <= 900) {
+    const activeNav = document.querySelector('.nav-btn.active');
+    if (activeNav) activeNav.click();
+    else setView('map');
+  }
+}
+
+// ─────────────────────────── SECTION TOGGLE & VIEW NAV ───────────────────────────
+function toggleSection(bodyId, iconId) {
+  const body = document.getElementById(bodyId);
+  const icon = document.getElementById(iconId);
+  if (!body) return;
+  const collapsed = body.style.display === 'none';
+  body.style.display = collapsed ? 'block' : 'none';
+  if (icon) icon.textContent = collapsed ? '▾' : '▸';
+}
+
+function setView(v, el) {
+  STATE.view = v;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+     const navBtn = document.getElementById('nav-' + v);
+     if (navBtn) navBtn.classList.add('active');
+  }
+
+  const logCont = document.getElementById('right-log-container');
+  const planCont = document.getElementById('right-plan-container');
+  const leftPanel = document.getElementById('left-panel');
+  const centerPanel = document.getElementById('center');
+  const rightPanel = document.getElementById('right-panel');
+
+  if (v === 'plan') {
+    if (logCont) logCont.style.display = 'none';
+    if (planCont) planCont.style.display = 'flex';
+  } else if (v === 'log') {
+    if (logCont) logCont.style.display = 'flex';
+    if (planCont) planCont.style.display = 'none';
+  }
+
+  if (window.innerWidth <= 900) {
+    if (leftPanel) leftPanel.style.display = (v === 'sensors') ? 'flex' : 'none';
+    if (centerPanel) centerPanel.style.display = (v === 'map') ? 'flex' : 'none';
+    if (rightPanel) rightPanel.style.display = (v === 'plan' || v === 'log') ? 'flex' : 'none';
+    if (v === 'map') setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+    
+    if (v === 'plan' && rightPanel) {
+        const p = document.getElementById('plan-panel');
+        if(p && p.style.display === 'none') togglePlanPanel();
+        setTimeout(() => rightPanel.scrollTop = rightPanel.scrollHeight, 50);
+    } else if (v === 'log' && rightPanel) {
+        rightPanel.scrollTop = 0;
+    }
+  } else {
+    if (v === 'log') {
+        const logEl = document.getElementById('event-log');
+        if (logEl) logEl.scrollTop = 0;
+    }
+  }
+}
+
+// Reset visibility when returning to Desktop/Tablet
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900) {
+    document.getElementById('left-panel').style.display = 'flex';
+    document.getElementById('center').style.display = 'flex';
+    document.getElementById('right-panel').style.display = 'flex';
+  } else {
+     const activeNav = document.querySelector('.nav-btn.active');
+     if (activeNav) {
+        activeNav.click();
+     } else {
+        setView('map');
+     }
+  }
+});
+
+// ─────────────────────────── TOOLS ───────────────────────────
+let measurePoints = [];
+let measureLine = null;
+let measureMarkers = [];
+
+function setTool(t) {
+  STATE.tool = t;
+  document.querySelectorAll('.map-tool-btn[id^="tool-"]').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('tool-'+t);
+  if (el) el.classList.add('active');
+  const label = document.getElementById('map-mode-label');
+  const finishBtn = document.getElementById('nfz-finish-btn');
+  if (t === 'pin') {
+    label.textContent = '📍 CLICK PE HARTĂ PENTRU SENZOR / PUNCT DE PROTECȚIE';
+    label.classList.add('visible');
+    if (map) map.getContainer().style.cursor = 'crosshair';
+    if (finishBtn) finishBtn.style.display = 'none';
+  } else if (t === 'zone') {
+    label.textContent = '⛔ ZONĂ INTERZISĂ · 0 PUNCTE · DUBLU-CLICK PENTRU FINALIZARE';
+    label.classList.add('visible');
+    if (map) map.getContainer().style.cursor = 'crosshair';
+    if (nfzPolyline && map) { try{map.removeLayer(nfzPolyline);}catch(e){} nfzPolyline=null; }
+    nfzDotMarkers.forEach(m => { if (map) try{map.removeLayer(m);}catch(e){} });
+    nfzDotMarkers = []; nfzPoints = [];
+    if (finishBtn) finishBtn.style.display = 'flex';
+  } else if (t === 'measure') {
+    label.textContent = '📏 CLICK DOUĂ PUNCTE PENTRU MĂSURARE DISTANȚĂ';
+    label.classList.add('visible');
+    if (map) map.getContainer().style.cursor = 'crosshair';
+    measurePoints = [];
+    if(measureLine && map){map.removeLayer(measureLine); measureLine=null;}
+    measureMarkers.forEach(m=>{if (map) map.removeLayer(m);}); measureMarkers=[];
+    if (finishBtn) finishBtn.style.display = 'none';
+  } else {
+    label.classList.remove('visible');
+    if (map) map.getContainer().style.cursor = '';
+    if (finishBtn) finishBtn.style.display = 'none';
+  }
+}
+
+// No-fly zone drawing - MULTI-PUNCT, dublu-click pentru finalizare
+let nfzPoints = [];
+let nfzPolyline = null;
+let nfzDotMarkers = [];
+
+function addNoFlyZone(latlng) {
+  nfzPoints.push(latlng);
+  const dot = L.circleMarker(latlng, {radius:4, color:'#ff3355', fillColor:'#ff3355', fillOpacity:1, weight:2}).addTo(map);
+  nfzDotMarkers.push(dot);
+  if (nfzPolyline) map.removeLayer(nfzPolyline);
+  if (nfzPoints.length >= 2) {
+    nfzPolyline = L.polyline([...nfzPoints, nfzPoints[0]], {color:'#ff3355', weight:2, dashArray:'6,4', opacity:.8}).addTo(map);
+  }
+  const label = document.getElementById('map-mode-label');
+  label.textContent = `⛔ ZONĂ INTERZISĂ · ${nfzPoints.length} PUNCTE · DUBLU-CLICK PENTRU FINALIZARE`;
+}
+
+function finalizeNoFlyZone() {
+  if (nfzPoints.length < 3) { toast('Minim 3 puncte necesare', 'yellow'); return; }
+  if (nfzPolyline) map.removeLayer(nfzPolyline);
+  nfzDotMarkers.forEach(m => { try{map.removeLayer(m);}catch(e){} });
+  nfzDotMarkers = [];
+  const poly = L.polygon(nfzPoints, {
+    color: '#ff3355', weight: 1.5, fillColor: '#ff3355',
+    fillOpacity: 0.12, dashArray: '6,4', className: 'nfz-polygon'
+  }).addTo(map);
+  poly.bindTooltip('<span style="font-family:var(--font-mono);font-size:10px;color:#ff3355;background:#06080d;border:1px solid #ff3355;padding:3px 8px;">ZONĂ INTERZISĂ</span>', {permanent:true, direction:'center', opacity:1});
+  STATE.mapLayers.push(poly);
+  const pts = nfzPoints.length;
+  nfzPoints = []; nfzPolyline = null;
+  logEvent(`Zonă interzisă de zbor stabilită pe hartă (${pts} puncte).`, 'warn');
+  toast('Zonă Interzisă Adăugată', 'yellow');
+  setTool('view');
+}
+
+// Measure tool
+function handleMeasure(latlng) {
+  const m = L.circleMarker(latlng, {radius:4, color:'#ffd700', fillColor:'#ffd700', fillOpacity:1}).addTo(map);
+  measureMarkers.push(m);
+  measurePoints.push(latlng);
+  if (measurePoints.length === 2) {
+    const dist = measurePoints[0].distanceTo(measurePoints[1]);
+    const km = (dist/1000).toFixed(2);
+    if (measureLine) map.removeLayer(measureLine);
+    measureLine = L.polyline(measurePoints, {color:'#ffd700', weight:1.5, dashArray:'4,4'}).addTo(map);
+    measureLine.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:#ffd700;background:#06080d;border:1px solid #ffd700;padding:3px 8px;">DISTANȚĂ: ${km} km / ${(dist).toFixed(0)} m</span>`, {permanent:true, sticky:false, opacity:1}).openTooltip();
+    STATE.mapLayers.push(measureLine);
+    measurePoints = [];
+    measureMarkers.forEach(m=>{ STATE.mapLayers.push(m); });
+    measureMarkers = [];
+    toast(`Distanță: ${km} km`, 'green');
+    setTool('view');
+  }
+}
+
+function clearAllLayers() {
+  STATE.mapLayers.forEach(l => { try { map.removeLayer(l); } catch(e){} });
+  STATE.mapLayers = [];
+  STATE.planItems.forEach(i => {
+    if (i.marker && map) map.removeLayer(i.marker);
+    if (i.visuals && map) i.visuals.forEach(v => map.removeLayer(v));
+  });
+  STATE.planItems = [];
+  if (nfzPolyline && map) { try{map.removeLayer(nfzPolyline);}catch(e){} nfzPolyline=null; }
+  nfzDotMarkers.forEach(m => { if(map) try{map.removeLayer(m);}catch(e){} });
+  nfzDotMarkers = []; nfzPoints = [];
+  updatePlanPanel();
+  updateStats();
+  logEvent('Toate straturile hărții au fost șterse de operator.', 'warn');
+  toast('Hartă Ștearsă', 'yellow');
+}
+
+// ─────────────────────────── PIN MODAL ───────────────────────────
+function openPinModal(latlng) {
+  setTool('view');
+  const body = document.getElementById('modal-body');
+  document.getElementById('modal-title').textContent = 'PUNCT DE PROTECȚIE';
+
+  const sensorOptions = Object.entries(SENSORS)
+    .filter(([id, s]) => s.status !== 'offline')
+    .map(([id, s]) => `<div class="sensor-checkbox-card" data-sid="${id}" onclick="toggleSC(this)">
+      <div class="sc-name">${s.name}</div>
+      <div class="sc-type">${s.type}</div>
+      <div class="sc-range">🎯 DET: ${s.detRange>0?s.detRange+'m':'—'} · MIT: ${s.mitRange>0?s.mitRange+'m':'—'}</div>
+    </div>`).join('');
+
+  body.innerHTML = `
+    <div class="modal-coords">📍 LAT: ${latlng.lat.toFixed(5)} · LNG: ${latlng.lng.toFixed(5)}</div>
+    <div class="field-group">
+      <div class="field-label">Nume Locație / Obiectiv</div>
+      <input type="text" id="pin-name" placeholder="ex. Post Comandă Alpha, Nod Infrastructură Critică...">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Tip Obiectiv</div>
+      <select id="pin-type">
+        <option value="command">Post Comandă / Cartier General</option>
+        <option value="critical">Infrastructură Critică</option>
+        <option value="airfield">Aerodrom / Spațiu Aerian</option>
+        <option value="convoy">Convoi / Țintă Mobilă</option>
+        <option value="event">Eveniment Public</option>
+        <option value="border">Frontieră / Perimetru</option>
+        <option value="vip">Protecție VIP</option>
+        <option value="custom">Locație Personalizată</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Atribuie Senzori (Selecție Multiplă)</div>
+      <input type="text" id="sensor-search" placeholder="🔍 Caută senzor după nume sau tip..." onkeyup="filterSensors()" style="margin-bottom: 8px;">
+      <div class="sensor-grid" id="modal-sensor-grid">${sensorOptions}</div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Suprascriere Rază Acoperire</div>
+      <div class="radius-row" id="radius-row">
+        ${[500,1000,2000,3000,4500].map(r=>`<div class="radius-btn" data-r="${r}" onclick="selectRadius(this)">${r>=1000?r/1000+'km':r+'m'}</div>`).join('')}
+        <div class="radius-btn sel" data-r="auto" onclick="selectRadius(this)">AUTO</div>
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Notițe Misiune</div>
+      <textarea id="pin-notes" placeholder="Evaluare amenințare, note operaționale, ROE..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeModal()">ANULARE</button>
+      <button class="btn btn-primary" onclick="confirmPin()">ADAUGĂ ÎN PLAN</button>
+    </div>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function toggleSC(el) { el.classList.toggle('selected'); }
+function selectRadius(el) {
+  document.querySelectorAll('.radius-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// Funcție nouă pentru plasarea directă a unui singur senzor
+function placeDirectSensor(sensorId, latlng) {
+  const s = SENSORS[sensorId];
+  if (!s) return;
+  const id = 'pin-' + Date.now();
+  const item = { 
+    id, 
+    name: s.name, 
+    type: 'custom', 
+    typeLabel: s.vendor.split(' ')[0], 
+    notes: 'Plasare rapidă din panou', 
+    sensors: [sensorId], 
+    latlng, 
+    radiusOverride: 'auto' 
+  };
+  STATE.planItems.push(item);
+  addPinToMap(item);
+  updatePlanPanel();
+  updateStats();
+  logEvent(`Senzor "${s.name}" plasat direct pe hartă.`, 'success');
+  toast(`"${s.name}" plasat pe hartă`, 'green');
+}
+
+function filterSensors() {
+  const query = document.getElementById('sensor-search').value.toLowerCase();
+  const cards = document.querySelectorAll('#modal-sensor-grid .sensor-checkbox-card');
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    if (text.includes(query)) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function confirmPin() {
+  const name = document.getElementById('pin-name').value || 'Punct Protecție';
+  const type = document.getElementById('pin-type').value;
+  const notes = document.getElementById('pin-notes').value;
+  const selectedSensors = [...document.querySelectorAll('.sensor-checkbox-card.selected')].map(el=>el.dataset.sid);
+  const radiusEl = document.querySelector('.radius-btn.sel');
+  const radiusOverride = radiusEl ? radiusEl.dataset.r : 'auto';
+  const latlng = STATE.pendingLatlng;
+  if (!latlng) return;
+
+  // Create plan item
+  const id = 'pin-' + Date.now();
+  const typeLabels = {command:'POST CMD',critical:'INFRA CRITICĂ',airfield:'AERODROM',convoy:'CONVOI',event:'EVENIMENT',border:'FRONTIERĂ',vip:'PROT. VIP',custom:'PERSONALIZAT'};
+  const item = { id, name, type, typeLabel: typeLabels[type]||type, notes, sensors: selectedSensors, latlng, radiusOverride };
+  STATE.planItems.push(item);
+
+  // Add map marker
+  addPinToMap(item);
+  updatePlanPanel();
+  updateStats();
+  logEvent(`Punct protecție "${name}" (${typeLabels[type]||type}) adăugat. Senzori: ${selectedSensors.length>0?selectedSensors.map(s=>SENSORS[s].name.split('-')[0]).join(', '):'NICIUNUL'}.`, 'success');
+  toast(`"${name}" adăugat în plan`, 'green');
+  closeModal();
+}
+
+const ASSET_ICONS = {command:'⬟',critical:'⬡',airfield:'✈',convoy:'◈',event:'◉',border:'▬',vip:'★',custom:'⊕'};
+
+function addPinToMap(item) {
+  const color = '#00ff9d';
+  const icon = ASSET_ICONS[item.type] || '⊕';
+  const markerHtml = `<div style="
+    width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+    background:rgba(6,10,15,0.9);border:2px solid ${color};border-radius:50%;
+    color:${color};font-size:14px;box-shadow:0 0 12px ${color}88;
+    font-family:var(--font-ui);font-weight:700;
+  ">${icon}</div>`;
+  
+  item.visuals = []; // Păstrăm referințe către elementele vizuale (cercuri/unde)
+
+  const marker = L.marker(item.latlng, {
+    icon: L.divIcon({ html: markerHtml, iconSize: [32,32], iconAnchor:[16,16], className:'' }),
+    draggable: true // Permite mutarea markerului cu mouse-ul
+  }).addTo(map);
+  
+  marker.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;background:#06080d;color:#00ff9d;border:1px solid #00ff9d;padding:3px 8px;">${item.name}</span>`, {permanent:false});
+  STATE.mapLayers.push(marker);
+  item.marker = marker;
+
+  // Evenimente pentru mutare (Drag & Drop)
+  marker.on('drag', (e) => {
+    const newPos = e.target.getLatLng();
+    // Mută în timp real toate cercurile asociate acestui element
+    item.visuals.forEach(v => v.setLatLng(newPos));
+  });
+
+  marker.on('dragend', (e) => {
+    const newPos = e.target.getLatLng();
+    item.latlng = newPos; // Actualizează coordonatele în datele aplicației
+    updatePlanPanel(); // Actualizează coordonatele din panoul lateral
+    logEvent(`Locație "${item.name}" mutată la LAT: ${newPos.lat.toFixed(4)}, LNG: ${newPos.lng.toFixed(4)}`, 'info');
+  });
+
+  // Eveniment pentru dublu-click (Afișare detalii unitate/punct)
+  marker.on('dblclick', (e) => {
+    L.DomEvent.stop(e); // Oprește propagarea pentru a nu face zoom accidental pe hartă
+    if (item.sensors.length === 1 && item.type === 'custom') {
+      // Dacă este o unitate simplă, afișează detaliile tehnice ale senzorului
+      focusSensor(item.sensors[0], true);
+    } else {
+      // Dacă este un punct de protecție complex, afișează detalii despre locație și senzorii incluși
+      document.getElementById('modal-title').textContent = `DETALII PUNCT · ${item.name.toUpperCase()}`;
+      
+      let sensorsHtml = item.sensors.map(sid => {
+          let s = SENSORS[sid];
+          if(!s) return '';
+          let translatedStatus = statusRO[s.status] || s.status.toUpperCase();
+          let statusColor = {active:'var(--green)',standby:'var(--yellow)',offline:'var(--text-dim)'}[s.status];
+          return `
+          <div style="background:var(--bg-secondary); border:1px solid var(--border); padding:8px; margin-bottom:6px; border-radius:2px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                  <div style="font-weight:bold; font-size:11px; color:${s.color||'var(--accent)'};">${s.name}</div>
+                  <div style="font-family:var(--font-mono); font-size:9px; color:${statusColor}; border:1px solid ${statusColor}; padding:1px 4px; border-radius:2px;">${translatedStatus}</div>
+              </div>
+              <div style="font-family:var(--font-mono); font-size:9px; color:var(--text-dim);">${s.type}</div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('modal-body').innerHTML = `
+        <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px;">${item.name}</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:12px;">TIP: ${item.typeLabel}</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:14px;">📍 LAT: ${item.latlng.lat.toFixed(5)} · LNG: ${item.latlng.lng.toFixed(5)}</div>
+        ${item.notes ? `<div style="font-size:11px;color:var(--text-primary);background:var(--bg-card);padding:8px;border-left:2px solid var(--accent);margin-bottom:14px;">${item.notes}</div>` : ''}
+        <div style="font-family:var(--font-display);font-size:10px;color:var(--text-secondary);margin-bottom:8px;">SENZORI ATRIBUIȚI (${item.sensors.length}):</div>
+        <div style="max-height:160px; overflow-y:auto; padding-right:4px;">
+          ${sensorsHtml || '<div style="font-size:10px; color:var(--text-dim);">Niciun senzor atribuit.</div>'}
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn btn-secondary" onclick="closeModal()">ÎNCHIDE</button>
+          <button class="btn btn-danger" onclick="closeModal(); removePlanItem('${item.id}')">ȘTERGE PUNCT</button>
+        </div>
+      `;
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+  });
+
+  // Draw animated coverage rings for assigned sensors
+  item.sensors.forEach((sid, idx) => {
+    const s = SENSORS[sid];
+    if (!s) return;
+    const r = item.radiusOverride !== 'auto' ? parseInt(item.radiusOverride) : null;
+    let computedDetR = s.detRange;
+    let computedMitR = s.mitRange;
+    
+    // Save computed ranges for proximity checking
+    if (r) {
+      computedDetR = r * 0.5;
+      computedMitR = Math.round(r * 0.7) * 0.5;
+    } else {
+      computedDetR = computedDetR * 0.5;
+      computedMitR = computedMitR * 0.5;
+    }
+    
+    item.detR = Math.max(item.detR || 0, computedDetR);
+    item.mitR = Math.max(item.mitR || 0, computedMitR);
+
+    if (s.detRange > 0) {
+      const c = L.circle(item.latlng, {
+        radius: computedDetR, color: s.color || '#ff3355', weight: 2,
+        fillColor: s.color || '#ff3355', fillOpacity: 0.08,
+        className: 'ring-detect'
+      }).addTo(map);
+      
+      STATE.mapLayers.push(c);
+      item.visuals.push(c);
+    }
+    
+    if (s.mitRange > 0) {
+      const c2 = L.circle(item.latlng, {
+        radius: computedMitR, color: '#00ff9d', weight: 1.5,
+        fillColor: '#00ff9d', fillOpacity: 0.1,
+        className: 'ring-mit'
+      }).addTo(map);
+      
+      STATE.mapLayers.push(c2);
+      item.visuals.push(c2);
+    }
+  });
+
+  map.panTo(item.latlng);
+}
+
+// ─────────────────────────── PLAN PANEL ───────────────────────────
+function updatePlanPanel() {
+  const panel = document.getElementById('plan-panel');
+  const empty = document.getElementById('plan-empty');
+  const count = document.getElementById('plan-count');
+  count.textContent = STATE.planItems.length;
+  if (STATE.planItems.length === 0) {
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+  }
+  // Remove old items
+  panel.querySelectorAll('.plan-item').forEach(el=>el.remove());
+  STATE.planItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'plan-item';
+    div.innerHTML = `
+      <span class="plan-remove" onclick="removePlanItem('${item.id}')">×</span>
+      <div class="plan-sensor">${item.typeLabel} · ${item.sensors.length} SENZOR${item.sensors.length!==1?'I':''}</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${item.name}</div>
+      <div class="plan-desc">${item.sensors.map(s=>SENSORS[s]?.name||s).join(' · ') || 'Niciun senzor atribuit'}</div>
+      ${item.notes ? `<div class="plan-coords" style="color:var(--text-secondary);margin-top:4px;">${item.notes.substring(0,80)}${item.notes.length>80?'…':''}</div>` : ''}
+      <div class="plan-coords">📍 ${item.latlng.lat.toFixed(4)}, ${item.latlng.lng.toFixed(4)}</div>
+    `;
+    div.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('plan-remove')) { map.panTo(item.latlng); map.setZoom(14); }
+    });
+    panel.appendChild(div);
+  });
+}
+
+function removePlanItem(id) {
+  const idx = STATE.planItems.findIndex(i=>i.id===id || i.id===id.toString());
+  if (idx<0) return;
+  const item = STATE.planItems[idx];
+  if (item.marker) { try{map.removeLayer(item.marker);}catch(e){} }
+  if (item.visuals) { item.visuals.forEach(v => { try{map.removeLayer(v);}catch(e){} }); }
+  STATE.planItems.splice(idx,1);
+  updatePlanPanel();
+  updateStats();
+  logEvent(`Punct protecție "${item.name}" eliminat din plan.`, 'warn');
+}
+
+function togglePlanPanel() {
+  const panel = document.getElementById('plan-panel');
+  const icon = document.getElementById('plan-toggle-icon');
+  if(!panel) return;
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if(icon) icon.textContent = panel.style.display === 'none' ? '▸' : '▾';
+}
+
+// ─────────────────────────── SENSOR FOCUS ───────────────────────────
+function focusSensor(id, hidePlaceBtn = false) {
+  const s = SENSORS[id];
+  if (!s) return;
+  document.getElementById('modal-title').textContent = `DETALII SENZOR · ${id}`;
+  
+  let translatedStatus = statusRO[s.status] || s.status.toUpperCase();
+  const statusColor = {active:'var(--green)',standby:'var(--yellow)',offline:'var(--text-dim)'}[s.status];
+  
+  const specsHtml = s.specs ? s.specs.map(([k,v])=>`<div class="sensor-detail-row"><span class="sd-key">${k}</span><span class="sd-val">${v}</span></div>`).join('') :
+    [
+      ['Tip', s.type],
+      ['Rază Detecție', s.detRange > 0 ? s.detRange+'m / '+(s.detRange/1000).toFixed(1)+'km' : 'N/D'],
+      ['Rază Neutralizare', s.mitRange > 0 ? s.mitRange+'m / '+(s.mitRange/1000).toFixed(1)+'km' : 'N/D'],
+      ['Acoperire', s.cover],
+      ['Mod Operare', s.mode],
+      ['Status', translatedStatus],
+    ].map(([k,v])=>`<div class="sensor-detail-row"><span class="sd-key">${k}</span><span class="sd-val">${v}</span></div>`).join('');
+    
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:${s.color||'var(--accent)'};">${s.name}</div>
+      <div style="font-family:var(--font-mono);font-size:9px;padding:2px 8px;border:1px solid ${statusColor};color:${statusColor};border-radius:2px;">${translatedStatus}</div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:12px;">${s.vendor}</div>
+    <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">${s.desc}</div>
+    ${specsHtml}
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn btn-secondary" onclick="closeModal()">ÎNCHIDE</button>
+      ${s.status !== 'offline' && !hidePlaceBtn ? `<button class="btn btn-primary" onclick="closeModal(); STATE.directPlacementSensorId='${id}'; setTool('pin'); toast('Click pe hartă pentru a plasa ${s.name}','green')">PLASEAZĂ PE HARTĂ</button>` : ''}
+    </div>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+// ─────────────────────────── MODAL ───────────────────────────
+function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+// ─────────────────────────── STATS ───────────────────────────
+function updateStats() {
+  const activeCount = Object.values(SENSORS).filter(s => s.status === 'active').length;
+  
+  const statSensorsEl = document.getElementById('stat-sensors');
+  if (statSensorsEl) statSensorsEl.textContent = activeCount;
+  
+  const activeCountEl = document.getElementById('active-count');
+  if (activeCountEl) activeCountEl.textContent = activeCount;
+  
+  const totalCountEl = document.getElementById('total-count');
+  if (totalCountEl) totalCountEl.textContent = Object.keys(SENSORS).length;
+  
+  const coverage = Math.min(100, STATE.planItems.length * 15);
+  const statCoverageEl = document.getElementById('stat-coverage');
+  if (statCoverageEl) statCoverageEl.textContent = coverage + "%";
+  
+  const coverageFillEl = document.getElementById('coverage-fill');
+  if (coverageFillEl) coverageFillEl.style.width = coverage + "%";
+  
+  const statPlansEl = document.getElementById('stat-plans');
+  if (statPlansEl) statPlansEl.textContent = STATE.planItems.length;
+}
+
+// ─────────────────────────── CLOCK ───────────────────────────
+function updateClock() {
+  const now = new Date();
+  const t = now.toUTCString().split(' ');
+  const clockTimeEl = document.getElementById('clock-time');
+  const clockDateEl = document.getElementById('clock-date');
+  if (clockTimeEl) clockTimeEl.textContent = now.toUTCString().match(/\d{2}:\d{2}:\d{2}/)[0] + 'Z';
+  if (clockDateEl) clockDateEl.textContent = t[0]+' '+t[1]+' '+t[2]+' '+t[3];
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ─────────────────────────── UPTIME ───────────────────────────
+setInterval(() => {
+  STATE.uptimeSeconds++;
+  const h = String(Math.floor(STATE.uptimeSeconds/3600)).padStart(2,'0');
+  const m = String(Math.floor((STATE.uptimeSeconds%3600)/60)).padStart(2,'0');
+  const s = String(STATE.uptimeSeconds%60).padStart(2,'0');
+  const statUptimeEl = document.getElementById('stat-uptime');
+  if (statUptimeEl) statUptimeEl.textContent = `${h}:${m}:${s}`;
+}, 1000);
+
+// ─────────────────────────── EVENT LOG ───────────────────────────
+function logEvent(msg, level='info') {
+  STATE.eventCount++;
+  const log = document.getElementById('event-log');
+  if (!log) return;
+  const now = new Date();
+  const t = now.toUTCString().match(/\d{2}:\d{2}:\d{2}/)[0];
+  const entry = document.createElement('div');
+  entry.className = 'event-entry';
+  entry.innerHTML = `<div class="event-time">${t}Z</div><div class="event-msg ${level}">${msg}</div>`;
+  log.insertBefore(entry, log.firstChild);
+  
+  const logCountEl = document.getElementById('log-count');
+  if (logCountEl) logCountEl.textContent = STATE.eventCount + ' EVENIMENTE';
+  
+  // Keep max 100
+  while (log.children.length > 100) log.removeChild(log.lastChild);
+}
+
+// ─────────────────────────── TOASTS ───────────────────────────
+function toast(msg, type='info') {
+  const c = document.getElementById('toast-container');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.animation='toastOut .3s ease forwards'; setTimeout(()=>t.remove(), 300); }, 3000);
+}
+
+// ─────────────────────────── ADS-B CIVIL TRAFFIC ───────────────────────────
+let adsbInterval = null;
+let adsbMarkers = new Map();
+
+async function fetchADSB() {
+  if (!STATE.adsbActive) return;
+  try {
+    const res = await fetch('https://opensky-network.org/api/states/all?lamin=44.0&lomin=25.5&lamax=44.8&lomax=26.8');
+    const data = await res.json();
+    const currentIds = new Set();
+    if (data.states) {
+        data.states.slice(0, 8).forEach(s => {
+          const id = s[0], call = s[1].trim() || 'CIVIL', lat = s[6], lng = s[5], head = s[10]||0;
+          currentIds.add(id);
+          if (adsbMarkers.has(id)) {
+              adsbMarkers.get(id).setLatLng([lat, lng]);
+          } else {
+            const m = L.marker([lat, lng], { icon: L.divIcon({ html: `<div style="transform:rotate(${head}deg); color:var(--orange); filter: drop-shadow(0 0 4px var(--orange));"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21,16V14L13,9V3.5A1.5,1.5 0 0,0 11.5,2A1.5,1.5 0 0,0 10,3.5V9L2,14V16L10,13.5V19L8,20.5V22L11.5,21L15,22V20.5L13,19V13.5L21,16Z"/></svg></div>`, className: ''}) }).addTo(map);
+            m.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--orange);background:#06080d;border:1px solid var(--orange);padding:3px 8px;">${call}</span>`, {permanent: true, direction: 'right', offset: [5, 0], opacity: 0.85});
+            adsbMarkers.set(id, m);
+          }
+        });
+    }
+    for (let [id, m] of adsbMarkers) { 
+        if (!currentIds.has(id)) { 
+            if(map) map.removeLayer(m); 
+            adsbMarkers.delete(id); 
+        } 
+    }
+    const statAdsbEl = document.getElementById('stat-adsb');
+    if (statAdsbEl) statAdsbEl.textContent = adsbMarkers.size;
+  } catch(e) {}
+}
+
+function toggleADSB() {
+  STATE.adsbActive = !STATE.adsbActive;
+  const btn = document.getElementById('btn-adsb');
+  if (STATE.adsbActive) {
+    if (btn) { btn.textContent = 'ADS-B: ON'; btn.classList.add('adsb-on'); btn.style.color = ''; btn.style.borderColor = ''; }
+    fetchADSB();
+    adsbInterval = setInterval(fetchADSB, 10000);
+    logEvent('Rețea ADS-B conectată. Trafic civil afișat pe hartă (OpenSky Network).', 'info');
+    toast('Trafic Civil Activat', 'info');
+  } else {
+    if (btn) { btn.textContent = 'ADS-B: OFF'; btn.classList.remove('adsb-on'); btn.style.color = 'var(--orange)'; btn.style.borderColor = 'rgba(255,140,0,0.4)'; }
+    clearInterval(adsbInterval);
+    adsbMarkers.forEach(m => { if (map) map.removeLayer(m); });
+    adsbMarkers.clear();
+    const statAdsbEl = document.getElementById('stat-adsb');
+    if (statAdsbEl) statAdsbEl.textContent = '0';
+    logEvent('Rețea ADS-B deconectată.', 'warn');
+    toast('Trafic Civil Ascuns', 'yellow');
+  }
+}
+
+function startRogueDrone() {
+  const iconHtml = `<div style="color:var(--red); filter: drop-shadow(0 0 8px var(--red)); animation: pulse .5s infinite; transform: rotate(45deg);"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21A1,1 0 0,1 20,18V16H18.82A7.04,7.04 0 0,1 13.5,19.82V21A2,2 0 0,1 15,23V24H9V23A2,2 0 0,1 10.5,21V19.82A7.04,7.04 0 0,1 5.18,16H4V18A1,1 0 0,1 3,19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M12,9A5,5 0 0,0 7,14A5,5 0 0,0 12,19A5,5 0 0,0 17,14A5,5 0 0,0 12,9Z" /></svg></div>`;
+  const icon = L.divIcon({ html: iconHtml, className: '', iconSize: [24,24], iconAnchor: [12,12] });
+  rogueDrone.marker = L.marker([rogueDrone.lat, rogueDrone.lng], { icon }).addTo(map);
+  rogueDrone.marker.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--red);background:#06080d;border:1px solid var(--red);padding:3px 8px;">⚠️ UAS NECUNOSCUT<br>V: 45km/h</span>`, {permanent: true, direction: 'right', offset: [8, 0], opacity: 0.9});
+
+  setInterval(() => {
+    rogueDrone.heading += (Math.random() - 0.5) * 20;
+    const rad = rogueDrone.heading * Math.PI / 180;
+    rogueDrone.lat += Math.cos(rad) * rogueDrone.speed; 
+    rogueDrone.lng += Math.sin(rad) * rogueDrone.speed * 1.4;
+    
+    if (rogueDrone.lat > 44.48 || rogueDrone.lat < 44.38) rogueDrone.heading += 180;
+    if (rogueDrone.lng > 26.15 || rogueDrone.lng < 25.95) rogueDrone.heading += 180;
+    
+    if (rogueDrone.marker) rogueDrone.marker.setLatLng([rogueDrone.lat, rogueDrone.lng]);
+    checkProximity();
+  }, 1500);
+}
+
+function checkProximity() {
+  let det = false, mit = false, unit = null;
+  const pos = L.latLng(rogueDrone.lat, rogueDrone.lng);
+  for (const item of STATE.planItems) {
+    const d = pos.distanceTo(item.latlng);
+    if (item.mitR && d <= item.mitR) { mit = true; det = true; unit = item; break; }
+    else if (item.detR && d <= item.detR) { det = true; unit = item; }
+  }
+  const badge = document.getElementById('threat-badge');
+  const sysPulse = document.getElementById('sys-pulse');
+  if (mit) { 
+      if (badge) { badge.className = "threat-indicator red"; badge.textContent = `AMENINȚARE IMINENTĂ · ÎN RAZA: ${unit.name.toUpperCase()}`; }
+      if (sysPulse) sysPulse.className = 'pulse red'; 
+  } else if (det) { 
+      if (badge) { badge.className = "threat-indicator orange"; badge.textContent = `AMENINȚARE MEDIE · DETECTAT DE: ${unit.name.toUpperCase()}`; }
+      if (sysPulse) sysPulse.className = 'pulse yellow'; 
+  } else { 
+      if (badge) { badge.className = "threat-indicator green"; badge.textContent = "AMENINȚARE: SCĂZUTĂ"; }
+      if (sysPulse) sysPulse.className = 'pulse green'; 
+  }
+}
+
+// ─────────────────────────── SIMULATED EVENTS ───────────────────────────
+const SIM_EVENTS = [
+  ['Semnal RF detectat · azimut 045° · UAS NECLASIFICAT · Profil quadcopter', 'warn'],
+  ['EnforceAir PLUS-01: Identificare dronă inițiată · clasă DJI Mavic', 'alert'],
+  ['Skylock Dir.Finder: Locație operator triangulată · 320m NE față de perimetru', 'alert'],
+  ['EnforceAir2-01: Secvență RF cyber-preluare INIȚIATĂ', 'critical'],
+  ['EnforceAir2-01: Dronă CONTROLATĂ · Redirecționare spre zona de aterizare sigură', 'success'],
+  ['Skylock Dome-01: Zonă liberă · Nicio amenințare activă în raza de detecție', 'success'],
+  ['Verificare sistem REUȘITĂ · Toți senzorii primari nominali', 'info'],
+];
+
+let simIdx = 0;
+function simEvent() {
+  const [msg, level] = SIM_EVENTS[simIdx % SIM_EVENTS.length];
+  logEvent(msg, level);
+  simIdx++;
+}
+
+// Așteptăm ca documentul să fie complet încărcat pentru a evita erori de inițializare Leaflet
+if (document.readyState === 'complete') {
+  initApp();
+} else {
+  window.addEventListener('load', initApp);
+}
+</script>
+</body>
+</html>
