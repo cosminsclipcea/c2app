@@ -197,7 +197,11 @@ html, body {
   position: relative;
   background: var(--bg-primary);
 }
-#map { width: 100%; height: 100%; filter: brightness(1.6) contrast(1.1); }
+#map { 
+  width: 100%; height: 100%; 
+  filter: brightness(1.6) contrast(1.1); 
+  transition: filter 0.4s ease; 
+}
 
 /* Map Leaflet dark override */
 .leaflet-container { background: #06080d; font-family: var(--font-ui); }
@@ -220,7 +224,7 @@ html, body {
   cursor: pointer; color: var(--text-secondary); transition: all .2s; font-size: 14px;
 }
 .map-tool-btn:hover { background: var(--bg-hover); color: var(--accent); border-color: var(--accent-dim); }
-.map-tool-btn.active { background: var(--accent-glow); color: var(--accent); border-color: var(--accent); }
+.map-tool-btn.active { background-color: var(--bg-card); background-image: linear-gradient(var(--accent-glow), var(--accent-glow)); color: var(--accent); border-color: var(--accent); }
 .map-tool-btn svg { width: 16px; height: 16px; }
 
 #map-mode-label {
@@ -470,6 +474,173 @@ textarea { resize: vertical; min-height: 70px; }
   animation: ringPulseMit 4s ease-in-out infinite !important;
 }
 
+/* Handle-uri pentru redimensionarea zonei interzise */
+.nfz-handle {
+  background: var(--red);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  cursor: grab;
+  box-shadow: 0 0 6px rgba(0,0,0,0.8);
+}
+.nfz-handle:active {
+  cursor: grabbing;
+}
+
+/* Context Menu (Click-Dreapta) */
+#custom-context-menu {
+  position: absolute;
+  z-index: 10000;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-bright);
+  border-radius: 2px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  display: none;
+  flex-direction: column;
+  min-width: 160px;
+  padding: 4px 0;
+  font-family: var(--font-ui);
+}
+.context-menu-item {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.context-menu-item:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+.context-menu-item.danger:hover {
+  color: var(--red);
+  background: rgba(255,51,85,0.1);
+}
+
+/* ── HEALTH DASHBOARD ── */
+#health-dashboard {
+  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+  z-index: 1500; background: var(--bg-panel); border: 1px solid var(--border-bright);
+  border-radius: 3px; padding: 16px; width: 680px; max-width: 96vw;
+  box-shadow: 0 0 40px rgba(0,212,255,0.15);
+  animation: modalIn .2s ease;
+  display: none;
+}
+#health-dashboard.visible { display: block; }
+.health-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+.health-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px;
+  padding: 10px; text-align: center;
+}
+.health-card .hc-val { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+.health-card .hc-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); margin-top: 2px; letter-spacing: 1px; }
+.health-card .hc-sub { font-family: var(--font-mono); font-size: 9px; color: var(--text-secondary); margin-top: 4px; }
+.health-sensor-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(26,48,80,0.4); font-size: 11px; }
+.health-sensor-bar { height: 3px; border-radius: 2px; margin-top: 2px; }
+
+/* ── LOG FILTER BAR ── */
+#log-filter-bar {
+  display: flex; gap: 4px; padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+.log-filter-btn {
+  padding: 2px 8px; font-family: var(--font-mono); font-size: 9px;
+  border: 1px solid var(--border); border-radius: 2px; cursor: pointer;
+  background: transparent; color: var(--text-dim); transition: all .2s; letter-spacing: 1px;
+}
+.log-filter-btn.active { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+.log-filter-btn.f-critical.active { color: var(--red); border-color: var(--red-dim); background: rgba(255,51,85,0.08); }
+.log-filter-btn.f-warn.active { color: var(--yellow); border-color: #aa8800; background: rgba(255,215,0,0.06); }
+.log-filter-btn.f-success.active { color: var(--green); border-color: var(--green-dim); background: rgba(0,255,157,0.06); }
+
+/* ── INTERCEPTOR MISSION PANEL ── */
+#interceptor-panel {
+  position: absolute; bottom: 150px; left: 56px; z-index: 900;
+  background: var(--bg-panel); border: 1px solid var(--accent-dim);
+  border-radius: 2px; padding: 10px 14px; min-width: 200px;
+  display: none; box-shadow: 0 0 20px rgba(0,212,255,0.15);
+  animation: modalIn .2s ease;
+}
+#interceptor-panel.visible { display: block; }
+.int-title { font-family: var(--font-display); font-size: 9px; color: var(--accent); letter-spacing: 2px; margin-bottom: 8px; }
+.int-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; padding: 3px 0; }
+.int-key { color: var(--text-dim); }
+.int-val { color: var(--text-secondary); }
+.int-progress { height: 3px; background: var(--border); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.int-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .5s; }
+
+/* ── SENSOR TOGGLE BUTTON ── */
+.sensor-toggle-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; font-family: var(--font-mono); font-size: 9px;
+  border-radius: 2px; cursor: pointer; border: 1px solid; margin-top: 6px;
+  transition: all .2s; letter-spacing: 1px; font-weight: 600;
+}
+.sensor-toggle-btn.activate { color: var(--green); border-color: var(--green-dim); background: rgba(0,255,157,0.06); }
+.sensor-toggle-btn.activate:hover { background: rgba(0,255,157,0.15); }
+.sensor-toggle-btn.standby { color: var(--yellow); border-color: #aa8800; background: rgba(255,215,0,0.06); }
+.sensor-toggle-btn.standby:hover { background: rgba(255,215,0,0.12); }
+
+/* ── MULTI-TARGET LIST ── */
+#multi-target-panel {
+  position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); z-index: 900;
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 2px; padding: 0; min-width: 240px;
+  display: none;
+}
+#multi-target-panel.visible { display: block; }
+.mt-header { font-family: var(--font-display); font-size: 9px; color: var(--accent); letter-spacing: 2px; padding: 7px 10px; border-bottom: 1px solid var(--border); background: var(--bg-secondary); }
+.mt-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-bottom: 1px solid rgba(26,48,80,0.4); cursor: pointer; transition: background .2s; }
+.mt-item:hover { background: var(--bg-hover); }
+.mt-item .mt-id { font-family: var(--font-display); font-size: 10px; font-weight: 700; }
+.mt-item .mt-status { font-family: var(--font-mono); font-size: 8px; padding: 1px 5px; border-radius: 2px; border: 1px solid; }
+.mt-item .mt-coords { font-family: var(--font-mono); font-size: 8px; color: var(--text-dim); }
+
+/* ── INCIDENT REPORT MODAL ── */
+#incident-report-modal {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(3,6,10,0.9); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+}
+#incident-report-modal.visible { display: flex; }
+.incident-report-box {
+  background: var(--bg-panel); border: 1px solid var(--border-bright);
+  width: 600px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+  border-radius: 2px; box-shadow: 0 0 60px rgba(0,212,255,0.1);
+  animation: modalIn .2s ease;
+}
+.ir-section { margin-bottom: 16px; }
+.ir-section-title { font-family: var(--font-display); font-size: 9px; letter-spacing: 2px; color: var(--accent); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.ir-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; padding: 4px 0; border-bottom: 1px solid rgba(26,48,80,0.3); }
+.ir-key { color: var(--text-dim); }
+.ir-val { color: var(--text-secondary); text-align: right; }
+
+/* ── THREAT PROFILE PANEL ── */
+.threat-profile-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; font-family: var(--font-mono); font-size: 9px;
+  border-radius: 2px; border: 1px solid; cursor: pointer;
+  transition: all .2s; letter-spacing: 1px;
+}
+.threat-profile-badge.low { color: var(--green); border-color: var(--green-dim); background: rgba(0,255,157,0.06); }
+.threat-profile-badge.medium { color: var(--yellow); border-color: #aa8800; background: rgba(255,215,0,0.06); }
+.threat-profile-badge.high { color: var(--orange); border-color: #aa5500; background: rgba(255,140,0,0.08); }
+.threat-profile-badge.critical { color: var(--red); border-color: var(--red-dim); background: rgba(255,51,85,0.1); }
+
+/* ── AUDIO ALERT INDICATOR ── */
+#audio-btn {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 2px; cursor: pointer;
+  color: var(--text-secondary); transition: all .2s; background: var(--bg-card);
+  font-size: 14px; flex-shrink: 0;
+}
+#audio-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
+#audio-btn.active { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+
 /* ── RESPONSIVE MOBILE ── */
 @media (max-width: 1200px) {
   #main { grid-template-columns: 240px 1fr 260px; }
@@ -499,6 +670,48 @@ textarea { resize: vertical; min-height: 70px; }
 </head>
 <body>
 
+<!-- ── HEALTH DASHBOARD ── -->
+<div id="health-dashboard">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:var(--font-display);font-size:11px;color:var(--accent);letter-spacing:3px;">SĂNĂTATE SISTEM</div>
+    <div onclick="toggleHealthDash()" style="cursor:pointer;color:var(--text-dim);font-size:18px;">×</div>
+  </div>
+  <div class="health-grid" id="health-grid"></div>
+  <div style="margin-top:14px;">
+    <div style="font-family:var(--font-display);font-size:9px;color:var(--text-secondary);letter-spacing:2px;margin-bottom:8px;">STARE SENZORI</div>
+    <div id="health-sensors-list" style="max-height:200px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- ── MULTI-TARGET PANEL ── -->
+<div id="multi-target-panel">
+  <div class="mt-header">ȚINTE ACTIVE · <span id="mt-count">0</span></div>
+  <div id="mt-list"></div>
+</div>
+
+<!-- ── INTERCEPTOR MISSION PANEL ── -->
+<div id="interceptor-panel">
+  <div class="int-title">🛡️ MISIUNE INTERCEPTOR</div>
+  <div class="int-row"><span class="int-key">ȚINTĂ:</span><span class="int-val" id="int-target">—</span></div>
+  <div class="int-row"><span class="int-key">DISTANȚĂ:</span><span class="int-val" id="int-dist">— km</span></div>
+  <div class="int-row"><span class="int-key">VITEZĂ:</span><span class="int-val">270 km/h</span></div>
+  <div class="int-row"><span class="int-key">AUTONOMIE:</span><span class="int-val" id="int-autonomy">20:00</span></div>
+  <div class="int-row"><span class="int-key">STARE:</span><span class="int-val" id="int-state" style="color:var(--accent);">EN ROUTE</span></div>
+  <div class="int-progress"><div class="int-progress-fill" id="int-progress-fill" style="width:0%"></div></div>
+  <button onclick="recallInterceptor()" style="margin-top:8px;width:100%;padding:5px;font-family:var(--font-display);font-size:9px;letter-spacing:2px;background:rgba(255,51,85,0.1);color:var(--red);border:1px solid var(--red-dim);border-radius:2px;cursor:pointer;">⬅ RECHEMARE</button>
+</div>
+
+<!-- ── INCIDENT REPORT MODAL ── -->
+<div id="incident-report-modal">
+  <div class="incident-report-box">
+    <div class="modal-header">
+      <div class="modal-title">📄 RAPORT INCIDENT OPERAȚIONAL</div>
+      <div class="modal-close" onclick="closeIncidentReport()">×</div>
+    </div>
+    <div class="modal-body" id="incident-report-body"></div>
+  </div>
+</div>
+
 <!-- ── TOP BAR ── -->
 <div id="topbar">
   <div class="logo" style="padding:0;">
@@ -514,10 +727,14 @@ textarea { resize: vertical; min-height: 70px; }
     <div class="nav-btn" id="nav-sensors" onclick="setView('sensors',this)">MGMT SENZORI</div>
     <div class="nav-btn" id="nav-plan" onclick="setView('plan',this)">PLAN PROTECȚIE</div>
     <div class="nav-btn" id="nav-log" onclick="setView('log',this)">JURNAL</div>
+    <div class="nav-btn" onclick="generateIncidentReport()" title="Raport Incident">📄 RAPORT</div>
     <div class="divider" style="margin:0 4px; height:20px; align-self:center;"></div>
     <div class="nav-btn" id="btn-adsb" onclick="toggleADSB()" style="color:var(--orange); border-color:rgba(255,140,0,0.4);" title="Afișează Trafic Civil (ADS-B)">ADS-B: OFF</div>
   </div>
   <div class="spacer"></div>
+  <div id="audio-btn" onclick="toggleAudio()" title="Alerte Sonore">🔇</div>
+  <div class="map-tool-btn" onclick="toggleHealthDash()" title="Sănătate Sistem" style="width:auto;padding:0 8px;font-family:var(--font-display);font-size:9px;letter-spacing:1px;color:var(--green);">⬡ HEALTH</div>
+  <div class="divider"></div>
   <div id="threat-badge" class="threat-indicator green">AMENINȚARE: SCĂZUTĂ</div>
   <div class="divider"></div>
   <div class="utc-clock">
@@ -911,6 +1128,12 @@ textarea { resize: vertical; min-height: 70px; }
         <div class="map-tool-btn active" id="tool-view" onclick="setTool('view')" title="Mod Vizualizare">
           <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4 3 1 8 1 8s3 5 7 5 7-5 7-5-3-5-7-5zm0 8a3 3 0 110-6 3 3 0 010 6z"/></svg>
         </div>
+        <div class="map-tool-btn" id="tool-theme" onclick="toggleMapTheme()" title="Schimbă Tematica Hărții (Dark/Grey ↔ Black/White)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"></path>
+          </svg>
+        </div>
         <div class="map-tool-btn" id="tool-pin" onclick="STATE.directPlacementSensorId=null; setTool('pin')" title="Plasează Pin / Plan Acoperire">
           <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 00-5 5c0 3.5 5 9 5 9s5-5.5 5-9a5 5 0 00-5-5zm0 7a2 2 0 110-4 2 2 0 010 4z"/></svg>
         </div>
@@ -922,6 +1145,9 @@ textarea { resize: vertical; min-height: 70px; }
         </div>
         <div class="map-tool-btn" onclick="clearAllLayers()" title="Șterge Toate Marcajele">
           <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 4l1 10h10L14 4H2zm3 2h2l.5 6H5L5 6zm4 0h2l-.5 6H9V6zM1 2h14v2H1V2zm4-2h6v1H5V0z"/></svg>
+        </div>
+        <div class="map-tool-btn" onclick="toggleMultiTargetPanel()" title="Panou Multi-Ținte" id="tool-multitarget">
+          <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="4" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><path d="M6 4h4M4 6v4M12 6v4M6 12h4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
         </div>
         <div id="nfz-finish-btn" class="map-tool-btn" onclick="finalizeNoFlyZone()" title="Finalizează Zona Interzisă" style="display:none;background:rgba(255,51,85,0.15);border-color:#ff3355;color:#ff3355;">
           <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5l-11 11M4 2h8v2H4zm8 0v8h-2V4zm-8 8H2V4h2v8zm8 0v2H4v-2h8z"/><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2"/></svg>
@@ -976,11 +1202,18 @@ textarea { resize: vertical; min-height: 70px; }
           <div class="section-header">
             <div class="section-title">JURNAL EVENIMENTE</div>
             <div style="display:flex;gap:6px;align-items:center;">
-              <button class="ai-btn" onclick="generateAIAnalysis()" title="Analiză Tactica cu IA">ANALIZĂ ✨</button>
+              <button class="ai-btn" onclick="exportLog()" title="Export Log CSV">⬇ CSV</button>
               <div class="pulse green" id="log-pulse"></div>
               <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);" id="log-count">0 EVENIMENTE</div>
             </div>
           </div>
+        </div>
+        <div id="log-filter-bar">
+          <button class="log-filter-btn active" data-filter="all" onclick="setLogFilter('all',this)">TOATE</button>
+          <button class="log-filter-btn f-critical" data-filter="critical" onclick="setLogFilter('critical',this)">CRITIC</button>
+          <button class="log-filter-btn f-warn" data-filter="warn" onclick="setLogFilter('warn',this)">ALERTĂ</button>
+          <button class="log-filter-btn f-success" data-filter="success" onclick="setLogFilter('success',this)">OK</button>
+          <button class="log-filter-btn" data-filter="info" onclick="setLogFilter('info',this)">INFO</button>
         </div>
         <div class="event-log" id="event-log"></div>
     </div>
@@ -990,7 +1223,8 @@ textarea { resize: vertical; min-height: 70px; }
           <div class="section-header" onclick="togglePlanPanel()">
             <div class="section-title">PLAN PROTECȚIE · <span id="plan-count">0</span> ELEMENTE</div>
             <div style="display:flex;gap:6px;align-items:center;">
-                <button class="ai-btn" onclick="generateMissionReport(event)" title="Generare Raport Misiune">RAPORT ✨</button>
+                <button class="ai-btn" onclick="generateMissionReport(event)" title="Generare Raport Misiune">RAPORT IA ✨</button>
+                <button class="ai-btn" onclick="generateIncidentReport()" title="Raport Incident Operațional" style="margin-left:2px;">📄</button>
                 <div style="font-family:var(--font-mono);font-size:9px;color:var(--accent); cursor:pointer;" id="plan-toggle-icon">▾</div>
             </div>
           </div>
@@ -1015,6 +1249,12 @@ textarea { resize: vertical; min-height: 70px; }
       <!-- Filled dynamically -->
     </div>
   </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div id="custom-context-menu">
+  <div class="context-menu-item" id="ctx-menu-details">🔍 VEZI DETALII</div>
+  <div class="context-menu-item danger" id="ctx-menu-delete">🗑️ ȘTERGE UNITATEA</div>
 </div>
 
 <!-- TOAST CONTAINER -->
@@ -1119,6 +1359,7 @@ function displayAIResult(title, text) {
   `;
 }
 
+
 // ─────────────────────────── STATE ───────────────────────────
 const STATE = {
   view: 'map',
@@ -1130,11 +1371,68 @@ const STATE = {
   threatLevel: 'low',
   pendingLatlng: null,
   adsbActive: false,
-  directPlacementSensorId: null, // Adăugat pentru plasarea rapidă a senzorilor
+  directPlacementSensorId: null,
+  mapTheme: 'dark', // 'dark' sau 'bw'
+  nfzItems: [] // Stocăm zonele interzise pentru calculul proximității
 };
 
+// Funcții matematice pentru Sectoare și Rulment (Bearing)
+function getBearing(start, end) {
+    const lat1 = start.lat * Math.PI / 180;
+    const lat2 = end.lat * Math.PI / 180;
+    const dLng = (end.lng - start.lng) * Math.PI / 180;
+    const y = Math.sin(dLng) * Math.cos(lat2);
+    const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+    const brng = Math.atan2(y, x) * 180 / Math.PI;
+    return (brng + 360) % 360;
+}
+
+function getSectorPolygon(latlng, radius, direction, angle, points = 30) {
+    const R = 6378137; // Raza Pământului în metri
+    const lat1 = latlng.lat * Math.PI / 180;
+    const lng1 = latlng.lng * Math.PI / 180;
+    let polyPoints = [latlng];
+    const startAngle = direction - angle / 2;
+    for (let i = 0; i <= points; i++) {
+        const brng = (startAngle + (i / points) * angle) * Math.PI / 180;
+        const lat2 = Math.asin(Math.sin(lat1)*Math.cos(radius/R) + Math.cos(lat1)*Math.sin(radius/R)*Math.cos(brng));
+        const lng2 = lng1 + Math.atan2(Math.sin(brng)*Math.sin(radius/R)*Math.cos(lat1), Math.cos(radius/R)-Math.sin(lat1)*Math.sin(lat2));
+        polyPoints.push([lat2 * 180 / Math.PI, lng2 * 180 / Math.PI]);
+    }
+    return polyPoints;
+}
+
+// Funcție pentru a verifica dacă un punct este în interiorul unui poligon (Ray-Casting)
+function isPointInPolygon(point, vs) {
+    let x = point.lng, y = point.lat;
+    let inside = false;
+    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        let xi = vs[i].lng, yi = vs[i].lat;
+        let xj = vs[j].lng, yj = vs[j].lat;
+        let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+}
+
 let rogueDrone = {
-  id: 'UAS-UNK-99', lat: 44.4050, lng: 26.0200, heading: 75, speed: 0.00015, alt: '120m', marker: null, interval: null, status: 'undetected'
+  id: 'UAS-UNK-99', lat: 44.4050, lng: 26.0200, heading: 75, speed: 0.00015, alt: '120m', marker: null, interval: null, status: 'undetected',
+  trail: [], trailLine: null, predictionLine: null, tracking: false, nfzState: 'outside', threatLevel: 'high',
+  specs: [
+    ['Clasă', 'Quadcopter COTS'],
+    ['Amprentă RF', 'OcuSync 2.0 / 3.0'],
+    ['Frecvență', '2.4 GHz / 5.8 GHz FHSS'],
+    ['RCS (Secțiune Radar)', '0.02 m²'],
+    ['Sarcină Utilă Est.', 'Optică / Necunoscută']
+  ]
+};
+
+let interceptor = {
+  active: false,
+  lat: 0,
+  lng: 0,
+  speed: 0.00045, // Mai rapid decât drona ostilă pentru a o putea prinde
+  marker: null
 };
 
 // Dicționar de traduceri pentru status
@@ -1188,16 +1486,16 @@ const SENSORS = {
   // ── SKYLOCK RADAR SYSTEMS ──
   'RADAR-5K': {
     name: 'Radar 5K (3D MIMO)', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Banda X FMCW · Supraveghere Aeriană 3D', detRange: 5000, mitRange: 0,
-    cover: '360° (4×90° fațete)', mode: 'AUTO', status: 'active',
+    type: 'BANDA X FMCW · SUPRAVEGHERE 3D', detRange: 5000, mitRange: 0,
+    cover: 'FOV 90° (Fațetă Individuală)', sectorAngle: 90, mode: 'AUTO', status: 'active',
     desc: 'Radar 3D MIMO X-band FMCW. Detecție până la 5km (0.01 RCS). Micro-Doppler pentru drone cu viteză redusă/zbor la punct fix. Putere 80W/19dBW. IP66/67. Desfășurare rapidă < 30 min. 53kg pe fațetă. -20°C până la +50°C.',
     color: '#00d4ff',
     specs: [['Arhitectură','3D MIMO'],['Tip Radar','FMCW'],['Bandă Frecv.','Banda X 9.8–9.9 GHz'],['Rază Detecție (0.01RCS)','Până la 5 km'],['Putere Ieșire','80 W / 19 dBW'],['Câmp Vizual (FOV)','90°/20° pe fațetă'],['Protecție IP','IP66/IP67'],['Dimensiuni','645×360×180 mm'],['Greutate','53 kg/fațetă']],
   },
   'RADAR-3K': {
     name: 'Radar 3K (4D ESA)', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Banda Ku ESA · Multi-Canal', detRange: 3000, mitRange: 0,
-    cover: '360° (4×130° fațete)', mode: 'AUTO', status: 'active',
+    type: 'BANDA KU ESA · MULTI-CANAL', detRange: 3000, mitRange: 0,
+    cover: 'FOV 130° (Fațetă Individuală)', sectorAngle: 130, mode: 'AUTO', status: 'active',
     desc: 'Radar 4D ESA, multi-canal bandă Ku. Detecție până la 3km (0.01 RCS). Acuratețe azimut < 0.5°. Răcire pasivă, IP66. -40°C până la +65°C. 17.8kg pe fațetă.',
     color: '#0097c4',
     specs: [['Arhitectură','4D ESA'],['Bandă Frecv.','Banda Ku 15.4–16.6 GHz'],['Rază Detecție (0.01RCS)','Până la 3 km'],['Acuratețe Az/El','< 0.5°'],['Câmp Vizual (FOV)','130°Az × 90°El/fațetă'],['Protecție IP','IP66'],['Consum','< 250 W max'],['Greutate','17.8 kg/fațetă']],
@@ -1205,7 +1503,7 @@ const SENSORS = {
   'RADAR-1K': {
     name: 'Radar 1K (Tactic)', vendor: 'SKYLOCK · AVNON GROUP',
     type: '3D Tactic · 24 GHz · Căutare-Urmărire', detRange: 1200, mitRange: 0,
-    cover: '120°Az × 80°El', mode: 'AUTO', status: 'standby',
+    cover: 'FOV 120°', sectorAngle: 120, mode: 'AUTO', status: 'standby',
     desc: 'Radar tactic ultra-compact (1.25kg). Multi-canal 24.45-24.65 GHz. Căutare și urmărire simultană (10Hz). Urmărește până la 20 de ținte simultan. Ținte noi < 1 sec. IP67, -40°C până la +75°C.',
     color: '#0077bb',
     specs: [['Rază (Phantom 4)','900 m'],['Rază (Matrice 600)','> 1.2 km'],['Câmp Vizual (FOV)','120°Az × 80°El'],['Ținte Maxime','20 simultan'],['Actualizare Urmărire','Până la 10 Hz'],['Dimensiuni','20.3×16.3×4 cm'],['Greutate','1.25 kg'],['Protecție IP','IP67'],['Temp. Operare','-40°C până la +75°C']],
@@ -1213,7 +1511,7 @@ const SENSORS = {
   // ── SKYLOCK RF DETECTION ──
   'RF-LRF': {
     name: 'Detector LRF 10km', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'RF Rază Lungă · 70MHz-6GHz · Găsire Direcție', detRange: 10000, mitRange: 0,
+    type: 'RF RAZĂ LUNGĂ · 70MHz-6GHz', detRange: 10000, mitRange: 0,
     cover: '360° Az / ±90° El', mode: 'AUTO', status: 'active',
     desc: 'Detecție RF cu rază lungă până la 10km. Găsirea direcției pentru WiFi. Suportă LightBridge, OcuSync 1/2/3, WiFi, Zigbee, BT, FPV. Bază AI pentru drone DIY. Listă Albă/Neagră. IP66.',
     color: '#ffaa00',
@@ -1221,7 +1519,7 @@ const SENSORS = {
   },
   'RF-WOLFPACK': {
     name: 'Detector RF WolfPack', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'SDR Compact · 70MHz-6GHz · Găsire Direcție', detRange: 4000, mitRange: 0,
+    type: 'SDR COMPACT · GĂSIRE DIRECȚIE', detRange: 4000, mitRange: 0,
     cover: 'OMNIDIRECȚIONAL', mode: 'AUTO', status: 'standby',
     desc: 'Detector radio definit software compact (5kg). Găsirea direcției < 5° RMS. Până la 4km în medii cu zgomot redus. Timp de detecție < 10 sec. IP67. -30°C până la +60°C. Consum 35W.',
     color: '#cc8800',
@@ -1230,16 +1528,16 @@ const SENSORS = {
   // ── SKYLOCK EO/IR SYSTEMS ──
   'EO-225': {
     name: 'Cameră EO/IR 225mm', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Termal Nerăcit VOx · 1080p Lumină Scăzută', detRange: 1500, mitRange: 0,
-    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'active',
+    type: 'TERMAL NERĂCIT · ZI 1080P', detRange: 1500, mitRange: 0,
+    cover: 'FOV 60° (Cameră PTZ)', sectorAngle: 60, mode: 'AUTO', status: 'active',
     desc: 'Microbolometru VOx nerăcit. 640x480 / 17μm. Zoom motorizat 9x. NETd 50mK. Cameră de zi CMOS 1080p lumină scăzută, zoom 33x. Urmărește DJI Phantom 4 până la 1.5km. Operare 24/7.',
     color: '#00ff9d',
     specs: [['Detector','Microbolometru VOx Nerăcit'],['Rezoluție','640 × 480'],['Dimensiune Pixel','17 μm'],['Distanță Focală','25 - 225 mm'],['Zoom Termal','9× Motorizat'],['NETd','≤ 50 mK (f/1.0)'],['Cameră de Zi','1080p, zoom 33×'],['Rază Urmărire (P4)','până la 1.5 km']],
   },
   'EO-785': {
     name: 'Cameră EO/IR 785mm', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Termal Răcit InSb · Sensibilitate Înaltă', detRange: 3000, mitRange: 0,
-    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'active',
+    type: 'TERMAL RĂCIT InSb · SENS. ÎNALTĂ', detRange: 3000, mitRange: 0,
+    cover: 'FOV 30° (Cameră PTZ)', sectorAngle: 30, mode: 'AUTO', status: 'active',
     desc: 'Detector InSb răcit. 640x512 / 15μm. Zoom motorizat 18x. NETd 30mK. Cameră de zi CMOS 1080p lumină scăzută, zoom 33x. Urmărește Phantom 4 până la 3km. Performanță standard militar.',
     color: '#00cc88',
     specs: [['Detector','InSb Răcit'],['Rezoluție','640 × 512'],['Dimensiune Pixel','15 μm'],['Distanță Focală','43.6 - 785 mm'],['Zoom Termal','18× Motorizat'],['NETd','≤ 30 mK'],['Cameră de Zi','1080p, zoom 33×'],['Rază Urmărire (P4)','până la 3 km']],
@@ -1247,15 +1545,15 @@ const SENSORS = {
   'EO-700': {
     name: 'Cameră EO/IR 700mm', vendor: 'SKYLOCK · AVNON GROUP',
     type: 'IR RĂCIT · URMĂRIRE RAZĂ LUNGĂ', detRange: 6100, mitRange: 0,
-    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'active',
+    cover: 'FOV 12° (Cameră PTZ)', sectorAngle: 12, mode: 'AUTO', status: 'active',
     desc: 'Infraroșu răcit de înaltă sensibilitate. 1280x720 / 10μm. Distanță focală 60-690mm. Urmărește DJI Inspire până la 6.1km, clasifică la 3.3km. MIL-STD-810G. Greutate 40kg. -20°C până la +40°C.',
     color: '#00aa77',
     specs: [['Detector','IR Răcit Sensibilitate Înaltă'],['Rezoluție','1280 × 720'],['Dimensiune Pixel','10 μm'],['Distanță Focală','60 - 690 mm'],['HFOV','1.06° - 12.2°'],['Urmărire (DJI Inspire)','6.1 km'],['Clasificare','3.3 km'],['Standard MIL','MIL-STD-810G'],['Greutate','40 kg']],
   },
   'EO-1000': {
     name: 'Cameră EO/IR 1000mm', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Detector CMT · Rază Ultra Lungă', detRange: 5000, mitRange: 0,
-    cover: '360°Az / ±90°El', mode: 'AUTO', status: 'standby',
+    type: 'DETECTOR CMT · RAZĂ ULTRA LUNGĂ', detRange: 5000, mitRange: 0,
+    cover: 'FOV 5° (Cameră PTZ)', sectorAngle: 5, mode: 'AUTO', status: 'standby',
     desc: 'Detector CMT. 1280x720 / 12μm. Zoom motorizat 12x pe termal, NETd 27.5mK. Zoom optic 60x pe camera de zi. Urmărește Phantom 4 până la 5km. Rază focală 80-960mm.',
     color: '#008866',
     specs: [['Detector','CMT'],['Rezoluție','1280 × 720'],['Dimensiune Pixel','12 μm'],['Distanță Focală','80 - 960 mm'],['Zoom Termal','12× Motorizat'],['NETd','Tipic 27.5 mK'],['Cameră de Zi','1080p, zoom 60×'],['Rază Urmărire (P4)','până la 5 km']],
@@ -1263,7 +1561,7 @@ const SENSORS = {
   // ── EFFECTORS ──
   'JAM-OMNI': {
     name: 'Bruiaj Omni 3-5km', vendor: 'OJMA · C-UAS SYSTEMS',
-    type: 'Bruiaj RF 360° · Auto/Manual', detRange: 0, mitRange: 5000,
+    type: 'BRUIAJ RF 360° · AUTO/MANUAL', detRange: 0, mitRange: 5000,
     cover: '360°', mode: 'AUTO', status: 'active',
     desc: 'Echipament de bruiaj RF omnidirecțional. 2.4GHz 120W, 5.8GHz 100W, 900MHz 20W, 433MHz 20W + GNSS L1 20W / L2 20W. Rază de bruiaj 3-5km. IP66. MIL-STD-810G. Moduri auto/manual. Neutralizare < 5 sec.',
     color: '#ff3355',
@@ -1271,15 +1569,15 @@ const SENSORS = {
   },
   'JAM-DIR': {
     name: 'Bruiaj RF 5km Dir.', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Bruiaj RF Direcțional · MIL-STD', detRange: 0, mitRange: 5000,
-    cover: 'DIRECȚIONAL', mode: 'MANUAL', status: 'standby',
+    type: 'BRUIAJ RF DIRECȚIONAL · MIL-STD', detRange: 0, mitRange: 5000,
+    cover: 'DIRECȚIONAL 60°', sectorAngle: 60, mode: 'MANUAL', status: 'standby',
     desc: 'Sistem de bruiaj RF direcțional. Sintetizat DDS & PLL. Control de la distanță TCP/IP. Benzi: 428-437, 868-928, 1150-1300, 1559-1610, 2400-2500, 5725-5850 MHz (10W fiecare). MIL-STD-810G. IP65.',
     color: '#cc1133',
     specs: [['Modulație','Zgomot pseudo-aleator (PRN)'],['Sursă Semnal','Sintetizat DDS & PLL'],['Control Distanță','TCP/IP'],['Consum','192 W'],['Benzi Frecv. × 10W','428-437 / 868-928 / 1150-1300 / 1559-1610 / 2400-2500 / 5725-5850 MHz'],['Distanță Bruiaj','5 km (direcțional)'],['Standard MIL','MIL-STD-810G'],['Protecție IP','IP65'],['Greutate','16 kg']],
   },
   'SPOOFER-L1': {
     name: 'Spoofer GNSS L1/L2', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Manipulare GNSS · L1/L2/L5', detRange: 0, mitRange: 3000,
+    type: 'MANIPULARE GNSS · GPS/GLONASS', detRange: 0, mitRange: 3000,
     cover: '360°', mode: 'AUTO', status: 'active',
     desc: 'Manipulare GNSS împotriva tuturor receptoarelor GNSS. L1: GPS, GLONASS, BEIDOU, GALILEO. Opțional L2/L5. Eficient împotriva roiurilor, dronelor invizibile, dronelor 4G/5G. Emisii zero pe comunicațiile de urgență/celulare. IP67, răcire pasivă.',
     color: '#ff8c00',
@@ -1287,7 +1585,7 @@ const SENSORS = {
   },
   'SPOOFER-5K': {
     name: 'Spoofer GNSS 5km', vendor: 'OJMA · C-UAS SYSTEMS',
-    type: 'Respingere GNSS / Simulare NFZ', detRange: 0, mitRange: 5000,
+    type: 'RESPINGERE / NFZ · OJMA', detRange: 0, mitRange: 5000,
     cover: '360°', mode: 'AUTO', status: 'standby',
     desc: 'Manipulare GNSS cu respingere (push-back) și simulare Zonă Interzisă de Zbor (NFZ). Eficient până la 5km (push-back). Invazie de semnal < 10s. Funcționează contra roiurilor, dronelor invizibile, 4G/5G, atacurilor din direcții multiple. IP65, -30°C până la +55°C, ≤100W.',
     color: '#ff6600',
@@ -1295,23 +1593,23 @@ const SENSORS = {
   },
   'SKYBEAM-01': {
     name: 'Armă Portabilă SkyBeam', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Armă Anti-Dronă Portabilă', detRange: 0, mitRange: 3000,
-    cover: 'DIRECȚIONAL', mode: 'MANUAL', status: 'active',
+    type: 'BRUIAJ PORTABIL · MANUAL', detRange: 0, mitRange: 3000,
+    cover: 'DIRECȚIONAL 45°', sectorAngle: 45, mode: 'MANUAL', status: 'active',
     desc: 'Armă anti-dronă portabilă. 6kg total. Bruiază 400MHz, 900MHz, 2.4GHz, 5.8GHz, GNSS L1/L2. Bruiaj selectiv pe benzi. Rază până la 3km. Baterie 1 oră. IP65. Ideală pentru poliție, armată, siguranță publică.',
     color: '#ff4400',
     specs: [['Frecvențe Bruiaj','400 MHz, 900 MHz, 2.4 GHz, 5.8 GHz'],['GNSS','L1 1.5 GHz, L2 1.2 GHz'],['Benzi Selective','GPS / Comm / GPS+Comm'],['Rază Eficientă','Până la 3 km'],['Autonomie Baterie','Până la 1 oră'],['Ciclu Lucru','100% continuu'],['Protecție IP','IP65'],['Temp. Operare','-20°C până la +40°C'],['Greutate','6 kg']],
   },
   'INTERCEPTOR-01': {
     name: 'Interceptor Drone', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Dronă-vs-DRONĂ · Cinetic Autonom', detRange: 0, mitRange: 15000,
-    cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'standby',
+    type: 'DRONĂ-vs-DRONĂ · AUTONOM', detRange: 0, mitRange: 15000,
+    cover: 'CON INTERCEPTARE 30°', sectorAngle: 30, mode: 'AUTO', status: 'standby',
     desc: 'Dronă de interceptare autonomă. Viteză max 270 km/h. Rază operațională 15km de la locul lansării. Autonomie 20min / 8min la viteză maximă. Operează în vânturi de până la 85km/h. -20°C până la +55°C. Structură PETG-CF.',
     color: '#ff2200',
     specs: [['Propulsie','Multirotor electric'],['Viteză Maximă','270 km/h'],['Rază Operațională','15 km de la lansare'],['Autonomie','20 min'],['Autonomie Viteză Max','8 min'],['Altitudine Maximă','4 500 m'],['Operare la Vânt','Până la 85 km/h'],['Temp. Operare','-20°C până la +55°C'],['Greutate','5 kg'],['Structură','PETG-CF']],
   },
   'PORT-DOME-01': {
     name: 'Dom Portabil', vendor: 'SKYLOCK · AVNON GROUP',
-    type: 'Detecție RF + Bruiaj 360° · All-in-One', detRange: 3000, mitRange: 3000,
+    type: 'DETECȚIE RF + BRUIAJ · ALL-IN-ONE', detRange: 3000, mitRange: 3000,
     cover: '360°', mode: 'AUTO', status: 'active',
     desc: 'Unitate portabilă completă (all-in-one). Detector RF (70MHz-6GHz, DF 7.5° RMS, 3km) integrat cu bruiaj 360° (2.4GHz 120W, 5.8GHz 100W, GNSS L1/L2). IP66. Desfășurare rapidă. Configurații de Bază/Standard/Premium.',
     color: '#ff5533',
@@ -1320,7 +1618,7 @@ const SENSORS = {
   // ── OPTOELECTRONICA ──
   'SKYDOME-C4I': {
     name: 'SkyDome C4I', vendor: 'OPTOELECTRONICA-2001 S.A.',
-    type: 'Platformă Comandă și Control · C4ISR', detRange: 0, mitRange: 0,
+    type: 'COMANDĂ ȘI CONTROL · C4ISR', detRange: 0, mitRange: 0,
     cover: 'REȚEA', mode: 'AUTO', status: 'active',
     desc: 'Platformă C4I integrată pentru sistemul SkyDome. Intel Core i5, 16GB RAM, 256GB SSD. OS Linux. Alerte în timp real, fuziune de date de la senzori, AI/ML. SDK/API pentru integrarea senzorilor suplimentari. Management Listă Albă/Neagră.',
     color: '#aa44ff',
@@ -1328,7 +1626,7 @@ const SENSORS = {
   },
   'SKYDEFENDER-5K': {
     name: 'SkyDefender 5km', vendor: 'OPTOELECTRONICA-2001 S.A.',
-    type: 'C-UAS All-in-One · Multi-Strat 5km', detRange: 5000, mitRange: 5000,
+    type: 'C-UAS ALL-IN-ONE · MULTI-STRAT', detRange: 5000, mitRange: 5000,
     cover: '360°', mode: 'AUTO', status: 'active',
     desc: 'Soluție completă integrată Sky Dome. C-UAS multistrat: Detecție RF (3km), radar 5K, radar 1K, spoofer GNSS, tracker EO/IR 225mm, armă portabilă SkyBeam, bruiaj RF 3km + 5km, comandă și control C4I. Apărare autonomă 24/7.',
     color: '#cc33ff',
@@ -1338,6 +1636,7 @@ const SENSORS = {
 
 // ─────────────────────────── MAP INIT ───────────────────────────
 let map;
+let currentTileLayer;
 
 function initApp() {
   if (typeof L === 'undefined') {
@@ -1348,11 +1647,11 @@ function initApp() {
   map = L.map('map', {
     center: [44.4268, 26.1025],
     zoom: 13,
-    zoomControl: true,
+    zoomControl: false,
     attributionControl: true,
   });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '© OpenStreetMap © CARTO',
     subdomains: 'abcd',
     maxZoom: 19,
@@ -1363,7 +1662,14 @@ function initApp() {
     if (attr) { attr.style.background='rgba(6,10,15,0.7)'; attr.style.color='#3d6080'; attr.style.fontSize='8px'; }
   }, 500);
 
+  map.on('contextmenu', (e) => {
+    openMapContextMenu(e);
+  });
+
   map.on('click', (e) => {
+    const menu = document.getElementById('custom-context-menu');
+    if (menu) menu.style.display = 'none';
+
     if (STATE.tool === 'pin') {
       if (STATE.directPlacementSensorId) {
         placeDirectSensor(STATE.directPlacementSensorId, e.latlng);
@@ -1383,6 +1689,14 @@ function initApp() {
   map.on('dblclick', (e) => {
     if (STATE.tool === 'zone' && nfzPoints.length >= 2) {
       L.DomEvent.stop(e); finalizeNoFlyZone();
+    }
+  });
+
+  // Deblochează automat camera dacă operatorul trage manual de hartă
+  map.on('dragstart', () => {
+    if (rogueDrone.tracking) {
+      rogueDrone.tracking = false;
+      toast('Urmărire automată oprită (intervenție manuală)', 'yellow');
     }
   });
 
@@ -1408,6 +1722,30 @@ function initApp() {
     if (activeNav) activeNav.click();
     else setView('map');
   }
+}
+
+function toggleMapTheme() {
+    STATE.mapTheme = STATE.mapTheme === 'dark' ? 'bw' : 'dark';
+    if (map && currentTileLayer) map.removeLayer(currentTileLayer);
+
+    const btn = document.getElementById('tool-theme');
+    const mapEl = document.getElementById('map');
+
+    if (STATE.mapTheme === 'dark') {
+        currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 19
+        }).addTo(map);
+        if (mapEl) mapEl.style.filter = 'brightness(1.6) contrast(1.1)';
+        if (btn) btn.classList.remove('active');
+        toast('Hartă: Mod Dark/Grey', 'info');
+    } else {
+        currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 19
+        }).addTo(map);
+        if (mapEl) mapEl.style.filter = 'grayscale(100%) brightness(0.95) contrast(1.1)';
+        if (btn) btn.classList.add('active');
+        toast('Hartă: Mod Black/White', 'info');
+    }
 }
 
 // ─────────────────────────── SECTION TOGGLE & VIEW NAV ───────────────────────────
@@ -1529,7 +1867,7 @@ function addNoFlyZone(latlng) {
   nfzPoints.push(latlng);
   const dot = L.circleMarker(latlng, {radius:4, color:'#ff3355', fillColor:'#ff3355', fillOpacity:1, weight:2}).addTo(map);
   nfzDotMarkers.push(dot);
-  if (nfzPolyline) map.removeLayer(nfzPolyline);
+  if (nfzPolyline && map) map.removeLayer(nfzPolyline);
   if (nfzPoints.length >= 2) {
     nfzPolyline = L.polyline([...nfzPoints, nfzPoints[0]], {color:'#ff3355', weight:2, dashArray:'6,4', opacity:.8}).addTo(map);
   }
@@ -1539,8 +1877,8 @@ function addNoFlyZone(latlng) {
 
 function finalizeNoFlyZone() {
   if (nfzPoints.length < 3) { toast('Minim 3 puncte necesare', 'yellow'); return; }
-  if (nfzPolyline) map.removeLayer(nfzPolyline);
-  nfzDotMarkers.forEach(m => { try{map.removeLayer(m);}catch(e){} });
+  if (nfzPolyline && map) map.removeLayer(nfzPolyline);
+  nfzDotMarkers.forEach(m => { if(map) try{map.removeLayer(m);}catch(e){} });
   nfzDotMarkers = [];
   const poly = L.polygon(nfzPoints, {
     color: '#ff3355', weight: 1.5, fillColor: '#ff3355',
@@ -1548,11 +1886,92 @@ function finalizeNoFlyZone() {
   }).addTo(map);
   poly.bindTooltip('<span style="font-family:var(--font-mono);font-size:10px;color:#ff3355;background:#06080d;border:1px solid #ff3355;padding:3px 8px;">ZONĂ INTERZISĂ</span>', {permanent:true, direction:'center', opacity:1});
   STATE.mapLayers.push(poly);
+  
+  // Salvăm NFZ în state pentru a o verifica la proximitatea dronei
+  const nfzId = 'nfz-' + Date.now();
+  poly.nfzId = nfzId;
+  const nfzItem = { id: nfzId, polygon: poly, points: [...nfzPoints], name: 'Zonă Interzisă', altMax: '0', priority: 'critical', notes: '' };
+  STATE.nfzItems.push(nfzItem);
+  
+  // Pregătire pentru Modul de Editare / Redimensionare
+  poly.isEditing = false;
+  poly.editHandles = [];
+
+  poly.on('contextmenu', (e) => {
+    L.DomEvent.stop(e);
+    const menu = document.getElementById('custom-context-menu');
+    menu.innerHTML = `
+        <div class="context-menu-item" id="ctx-menu-cfg-nfz">⚙️ CONFIGUREAZĂ ZONĂ</div>
+        <div class="context-menu-item" id="ctx-menu-edit-nfz">✏️ ${poly.isEditing ? 'SALVEAZĂ ZONĂ' : 'REDIMENSIONEAZĂ ZONĂ'}</div>
+        <div class="context-menu-item danger" id="ctx-menu-delete-nfz">🗑️ ȘTERGE ZONĂ</div>
+    `;
+    menu.style.display = 'flex';
+    menu.style.left = e.originalEvent.pageX + 'px';
+    menu.style.top = e.originalEvent.pageY + 'px';
+
+    document.getElementById('ctx-menu-cfg-nfz').onclick = () => {
+        menu.style.display = 'none';
+        showNFZConfig(nfzItem);
+    };
+    document.getElementById('ctx-menu-edit-nfz').onclick = () => {
+        menu.style.display = 'none';
+        toggleEditNFZ(poly);
+    };
+    document.getElementById('ctx-menu-delete-nfz').onclick = () => {
+        menu.style.display = 'none';
+        if (poly.editHandles) poly.editHandles.forEach(h => { if(map) map.removeLayer(h); });
+        if (map) map.removeLayer(poly);
+        STATE.mapLayers = STATE.mapLayers.filter(l => l !== poly);
+        STATE.nfzItems = STATE.nfzItems.filter(n => n.id !== poly.nfzId);
+        toast('Zonă interzisă ștearsă', 'warn');
+        logEvent('Zonă interzisă ștearsă de pe hartă.', 'warn');
+    };
+  });
+
   const pts = nfzPoints.length;
   nfzPoints = []; nfzPolyline = null;
   logEvent(`Zonă interzisă de zbor stabilită pe hartă (${pts} puncte).`, 'warn');
   toast('Zonă Interzisă Adăugată', 'yellow');
   setTool('view');
+}
+
+function toggleEditNFZ(poly) {
+  if (poly.isEditing) {
+    poly.isEditing = false;
+    if (poly.editHandles) poly.editHandles.forEach(h => { if(map) map.removeLayer(h); });
+    poly.editHandles = [];
+    // Actualizăm coordonatele în STATE pentru calculul proximității
+    const updatedPoints = poly.getLatLngs()[0];
+    const nfzItem = STATE.nfzItems.find(n => n.id === poly.nfzId);
+    if (nfzItem) nfzItem.points = [...updatedPoints];
+    toast('Dimensiuni salvate', 'success');
+  } else {
+    poly.isEditing = true;
+    const latlngs = poly.getLatLngs()[0]; // Extrage punctele poligonului
+    latlngs.forEach((latlng, idx) => {
+      const handle = L.marker(latlng, {
+        draggable: true,
+        icon: L.divIcon({ className: 'nfz-handle', html: '', iconSize: [12, 12], iconAnchor: [6, 6] })
+      }).addTo(map);
+      
+      handle.on('click', (e) => L.DomEvent.stop(e)); // Previne click-urile accidentale pe hartă
+      
+      handle.on('drag', (e) => {
+        const newLatlngs = [...poly.getLatLngs()[0]];
+        newLatlngs[idx] = e.target.getLatLng(); // Actualizează nodul curent
+        poly.setLatLngs(newLatlngs); // Re-desenează forma în timp real
+        
+        // Relochează tooltip-ul automat în centru
+        if (poly.getTooltip()) {
+            poly.closeTooltip();
+            poly.openTooltip();
+        }
+      });
+      
+      poly.editHandles.push(handle);
+    });
+    toast('Mod editare activ. Trage de colțuri pentru a redimensiona.', 'info');
+  }
 }
 
 // Measure tool
@@ -1563,7 +1982,7 @@ function handleMeasure(latlng) {
   if (measurePoints.length === 2) {
     const dist = measurePoints[0].distanceTo(measurePoints[1]);
     const km = (dist/1000).toFixed(2);
-    if (measureLine) map.removeLayer(measureLine);
+    if (measureLine && map) map.removeLayer(measureLine);
     measureLine = L.polyline(measurePoints, {color:'#ffd700', weight:1.5, dashArray:'4,4'}).addTo(map);
     measureLine.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:#ffd700;background:#06080d;border:1px solid #ffd700;padding:3px 8px;">DISTANȚĂ: ${km} km / ${(dist).toFixed(0)} m</span>`, {permanent:true, sticky:false, opacity:1}).openTooltip();
     STATE.mapLayers.push(measureLine);
@@ -1576,8 +1995,13 @@ function handleMeasure(latlng) {
 }
 
 function clearAllLayers() {
-  STATE.mapLayers.forEach(l => { try { map.removeLayer(l); } catch(e){} });
+  STATE.mapLayers.forEach(l => { 
+    // Curăță handle-urile de editare dacă poligoanele erau în mod edit
+    if (l.editHandles) { l.editHandles.forEach(h => { if(map) try{map.removeLayer(h);}catch(e){} }); }
+    if(map) try { map.removeLayer(l); } catch(e){} 
+  });
   STATE.mapLayers = [];
+  STATE.nfzItems = [];
   STATE.planItems.forEach(i => {
     if (i.marker && map) map.removeLayer(i.marker);
     if (i.visuals && map) i.visuals.forEach(v => map.removeLayer(v));
@@ -1667,7 +2091,8 @@ function placeDirectSensor(sensorId, latlng) {
     notes: 'Plasare rapidă din panou', 
     sensors: [sensorId], 
     latlng, 
-    radiusOverride: 'auto' 
+    radiusOverride: 'auto',
+    status: 'active'
   };
   STATE.planItems.push(item);
   addPinToMap(item);
@@ -1703,7 +2128,7 @@ function confirmPin() {
   // Create plan item
   const id = 'pin-' + Date.now();
   const typeLabels = {command:'POST CMD',critical:'INFRA CRITICĂ',airfield:'AERODROM',convoy:'CONVOI',event:'EVENIMENT',border:'FRONTIERĂ',vip:'PROT. VIP',custom:'PERSONALIZAT'};
-  const item = { id, name, type, typeLabel: typeLabels[type]||type, notes, sensors: selectedSensors, latlng, radiusOverride };
+  const item = { id, name, type, typeLabel: typeLabels[type]||type, notes, sensors: selectedSensors, latlng, radiusOverride, heading: 0, status: 'active' };
   STATE.planItems.push(item);
 
   // Add map marker
@@ -1717,37 +2142,80 @@ function confirmPin() {
 
 const ASSET_ICONS = {command:'⬟',critical:'⬡',airfield:'✈',convoy:'◈',event:'◉',border:'▬',vip:'★',custom:'⊕'};
 
-function addPinToMap(item) {
-  const color = '#00ff9d';
+function updateMarkerIcon(item) {
+  if (!item.marker) return;
+  const isActive = item.status !== 'standby';
+  const color = isActive ? '#00ff9d' : '#7a9fc0';
   const icon = ASSET_ICONS[item.type] || '⊕';
+  
   const markerHtml = `<div style="
     width:32px;height:32px;display:flex;align-items:center;justify-content:center;
     background:rgba(6,10,15,0.9);border:2px solid ${color};border-radius:50%;
     color:${color};font-size:14px;box-shadow:0 0 12px ${color}88;
     font-family:var(--font-ui);font-weight:700;
+    transition: all 0.3s ease;
   ">${icon}</div>`;
   
+  item.marker.setIcon(L.divIcon({ html: markerHtml, iconSize: [32,32], iconAnchor:[16,16], className:'' }));
+  
+  const tooltipHtml = `<span style="font-family:var(--font-mono);font-size:10px;background:#06080d;color:${color};border:1px solid ${color};padding:3px 8px;">${item.name}${isActive ? '' : ' (STANDBY)'}</span>`;
+  
+  if (item.marker.getTooltip()) {
+    item.marker.getTooltip().setContent(tooltipHtml);
+  } else {
+    item.marker.bindTooltip(tooltipHtml, {permanent:false});
+  }
+}
+
+function addPinToMap(item) {
   item.visuals = []; // Păstrăm referințe către elementele vizuale (cercuri/unde)
 
   const marker = L.marker(item.latlng, {
-    icon: L.divIcon({ html: markerHtml, iconSize: [32,32], iconAnchor:[16,16], className:'' }),
+    icon: L.divIcon({ html: '', className:'' }), // Se aplică prin updateMarkerIcon imediat după
     draggable: true // Permite mutarea markerului cu mouse-ul
   }).addTo(map);
   
-  marker.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;background:#06080d;color:#00ff9d;border:1px solid #00ff9d;padding:3px 8px;">${item.name}</span>`, {permanent:false});
   STATE.mapLayers.push(marker);
   item.marker = marker;
+  updateMarkerIcon(item);
 
-  // Evenimente pentru mutare (Drag & Drop)
+  // Evenimente optimizate pentru mutare fluidă (High-Performance Drag & Drop)
+  marker.on('dragstart', (e) => {
+    const el = e.target.getElement();
+    if(el) {
+      el.style.opacity = '0.6'; // Facem unitatea transparentă
+      if (el.firstChild) {
+          el.firstChild.style.transform = 'scale(1.3)'; // Mărim doar elementul interior!
+      }
+    }
+  });
+
   marker.on('drag', (e) => {
     const newPos = e.target.getLatLng();
-    // Mută în timp real toate cercurile asociate acestui element
-    item.visuals.forEach(v => v.setLatLng(newPos));
+    item.latlng = newPos;
+    
+    // Actualizare instantanee a straturilor vizuale direct din memorie (fără a recrea DOM-ul)
+    item.visuals.forEach(v => {
+      if (v._sectorParams) {
+          // Re-generăm conturul doar pe bază de noile coordonate
+          v.setLatLngs(getSectorPolygon(newPos, v._sectorParams.radius, v._sectorParams.direction, v._sectorParams.angle));
+      } else if (v.setLatLng) {
+          // Pentru cercuri complete (omni), mutăm direct centrul
+          v.setLatLng(newPos);
+      }
+    });
   });
 
   marker.on('dragend', (e) => {
+    const el = e.target.getElement();
+    if(el) {
+      el.style.opacity = '1'; // Revenire la opacitate normală
+      if (el.firstChild) {
+          el.firstChild.style.transform = 'scale(1)'; // Revenire la mărimea originală
+      }
+    }
     const newPos = e.target.getLatLng();
-    item.latlng = newPos; // Actualizează coordonatele în datele aplicației
+    item.latlng = newPos; // Actualizează coordonatele finale
     updatePlanPanel(); // Actualizează coordonatele din panoul lateral
     logEvent(`Locație "${item.name}" mutată la LAT: ${newPos.lat.toFixed(4)}, LNG: ${newPos.lng.toFixed(4)}`, 'info');
   });
@@ -1757,7 +2225,7 @@ function addPinToMap(item) {
     L.DomEvent.stop(e); // Oprește propagarea pentru a nu face zoom accidental pe hartă
     if (item.sensors.length === 1 && item.type === 'custom') {
       // Dacă este o unitate simplă, afișează detaliile tehnice ale senzorului
-      focusSensor(item.sensors[0], true);
+      focusSensor(item.sensors[0], true, item.latlng);
     } else {
       // Dacă este un punct de protecție complex, afișează detalii despre locație și senzorii incluși
       document.getElementById('modal-title').textContent = `DETALII PUNCT · ${item.name.toUpperCase()}`;
@@ -1795,15 +2263,89 @@ function addPinToMap(item) {
     }
   });
 
-  // Draw animated coverage rings for assigned sensors
-  item.sensors.forEach((sid, idx) => {
+  // Check for directional sensors
+  const isDirectional = item.sensors.some(sid => SENSORS[sid] && SENSORS[sid].sectorAngle && SENSORS[sid].sectorAngle < 360);
+
+  // Eveniment pentru click dreapta (Context Menu)
+  marker.on('contextmenu', (e) => {
+    L.DomEvent.stop(e); // Oprește meniul de browser nativ
+    const menu = document.getElementById('custom-context-menu');
+    
+    const isActive = item.status !== 'standby';
+
+    // Construire dinamică meniu contextual
+    let menuHtml = `<div class="context-menu-item" id="ctx-menu-details">🔍 VEZI DETALII</div>`;
+    menuHtml += `<div class="context-menu-item" id="ctx-menu-toggle-status">${isActive ? '⏸️ TRECE ÎN STANDBY' : '▶️ ACTIVEAZĂ UNITATEA'}</div>`;
+    
+    if (isDirectional && isActive) {
+        menuHtml += `<div class="context-menu-item" id="ctx-menu-rotate">🔄 ROTEȘTE SECTORUL (+15°)</div>`;
+    }
+    menuHtml += `<div class="context-menu-item danger" id="ctx-menu-delete">🗑️ ȘTERGE UNITATEA</div>`;
+    menu.innerHTML = menuHtml;
+
+    menu.style.display = 'flex';
+    menu.style.left = e.originalEvent.pageX + 'px';
+    menu.style.top = e.originalEvent.pageY + 'px';
+
+    // Acțiune: Vezi Detalii (simulează dublu-click)
+    document.getElementById('ctx-menu-details').onclick = () => {
+      menu.style.display = 'none';
+      marker.fire('dblclick', e);
+    };
+
+    // Acțiune: Standby Toggle
+    document.getElementById('ctx-menu-toggle-status').onclick = () => {
+      menu.style.display = 'none';
+      item.status = isActive ? 'standby' : 'active';
+      updateMarkerIcon(item);
+      drawVisuals(item);
+      updatePlanPanel();
+      toast(`Unitatea ${item.name} este acum ${item.status.toUpperCase()}`, isActive ? 'yellow' : 'green');
+    };
+
+    // Acțiune: Rotește
+    if (isDirectional && isActive) {
+        document.getElementById('ctx-menu-rotate').onclick = () => {
+            menu.style.display = 'none';
+            item.heading = (item.heading + 15) % 360;
+            drawVisuals(item);
+            toast(`Sector rotit la ${item.heading}°`, 'info');
+        };
+    }
+
+    // Acțiune: Șterge unitatea
+    document.getElementById('ctx-menu-delete').onclick = () => {
+      menu.style.display = 'none';
+      removePlanItem(item.id);
+    };
+  });
+
+  drawVisuals(item);
+  map.panTo(item.latlng);
+}
+
+function drawVisuals(item) {
+  // Curăță vizualurile vechi din memorie și hartă
+  if (item.visuals) {
+      item.visuals.forEach(v => {
+          if (map) map.removeLayer(v);
+          STATE.mapLayers = STATE.mapLayers.filter(l => l !== v);
+      });
+  }
+  item.visuals = [];
+  item.heading = item.heading || 0;
+  
+  const isActive = item.status !== 'standby';
+
+  // Re-randează inelele și sectoarele de acoperire
+  item.sensors.forEach((sid) => {
     const s = SENSORS[sid];
     if (!s) return;
     const r = item.radiusOverride !== 'auto' ? parseInt(item.radiusOverride) : null;
     let computedDetR = s.detRange;
     let computedMitR = s.mitRange;
     
-    // Save computed ranges for proximity checking
+    // Scale ranges
     if (r) {
       computedDetR = r * 0.5;
       computedMitR = Math.round(r * 0.7) * 0.5;
@@ -1815,30 +2357,48 @@ function addPinToMap(item) {
     item.detR = Math.max(item.detR || 0, computedDetR);
     item.mitR = Math.max(item.mitR || 0, computedMitR);
 
+    const angle = s.sectorAngle || 360;
+    
+    // Dacă este în standby, culorile devin un gri discret și nu mai au clasele de animație CSS
+    const detColor = isActive ? (s.color || '#ff3355') : '#3d6080';
+    const mitColor = isActive ? '#00ff9d' : '#3d6080';
+    const ringClassDet = isActive ? 'ring-detect' : '';
+    const ringClassMit = isActive ? 'ring-mit' : '';
+    const fillOpac = isActive ? 0.08 : 0.03;
+    const mitOpac = isActive ? 0.1 : 0.04;
+
     if (s.detRange > 0) {
-      const c = L.circle(item.latlng, {
-        radius: computedDetR, color: s.color || '#ff3355', weight: 2,
-        fillColor: s.color || '#ff3355', fillOpacity: 0.08,
-        className: 'ring-detect'
-      }).addTo(map);
-      
-      STATE.mapLayers.push(c);
-      item.visuals.push(c);
+      let v;
+      if (angle < 360) {
+          v = L.polygon(getSectorPolygon(item.latlng, computedDetR, item.heading, angle), {
+              color: detColor, weight: 2, fillColor: detColor, fillOpacity: fillOpac, className: ringClassDet
+          }).addTo(map);
+          v._sectorParams = { radius: computedDetR, direction: item.heading, angle: angle }; // Salvare parametrii direcționali pentru Drag
+      } else {
+          v = L.circle(item.latlng, {
+              radius: computedDetR, color: detColor, weight: 2, fillColor: detColor, fillOpacity: fillOpac, className: ringClassDet
+          }).addTo(map);
+      }
+      STATE.mapLayers.push(v);
+      item.visuals.push(v);
     }
     
     if (s.mitRange > 0) {
-      const c2 = L.circle(item.latlng, {
-        radius: computedMitR, color: '#00ff9d', weight: 1.5,
-        fillColor: '#00ff9d', fillOpacity: 0.1,
-        className: 'ring-mit'
-      }).addTo(map);
-      
-      STATE.mapLayers.push(c2);
-      item.visuals.push(c2);
+      let v;
+      if (angle < 360) {
+          v = L.polygon(getSectorPolygon(item.latlng, computedMitR, item.heading, angle), {
+              color: mitColor, weight: 1.5, fillColor: mitColor, fillOpacity: mitOpac, className: ringClassMit
+          }).addTo(map);
+          v._sectorParams = { radius: computedMitR, direction: item.heading, angle: angle }; // Salvare parametrii direcționali pentru Drag
+      } else {
+          v = L.circle(item.latlng, {
+              radius: computedMitR, color: mitColor, weight: 1.5, fillColor: mitColor, fillOpacity: mitOpac, className: ringClassMit
+          }).addTo(map);
+      }
+      STATE.mapLayers.push(v);
+      item.visuals.push(v);
     }
   });
-
-  map.panTo(item.latlng);
 }
 
 // ─────────────────────────── PLAN PANEL ───────────────────────────
@@ -1855,11 +2415,13 @@ function updatePlanPanel() {
   // Remove old items
   panel.querySelectorAll('.plan-item').forEach(el=>el.remove());
   STATE.planItems.forEach(item => {
+    const isStandby = item.status === 'standby';
     const div = document.createElement('div');
     div.className = 'plan-item';
+    div.style.opacity = isStandby ? '0.5' : '1';
     div.innerHTML = `
       <span class="plan-remove" onclick="removePlanItem('${item.id}')">×</span>
-      <div class="plan-sensor">${item.typeLabel} · ${item.sensors.length} SENZOR${item.sensors.length!==1?'I':''}</div>
+      <div class="plan-sensor">${item.typeLabel} · ${item.sensors.length} SENZOR${item.sensors.length!==1?'I':''} ${isStandby ? '<span style="color:var(--yellow);">(STANDBY)</span>' : ''}</div>
       <div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${item.name}</div>
       <div class="plan-desc">${item.sensors.map(s=>SENSORS[s]?.name||s).join(' · ') || 'Niciun senzor atribuit'}</div>
       ${item.notes ? `<div class="plan-coords" style="color:var(--text-secondary);margin-top:4px;">${item.notes.substring(0,80)}${item.notes.length>80?'…':''}</div>` : ''}
@@ -1876,8 +2438,8 @@ function removePlanItem(id) {
   const idx = STATE.planItems.findIndex(i=>i.id===id || i.id===id.toString());
   if (idx<0) return;
   const item = STATE.planItems[idx];
-  if (item.marker) { try{map.removeLayer(item.marker);}catch(e){} }
-  if (item.visuals) { item.visuals.forEach(v => { try{map.removeLayer(v);}catch(e){} }); }
+  if (item.marker && map) { try{map.removeLayer(item.marker);}catch(e){} }
+  if (item.visuals && map) { item.visuals.forEach(v => { try{map.removeLayer(v);}catch(e){} }); }
   STATE.planItems.splice(idx,1);
   updatePlanPanel();
   updateStats();
@@ -1893,7 +2455,7 @@ function togglePlanPanel() {
 }
 
 // ─────────────────────────── SENSOR FOCUS ───────────────────────────
-function focusSensor(id, hidePlaceBtn = false) {
+function focusSensor(id, hidePlaceBtn = false, latlng = null) {
   const s = SENSORS[id];
   if (!s) return;
   document.getElementById('modal-title').textContent = `DETALII SENZOR · ${id}`;
@@ -1911,6 +2473,11 @@ function focusSensor(id, hidePlaceBtn = false) {
       ['Status', translatedStatus],
     ].map(([k,v])=>`<div class="sensor-detail-row"><span class="sd-key">${k}</span><span class="sd-val">${v}</span></div>`).join('');
     
+  let coordsHtml = '';
+  if (latlng) {
+      coordsHtml = `<div class="sensor-detail-row" style="border-top: 1px dashed var(--accent-dim); margin-top: 4px; padding-top: 8px;"><span class="sd-key">Coordonate GPS</span><span class="sd-val" style="color: var(--accent);">${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}</span></div>`;
+  }
+    
   document.getElementById('modal-body').innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
       <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:${s.color||'var(--accent)'};">${s.name}</div>
@@ -1919,8 +2486,10 @@ function focusSensor(id, hidePlaceBtn = false) {
     <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:12px;">${s.vendor}</div>
     <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">${s.desc}</div>
     ${specsHtml}
+    ${coordsHtml}
     <div class="btn-row" style="margin-top:14px;">
       <button class="btn btn-secondary" onclick="closeModal()">ÎNCHIDE</button>
+      ${latlng && s.status !== 'offline' ? `<button class="btn ${s.status==='active'?'btn-secondary':'btn-primary'}" onclick="toggleSensorStatus('${id}',this); closeModal();">${s.status==='active'?'⏸ STANDBY':'▶ ACTIVEAZĂ'}</button>` : ''}
       ${s.status !== 'offline' && !hidePlaceBtn ? `<button class="btn btn-primary" onclick="closeModal(); STATE.directPlacementSensorId='${id}'; setTool('pin'); toast('Click pe hartă pentru a plasa ${s.name}','green')">PLASEAZĂ PE HARTĂ</button>` : ''}
     </div>`;
   document.getElementById('modal-overlay').style.display = 'flex';
@@ -1978,20 +2547,36 @@ setInterval(() => {
 // ─────────────────────────── EVENT LOG ───────────────────────────
 function logEvent(msg, level='info') {
   STATE.eventCount++;
-  const log = document.getElementById('event-log');
-  if (!log) return;
   const now = new Date();
   const t = now.toUTCString().match(/\d{2}:\d{2}:\d{2}/)[0];
-  const entry = document.createElement('div');
-  entry.className = 'event-entry';
-  entry.innerHTML = `<div class="event-time">${t}Z</div><div class="event-msg ${level}">${msg}</div>`;
-  log.insertBefore(entry, log.firstChild);
+  
+  // Store in memory
+  eventLogStore.unshift({ time: t, level, msg });
+  if (eventLogStore.length > 200) eventLogStore.pop();
+  
+  // Audio
+  if (level === 'critical') playAlert('critical');
+  else if (level === 'alert' || level === 'warn') playAlert('warn');
+  
+  const log = document.getElementById('event-log');
+  if (!log) return;
+  
+  // Only add to DOM if passes current filter
+  if (currentLogFilter === 'all' || currentLogFilter === level) {
+    const entry = document.createElement('div');
+    entry.className = 'event-entry';
+    entry.innerHTML = `<div class="event-time">${t}Z</div><div class="event-msg ${level}">${msg}</div>`;
+    log.insertBefore(entry, log.firstChild);
+  }
   
   const logCountEl = document.getElementById('log-count');
   if (logCountEl) logCountEl.textContent = STATE.eventCount + ' EVENIMENTE';
   
-  // Keep max 100
+  // Keep max 100 visible
   while (log.children.length > 100) log.removeChild(log.lastChild);
+  
+  // Update multi-target panel
+  renderMultiTargetPanel();
 }
 
 // ─────────────────────────── TOASTS ───────────────────────────
@@ -2005,38 +2590,539 @@ function toast(msg, type='info') {
   setTimeout(() => { t.style.animation='toastOut .3s ease forwards'; setTimeout(()=>t.remove(), 300); }, 3000);
 }
 
-// ─────────────────────────── ADS-B CIVIL TRAFFIC ───────────────────────────
+// ─────────────────────────── LOG FILTER ───────────────────────────
+let currentLogFilter = 'all';
+const eventLogStore = []; // keep all events in memory
+
+function setLogFilter(filter, btn) {
+  currentLogFilter = filter;
+  document.querySelectorAll('.log-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderFilteredLog();
+}
+
+function renderFilteredLog() {
+  const log = document.getElementById('event-log');
+  if (!log) return;
+  log.innerHTML = '';
+  const filtered = currentLogFilter === 'all' ? eventLogStore : eventLogStore.filter(e => e.level === currentLogFilter);
+  filtered.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'event-entry';
+    div.innerHTML = `<div class="event-time">${entry.time}Z</div><div class="event-msg ${entry.level}">${entry.msg}</div>`;
+    log.appendChild(div);
+  });
+}
+
+function exportLog() {
+  const rows = eventLogStore.map(e => `"${e.time}","${e.level}","${e.msg.replace(/"/g,'""')}"`);
+  const csv = 'Timp UTC,Nivel,Mesaj\n' + rows.join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `skydome-log-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('Log exportat CSV', 'green');
+}
+
+// ─────────────────────────── AUDIO ALERTS ───────────────────────────
+let audioEnabled = false;
+let audioCtx = null;
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  const btn = document.getElementById('audio-btn');
+  if (audioEnabled) {
+    btn.textContent = '🔊'; btn.classList.add('active');
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    toast('Alerte sonore ACTIVE', 'green');
+  } else {
+    btn.textContent = '🔇'; btn.classList.remove('active');
+    toast('Alerte sonore OPRITE', 'yellow');
+  }
+}
+
+function playAlert(type) {
+  if (!audioEnabled || !audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  if (type === 'critical') {
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.15);
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+  } else if (type === 'warn') {
+    osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+  } else {
+    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+  }
+}
+
+// ─────────────────────────── HEALTH DASHBOARD ───────────────────────────
+function toggleHealthDash() {
+  const d = document.getElementById('health-dashboard');
+  d.classList.toggle('visible');
+  if (d.classList.contains('visible')) renderHealthDash();
+}
+
+function renderHealthDash() {
+  // Only sensors that are actually placed on the map (appear in at least one planItem)
+  const placedSensorIds = new Set();
+  STATE.planItems.forEach(item => item.sensors.forEach(sid => placedSensorIds.add(sid)));
+  const placedEntries = Object.entries(SENSORS).filter(([id]) => placedSensorIds.has(id));
+
+  const active = placedEntries.filter(([,s])=>s.status==='active').length;
+  const standby = placedEntries.filter(([,s])=>s.status==='standby').length;
+  const offline = placedEntries.filter(([,s])=>s.status==='offline').length;
+  const total = placedEntries.length;
+
+  const upH = String(Math.floor(STATE.uptimeSeconds/3600)).padStart(2,'0');
+  const upM = String(Math.floor((STATE.uptimeSeconds%3600)/60)).padStart(2,'0');
+
+  document.getElementById('health-grid').innerHTML = total === 0
+    ? `<div style="grid-column:1/-1;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);padding:16px;">Nicio unitate plasată pe hartă.<br>Folosiți instrumentul PIN pentru a plasa senzori.</div>`
+    : `
+    <div class="health-card"><div class="hc-val green">${active}</div><div class="hc-label">ACTIVE</div><div class="hc-sub">din ${total} plasate</div></div>
+    <div class="health-card"><div class="hc-val yellow">${standby}</div><div class="hc-label">STANDBY</div><div class="hc-sub">în așteptare</div></div>
+    <div class="health-card"><div class="hc-val" style="color:var(--text-dim)">${offline}</div><div class="hc-label">OFFLINE</div><div class="hc-sub">deconectate</div></div>
+    <div class="health-card"><div class="hc-val" style="color:var(--accent)">${upH}:${upM}</div><div class="hc-label">UPTIME</div><div class="hc-sub">HH:MM</div></div>
+  `;
+
+  const list = document.getElementById('health-sensors-list');
+  if (placedEntries.length === 0) { list.innerHTML = ''; return; }
+
+  list.innerHTML = placedEntries.map(([id, s]) => {
+    const color = {active:'var(--green)',standby:'var(--yellow)',offline:'var(--text-dim)'}[s.status];
+    const label = {active:'ACTIV',standby:'STANDBY',offline:'OFFLINE'}[s.status];
+    const pct = s.status === 'active' ? 100 : s.status === 'standby' ? 40 : 0;
+    const bgColor = s.status === 'active' ? 'var(--green)' : s.status === 'standby' ? 'var(--yellow)' : 'var(--text-dim)';
+    // Find which plan item(s) this sensor is on
+    const locations = STATE.planItems.filter(p => p.sensors.includes(id)).map(p => p.name).join(', ');
+    return `<div class="health-sensor-row">
+      <div>
+        <div style="font-weight:600;font-size:11px;color:var(--text-primary);">${s.name}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);margin-top:1px;">📍 ${locations}</div>
+        <div class="health-sensor-bar" style="width:120px;background:var(--border);margin-top:3px;"><div style="width:${pct}%;height:100%;background:${bgColor};border-radius:2px;"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="font-family:var(--font-mono);font-size:9px;color:${color};border:1px solid ${color};padding:1px 5px;border-radius:2px;">${label}</div>
+        <button class="sensor-toggle-btn ${s.status==='active'?'standby':'activate'}" onclick="toggleSensorStatus('${id}',this)">
+          ${s.status==='active'?'⏸ STANDBY':'▶ ACTIVEAZĂ'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSensorStatus(id, btn) {
+  const s = SENSORS[id];
+  if (!s) return;
+  if (s.status === 'active') {
+    s.status = 'standby';
+    btn.className = 'sensor-toggle-btn activate';
+    btn.textContent = '▶ ACTIVEAZĂ';
+    logEvent(`Senzor "${s.name}" trecut în STANDBY de operator.`, 'warn');
+    playAlert('warn');
+    toast(`${s.name} → STANDBY`, 'yellow');
+  } else {
+    s.status = 'active';
+    btn.className = 'sensor-toggle-btn standby';
+    btn.textContent = '⏸ STANDBY';
+    logEvent(`Senzor "${s.name}" ACTIVAT de operator.`, 'success');
+    playAlert('info');
+    toast(`${s.name} → ACTIV`, 'green');
+  }
+  updateStats();
+  renderHealthDash();
+  // Refresh all plan visuals that use this sensor
+  STATE.planItems.forEach(item => {
+    if (item.sensors.includes(id)) drawVisuals(item);
+  });
+}
+
+// ─────────────────────────── MULTI-TARGET ───────────────────────────
+const MULTI_TARGETS = [];
+let mtInterval = null;
+
+function addMultiTarget(id, lat, lng, status) {
+  const existing = MULTI_TARGETS.find(t => t.id === id);
+  if (existing) { existing.lat = lat; existing.lng = lng; existing.status = status; }
+  else MULTI_TARGETS.push({ id, lat, lng, status, threatLevel: 'high', notes: '' });
+  renderMultiTargetPanel();
+}
+
+function toggleMultiTargetPanel() {
+  const p = document.getElementById('multi-target-panel');
+  p.classList.toggle('visible');
+}
+
+function renderMultiTargetPanel() {
+  const list = document.getElementById('mt-list');
+  const count = document.getElementById('mt-count');
+  if (!list || !count) return;
+  // Always include the rogue drone
+  const targets = [...MULTI_TARGETS];
+  if (rogueDrone.status !== 'neutralized' && !targets.find(t=>t.id===rogueDrone.id)) {
+    targets.push({id: rogueDrone.id, lat: rogueDrone.lat, lng: rogueDrone.lng, status: rogueDrone.status, threatLevel: rogueDrone.threatLevel || 'high'});
+  } else {
+    // Keep rogueDrone threatLevel in sync
+    const rd = targets.find(t=>t.id===rogueDrone.id);
+    if (rd) rd.threatLevel = rogueDrone.threatLevel || rd.threatLevel || 'high';
+  }
+  count.textContent = targets.length;
+
+  const statusColors = {detected:'var(--orange)',mitigated:'var(--red)',neutralized:'var(--green)',undetected:'var(--text-dim)'};
+  const statusLabels = {detected:'DETECTAT',mitigated:'IMINENTĂ',neutralized:'NEUTRALIZAT',undetected:'NEDETECTAT'};
+  const threatColors = {low:'var(--green)',medium:'var(--yellow)',high:'var(--orange)',critical:'var(--red)'};
+  const threatLabels = {low:'SCĂZUT',medium:'MEDIU',high:'RIDICAT',critical:'CRITIC'};
+
+  list.innerHTML = targets.map(t => {
+    const tColor = threatColors[t.threatLevel] || 'var(--orange)';
+    const tLabel = threatLabels[t.threatLevel] || 'RIDICAT';
+    return `
+    <div class="mt-item" onclick="if(map)map.panTo([${t.lat},${t.lng}])">
+      <div style="flex:1;min-width:0;">
+        <div class="mt-id" style="color:${statusColors[t.status]||'var(--red)'};">${t.id}</div>
+        <div class="mt-coords">${(t.lat||0).toFixed(4)}, ${(t.lng||0).toFixed(4)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">
+        <div class="mt-status" style="color:${statusColors[t.status]};border-color:${statusColors[t.status]};">${statusLabels[t.status]||t.status}</div>
+        <div style="font-family:var(--font-mono);font-size:8px;padding:1px 5px;border-radius:2px;border:1px solid ${tColor};color:${tColor};">⚠ ${tLabel}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="padding:10px;font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">NICIO ȚINTĂ ACTIVĂ</div>';
+}
+
+// ─────────────────────────── INTERCEPTOR MISSION PANEL ───────────────────────────
+let interceptorMissionTime = 0;
+let interceptorMissionInterval = null;
+
+function showInterceptorPanel() {
+  document.getElementById('interceptor-panel').classList.add('visible');
+  interceptorMissionTime = 0;
+  document.getElementById('int-target').textContent = rogueDrone.id;
+  clearInterval(interceptorMissionInterval);
+  interceptorMissionInterval = setInterval(updateInterceptorPanel, 1000);
+}
+
+function updateInterceptorPanel() {
+  if (!interceptor.active) return;
+  interceptorMissionTime++;
+  const maxTime = 20 * 60; // 20 min in seconds
+  const remaining = Math.max(0, maxTime - interceptorMissionTime);
+  const m = String(Math.floor(remaining/60)).padStart(2,'0');
+  const s = String(remaining%60).padStart(2,'0');
+  document.getElementById('int-autonomy').textContent = `${m}:${s}`;
+  
+  const dist = map ? map.distance([interceptor.lat, interceptor.lng], [rogueDrone.lat, rogueDrone.lng]) : 0;
+  document.getElementById('int-dist').textContent = (dist/1000).toFixed(2) + ' km';
+  
+  const progress = Math.min(100, (interceptorMissionTime / 60) * 15);
+  document.getElementById('int-progress-fill').style.width = progress + '%';
+  
+  if (dist < 50) {
+    document.getElementById('int-state').textContent = 'INTERCEPȚIE!';
+    document.getElementById('int-state').style.color = 'var(--red)';
+    playAlert('critical');
+  }
+  
+  if (remaining <= 0) {
+    recallInterceptor();
+    toast('Interceptor: autonomie epuizată, rechemat automat.', 'yellow');
+  }
+}
+
+function recallInterceptor() {
+  clearInterval(interceptorMissionInterval);
+  if (interceptor.marker && map) { try{map.removeLayer(interceptor.marker);}catch(e){} }
+  interceptor.active = false; interceptor.marker = null;
+  document.getElementById('interceptor-panel').classList.remove('visible');
+  logEvent('Interceptor rechemat la bază.', 'warn');
+  toast('Interceptor rechemat', 'yellow');
+}
+
+// ─────────────────────────── INCIDENT REPORT ───────────────────────────
+function generateIncidentReport() {
+  const now = new Date();
+  const utc = now.toUTCString();
+  const activeSensors = Object.entries(SENSORS).filter(([,s])=>s.status==='active').map(([,s])=>s.name);
+  const actions = eventLogStore.filter(e=>e.level==='critical'||e.level==='success').slice(0,10);
+  
+  document.getElementById('incident-report-body').innerHTML = `
+    <div class="ir-section">
+      <div class="ir-section-title">IDENTIFICARE INCIDENT</div>
+      <div class="ir-row"><span class="ir-key">ID Incident</span><span class="ir-val">INC-${now.getTime().toString().slice(-6)}</span></div>
+      <div class="ir-row"><span class="ir-key">Data/Ora UTC</span><span class="ir-val">${utc}</span></div>
+      <div class="ir-row"><span class="ir-key">Operator Sistem</span><span class="ir-val">SKY DOME C2</span></div>
+      <div class="ir-row"><span class="ir-key">Nivel Amenințare Max.</span><span class="ir-val" style="color:var(--red);">RIDICAT</span></div>
+    </div>
+    <div class="ir-section">
+      <div class="ir-section-title">PROFIL ȚINTĂ</div>
+      <div class="ir-row"><span class="ir-key">ID Țintă</span><span class="ir-val">${rogueDrone.id}</span></div>
+      <div class="ir-row"><span class="ir-key">Clasă</span><span class="ir-val">Quadcopter COTS · Necunoscut</span></div>
+      <div class="ir-row"><span class="ir-key">Amprentă RF</span><span class="ir-val">OcuSync 2.0/3.0</span></div>
+      <div class="ir-row"><span class="ir-key">Ultimele Coord.</span><span class="ir-val">${rogueDrone.lat.toFixed(5)}, ${rogueDrone.lng.toFixed(5)}</span></div>
+      <div class="ir-row"><span class="ir-key">Altitudine</span><span class="ir-val">${rogueDrone.alt}</span></div>
+      <div class="ir-row"><span class="ir-key">Status Final</span><span class="ir-val" style="color:var(--${rogueDrone.status==='neutralized'?'green':'red'});">${rogueDrone.status.toUpperCase()}</span></div>
+    </div>
+    <div class="ir-section">
+      <div class="ir-section-title">SENZORI IMPLICAȚI (${activeSensors.length} activi)</div>
+      ${activeSensors.map(n=>`<div class="ir-row"><span class="ir-key">✓</span><span class="ir-val">${n}</span></div>`).join('')}
+    </div>
+    <div class="ir-section">
+      <div class="ir-section-title">TIMELINE ACȚIUNI (ultimele ${actions.length} evenimente critice)</div>
+      ${actions.map(e=>`<div class="ir-row"><span class="ir-key">${e.time}Z</span><span class="ir-val" style="text-align:right;max-width:320px;">${e.msg.substring(0,60)}${e.msg.length>60?'…':''}</span></div>`).join('')}
+    </div>
+    <div class="ir-section">
+      <div class="ir-section-title">STATISTICI MISIUNE</div>
+      <div class="ir-row"><span class="ir-key">Durată Sesiune</span><span class="ir-val">${String(Math.floor(STATE.uptimeSeconds/3600)).padStart(2,'0')}:${String(Math.floor((STATE.uptimeSeconds%3600)/60)).padStart(2,'0')}:${String(STATE.uptimeSeconds%60).padStart(2,'0')}</span></div>
+      <div class="ir-row"><span class="ir-key">Total Evenimente Log</span><span class="ir-val">${STATE.eventCount}</span></div>
+      <div class="ir-row"><span class="ir-key">Puncte Protecție</span><span class="ir-val">${STATE.planItems.length}</span></div>
+      <div class="ir-row"><span class="ir-key">Zone Interzise</span><span class="ir-val">${STATE.nfzItems.length}</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeIncidentReport()">ÎNCHIDE</button>
+      <button class="btn btn-primary" onclick="printIncidentReport()">🖨 PRINTEAZĂ</button>
+    </div>
+  `;
+  document.getElementById('incident-report-modal').classList.add('visible');
+}
+
+function closeIncidentReport() {
+  document.getElementById('incident-report-modal').classList.remove('visible');
+}
+
+function printIncidentReport() {
+  window.print();
+}
+
+// ─────────────────────────── NFZ CONFIG DIALOG ───────────────────────────
+function showNFZConfig(nfzItem) {
+  document.getElementById('modal-title').textContent = 'CONFIGURARE ZONĂ INTERZISĂ';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="field-group">
+      <div class="field-label">Nume Zonă</div>
+      <input type="text" id="nfz-name" value="${nfzItem.name||'Zonă Interzisă'}" placeholder="ex. Perimetru VIP, Aeroport Henri Coandă...">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Altitudine Maximă Permisă</div>
+      <select id="nfz-alt">
+        <option value="0">0m (Interdicție totală)</option>
+        <option value="50">50m</option>
+        <option value="120">120m (Limita legală standard)</option>
+        <option value="300">300m</option>
+        <option value="500">500m</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Nivel Prioritate</div>
+      <select id="nfz-priority">
+        <option value="critical">CRITIC – Interdicție imediată</option>
+        <option value="high">RIDICAT – Alertă imediată</option>
+        <option value="medium">MEDIU – Monitorizare</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Note Operaționale</div>
+      <textarea id="nfz-notes" placeholder="Context, ROE, autoritate responsabilă...">${nfzItem.notes||''}</textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeModal()">ANULARE</button>
+      <button class="btn btn-danger" onclick="removeNFZ('${nfzItem.id}'); closeModal();">🗑 ȘTERGE ZONA</button>
+      <button class="btn btn-primary" onclick="saveNFZConfig('${nfzItem.id}')">SALVEAZĂ</button>
+    </div>
+  `;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function saveNFZConfig(id) {
+  const item = STATE.nfzItems.find(n=>n.id===id);
+  if (!item) return;
+  item.name = document.getElementById('nfz-name').value || 'Zonă Interzisă';
+  item.altMax = document.getElementById('nfz-alt').value;
+  item.priority = document.getElementById('nfz-priority').value;
+  item.notes = document.getElementById('nfz-notes').value;
+  // Update tooltip on polygon
+  if (item.polygon) {
+    item.polygon.setTooltipContent(`<span style="font-family:var(--font-mono);font-size:10px;color:#ff3355;background:#06080d;border:1px solid #ff3355;padding:3px 8px;">⛔ ${item.name} | ALT MAX: ${item.altMax}m</span>`);
+  }
+  logEvent(`NFZ "${item.name}" configurată (Alt max: ${item.altMax}m, Prioritate: ${item.priority})`, 'warn');
+  toast(`NFZ "${item.name}" salvată`, 'green');
+  closeModal();
+}
+
+function removeNFZ(id) {
+  const idx = STATE.nfzItems.findIndex(n=>n.id===id);
+  if (idx < 0) return;
+  const item = STATE.nfzItems[idx];
+  if (item.polygon && map) { try{map.removeLayer(item.polygon);}catch(e){} }
+  STATE.nfzItems.splice(idx, 1);
+  logEvent(`Zonă interzisă eliminată de operator.`, 'warn');
+  toast('NFZ eliminată', 'yellow');
+}
+
+// ─────────────────────────── THREAT PROFILE CLASSIFICATION ───────────────────────────
+function classifyThreat(targetId, level) {
+  const labels = {low:'SCĂZUT',medium:'MEDIU',high:'RIDICAT',critical:'CRITIC'};
+  // Persist on rogueDrone so the multi-target panel can read it
+  if (targetId === rogueDrone.id) rogueDrone.threatLevel = level;
+  const mt = MULTI_TARGETS.find(t => t.id === targetId);
+  if (mt) mt.threatLevel = level;
+  logEvent(`Ținta ${targetId} reclasificată manual: nivel amenințare ${labels[level]||level}`, 'alert');
+  playAlert(level === 'critical' ? 'critical' : 'warn');
+  toast(`Amenințare clasificată: ${labels[level]}`, level === 'critical' ? 'red' : 'yellow');
+  renderMultiTargetPanel();
+}
+
+// ─────────────────────────── MAP CONTEXT MENU ENHANCEMENT ───────────────────────────
+// stored so onclick handlers can access without inline L.latLng calls
+let _ctxMenuLatlng = null;
+
+function openMapContextMenu(e) {
+  _ctxMenuLatlng = e.latlng;
+  const menu = document.getElementById('custom-context-menu');
+  menu.innerHTML = `
+    <div class="context-menu-item" onclick="menu_addPin()">📍 ADAUGĂ PUNCT PROTECȚIE</div>
+    <div class="context-menu-item" onclick="menu_startNFZ()">⛔ INIȚIAZĂ ZONĂ INTERZISĂ</div>
+    <div class="context-menu-item" onclick="menu_measure()">📏 MĂSOARĂ DISTANȚĂ DE AICI</div>
+    <div class="context-menu-item" onclick="menu_copyCoords()">📋 COPIAZĂ COORDONATE</div>
+  `;
+  menu.style.display = 'flex';
+  menu.style.left = e.originalEvent.pageX + 'px';
+  menu.style.top = e.originalEvent.pageY + 'px';
+}
+
+function menu_addPin() {
+  document.getElementById('custom-context-menu').style.display = 'none';
+  if (!_ctxMenuLatlng) return;
+  STATE.pendingLatlng = _ctxMenuLatlng;
+  openPinModal(_ctxMenuLatlng);
+}
+function menu_startNFZ() {
+  document.getElementById('custom-context-menu').style.display = 'none';
+  if (!_ctxMenuLatlng) return;
+  setTool('zone');
+  addNoFlyZone(_ctxMenuLatlng);
+}
+function menu_measure() {
+  document.getElementById('custom-context-menu').style.display = 'none';
+  if (!_ctxMenuLatlng) return;
+  measureFromPoint(_ctxMenuLatlng);
+}
+function menu_copyCoords() {
+  document.getElementById('custom-context-menu').style.display = 'none';
+  if (!_ctxMenuLatlng) return;
+  copyCoords(_ctxMenuLatlng.lat, _ctxMenuLatlng.lng);
+}
+
+function measureFromPoint(latlng) {
+  setTool('measure');
+  handleMeasure(latlng);
+}
+
+function copyCoords(lat, lng) {
+  const text = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(()=>toast('Coordonate copiate: '+text,'green'));
+  else toast('Coordonate: '+text,'info');
+}
+
+
 let adsbInterval = null;
+let simAdsbInterval = null;
 let adsbMarkers = new Map();
+
+const CIVIL_FLIGHTS = [
+  { id: 'TAROM 381', lat: 44.38, lng: 26.05, heading: 340, speed: 0.0006, alt: 'FL320' },
+  { id: 'WIZZ 4092', lat: 44.35, lng: 25.90, heading: 45, speed: 0.0005, alt: 'FL240' },
+  { id: 'RYR 12Z', lat: 44.50, lng: 26.25, heading: 250, speed: 0.0007, alt: 'FL180' },
+  { id: 'LUF 202', lat: 44.45, lng: 26.15, heading: 180, speed: 0.0006, alt: 'FL300' },
+  { id: 'AUA 89C', lat: 44.42, lng: 25.95, heading: 90, speed: 0.0008, alt: 'FL340' }
+];
 
 async function fetchADSB() {
   if (!STATE.adsbActive) return;
   try {
     const res = await fetch('https://opensky-network.org/api/states/all?lamin=44.0&lomin=25.5&lamax=44.8&lomax=26.8');
+    if (!res.ok) throw new Error("API Limit");
     const data = await res.json();
+    
     const currentIds = new Set();
-    if (data.states) {
+    if (data && data.states && data.states.length > 0) {
         data.states.slice(0, 8).forEach(s => {
           const id = s[0], call = s[1].trim() || 'CIVIL', lat = s[6], lng = s[5], head = s[10]||0;
+          const alt = Math.round(s[7]*3.28084) + "ft";
           currentIds.add(id);
-          if (adsbMarkers.has(id)) {
-              adsbMarkers.get(id).setLatLng([lat, lng]);
-          } else {
-            const m = L.marker([lat, lng], { icon: L.divIcon({ html: `<div style="transform:rotate(${head}deg); color:var(--orange); filter: drop-shadow(0 0 4px var(--orange));"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21,16V14L13,9V3.5A1.5,1.5 0 0,0 11.5,2A1.5,1.5 0 0,0 10,3.5V9L2,14V16L10,13.5V19L8,20.5V22L11.5,21L15,22V20.5L13,19V13.5L21,16Z"/></svg></div>`, className: ''}) }).addTo(map);
-            m.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--orange);background:#06080d;border:1px solid var(--orange);padding:3px 8px;">${call}</span>`, {permanent: true, direction: 'right', offset: [5, 0], opacity: 0.85});
-            adsbMarkers.set(id, m);
-          }
+          
+          updateOrAddADSBMarker(id, lat, lng, head, call, alt);
         });
+        
+        for (let [id, m] of adsbMarkers) {
+            if (!currentIds.has(id) && !id.startsWith('SIM_')) {
+                if (map) map.removeLayer(m);
+                adsbMarkers.delete(id);
+            }
+        }
+        const statAdsbEl = document.getElementById('stat-adsb');
+        if (statAdsbEl) statAdsbEl.textContent = adsbMarkers.size;
+        return; 
+    } else {
+        throw new Error("Nu există date / Limită");
     }
-    for (let [id, m] of adsbMarkers) { 
-        if (!currentIds.has(id)) { 
-            if(map) map.removeLayer(m); 
-            adsbMarkers.delete(id); 
-        } 
+  } catch(e) {
+     // Silently fallback to simulated flights
+  }
+}
+
+function updateOrAddADSBMarker(id, lat, lng, head, call, alt) {
+  const iconHtml = `<div style="transform:rotate(${head}deg); color:var(--orange); filter: drop-shadow(0 0 4px var(--orange));"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21,16V14L13,9V3.5A1.5,1.5 0 0,0 11.5,2A1.5,1.5 0 0,0 10,3.5V9L2,14V16L10,13.5V19L8,20.5V22L11.5,21L15,22V20.5L13,19V13.5L21,16Z"/></svg></div>`;
+  const tooltipHtml = `<span style="font-family:var(--font-mono);font-size:10px;color:var(--orange);background:#06080d;border:1px solid var(--orange);padding:3px 8px;">${call}${alt ? ' <br> ' + alt : ''}</span>`;
+  
+  if (adsbMarkers.has(id)) {
+      const m = adsbMarkers.get(id);
+      m.setLatLng([lat, lng]);
+      m.setIcon(L.divIcon({ html: iconHtml, className: '', iconSize: [18, 18], iconAnchor: [9, 9] }));
+      m.getTooltip().setContent(tooltipHtml);
+  } else {
+    const m = L.marker([lat, lng], { icon: L.divIcon({ html: iconHtml, className: '', iconSize: [18, 18], iconAnchor: [9, 9] }) }).addTo(map);
+    m.bindTooltip(tooltipHtml, {permanent: true, direction: 'right', offset: [5, 0], opacity: 0.85});
+    adsbMarkers.set(id, m);
+  }
+}
+
+function simulateADSB() {
+    if (!STATE.adsbActive) return;
+    
+    let hasRealData = false;
+    for (let key of adsbMarkers.keys()) {
+        if (!key.startsWith('SIM_')) hasRealData = true;
     }
+    
+    if (hasRealData) return; 
+    
+    CIVIL_FLIGHTS.forEach((f, index) => {
+        const id = 'SIM_' + index;
+        const rad = f.heading * Math.PI / 180;
+        f.lat += Math.cos(rad) * f.speed;
+        f.lng += Math.sin(rad) * f.speed * 1.4;
+        
+        if (f.lat > 44.6) f.lat = 44.2;
+        if (f.lat < 44.2) f.lat = 44.6;
+        if (f.lng > 26.3) f.lng = 25.8;
+        if (f.lng < 25.8) f.lng = 26.3;
+
+        updateOrAddADSBMarker(id, f.lat, f.lng, f.heading, f.id, f.alt);
+    });
+    
     const statAdsbEl = document.getElementById('stat-adsb');
     if (statAdsbEl) statAdsbEl.textContent = adsbMarkers.size;
-  } catch(e) {}
 }
 
 function toggleADSB() {
@@ -2046,11 +3132,13 @@ function toggleADSB() {
     if (btn) { btn.textContent = 'ADS-B: ON'; btn.classList.add('adsb-on'); btn.style.color = ''; btn.style.borderColor = ''; }
     fetchADSB();
     adsbInterval = setInterval(fetchADSB, 10000);
-    logEvent('Rețea ADS-B conectată. Trafic civil afișat pe hartă (OpenSky Network).', 'info');
+    simAdsbInterval = setInterval(simulateADSB, 1500);
+    logEvent('Rețea ADS-B conectată. Trafic civil afișat pe hartă (OpenSky / Sim).', 'info');
     toast('Trafic Civil Activat', 'info');
   } else {
     if (btn) { btn.textContent = 'ADS-B: OFF'; btn.classList.remove('adsb-on'); btn.style.color = 'var(--orange)'; btn.style.borderColor = 'rgba(255,140,0,0.4)'; }
     clearInterval(adsbInterval);
+    clearInterval(simAdsbInterval);
     adsbMarkers.forEach(m => { if (map) map.removeLayer(m); });
     adsbMarkers.clear();
     const statAdsbEl = document.getElementById('stat-adsb');
@@ -2064,41 +3152,313 @@ function startRogueDrone() {
   const iconHtml = `<div style="color:var(--red); filter: drop-shadow(0 0 8px var(--red)); animation: pulse .5s infinite; transform: rotate(45deg);"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21A1,1 0 0,1 20,18V16H18.82A7.04,7.04 0 0,1 13.5,19.82V21A2,2 0 0,1 15,23V24H9V23A2,2 0 0,1 10.5,21V19.82A7.04,7.04 0 0,1 5.18,16H4V18A1,1 0 0,1 3,19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M12,9A5,5 0 0,0 7,14A5,5 0 0,0 12,19A5,5 0 0,0 17,14A5,5 0 0,0 12,9Z" /></svg></div>`;
   const icon = L.divIcon({ html: iconHtml, className: '', iconSize: [24,24], iconAnchor: [12,12] });
   rogueDrone.marker = L.marker([rogueDrone.lat, rogueDrone.lng], { icon }).addTo(map);
-  rogueDrone.marker.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--red);background:#06080d;border:1px solid var(--red);padding:3px 8px;">⚠️ UAS NECUNOSCUT<br>V: 45km/h</span>`, {permanent: true, direction: 'right', offset: [8, 0], opacity: 0.9});
+  
+  // Inițializare linii pentru istoric (trail) și predicție
+  rogueDrone.trailLine = L.polyline([], { color: 'var(--red)', weight: 2, opacity: 0.5, dashArray: '2, 6' }).addTo(map);
+  rogueDrone.predictionLine = L.polyline([], { color: 'var(--orange)', weight: 2, opacity: 0.8, dashArray: '4, 4' }).addTo(map);
+  
+  rogueDrone.marker.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--red);background:#06080d;border:1px solid var(--red);padding:3px 8px;">⚠️ UAS NECUNOSCUT<br>ALT: ${rogueDrone.alt} | V: 45 km/h</span>`, {permanent: true, direction: 'right', offset: [8, 0], opacity: 0.9});
+
+  rogueDrone.marker.on('dblclick', (e) => {
+    L.DomEvent.stop(e);
+    showDroneDetails();
+  });
 
   setInterval(() => {
-    rogueDrone.heading += (Math.random() - 0.5) * 20;
-    const rad = rogueDrone.heading * Math.PI / 180;
-    rogueDrone.lat += Math.cos(rad) * rogueDrone.speed; 
-    rogueDrone.lng += Math.sin(rad) * rogueDrone.speed * 1.4;
-    
-    if (rogueDrone.lat > 44.48 || rogueDrone.lat < 44.38) rogueDrone.heading += 180;
-    if (rogueDrone.lng > 26.15 || rogueDrone.lng < 25.95) rogueDrone.heading += 180;
-    
-    if (rogueDrone.marker) rogueDrone.marker.setLatLng([rogueDrone.lat, rogueDrone.lng]);
-    checkProximity();
+    if (rogueDrone.status !== 'neutralized') {
+      rogueDrone.heading += (Math.random() - 0.5) * 20;
+      rogueDrone.speed = Math.max(0.00008, Math.min(0.00025, rogueDrone.speed + (Math.random() - 0.5) * 0.00004));
+
+      const rad = rogueDrone.heading * Math.PI / 180;
+      rogueDrone.lat += Math.cos(rad) * rogueDrone.speed; 
+      rogueDrone.lng += Math.sin(rad) * rogueDrone.speed * 1.4;
+      
+      if (rogueDrone.lat > 44.48 || rogueDrone.lat < 44.38) rogueDrone.heading += 180;
+      if (rogueDrone.lng > 26.15 || rogueDrone.lng < 25.95) rogueDrone.heading += 180;
+      
+      const currentLatLng = L.latLng(rogueDrone.lat, rogueDrone.lng);
+
+      if (rogueDrone.marker) {
+        rogueDrone.marker.setLatLng(currentLatLng);
+        const afisajViteza = Math.round(rogueDrone.speed * 300000); 
+        rogueDrone.marker.getTooltip().setContent(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--red);background:#06080d;border:1px solid var(--red);padding:3px 8px;">⚠️ UAS NECUNOSCUT<br>ALT: ${rogueDrone.alt} | V: ${afisajViteza} km/h</span>`);
+      }
+
+      // Actualizare Trail (Urmă istorică)
+      rogueDrone.trail.push(currentLatLng);
+      if (rogueDrone.trail.length > 40) rogueDrone.trail.shift(); // Păstrăm doar ultimele 40 de puncte
+      if (rogueDrone.trailLine) rogueDrone.trailLine.setLatLngs(rogueDrone.trail);
+
+      // Actualizare Predicție (Vector de deplasare viitoare estimată)
+      const predSteps = 15; // Estimăm poziția peste 15 pași (aprox. 22 de secunde în viitor)
+      const predLat = rogueDrone.lat + Math.cos(rad) * rogueDrone.speed * predSteps;
+      const predLng = rogueDrone.lng + Math.sin(rad) * rogueDrone.speed * 1.4 * predSteps;
+      if (rogueDrone.predictionLine) rogueDrone.predictionLine.setLatLngs([currentLatLng, [predLat, predLng]]);
+
+      checkProximity(currentLatLng);
+    }
+
+    // Logica Interceptorului (Drone-vs-Drone)
+    if (interceptor.active) {
+      const dx = rogueDrone.lat - interceptor.lat;
+      const dy = rogueDrone.lng - interceptor.lng;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 0.001) { // Atingerea țintei (aprox. 100m)
+        interceptor.active = false;
+        rogueDrone.status = 'neutralized';
+        rogueDrone.tracking = false; // Deblocăm camera
+
+        // Efect vizual de explozie/neutralizare
+        const boomHtml = `<div style="color:var(--orange); font-size:28px; filter: drop-shadow(0 0 12px var(--orange));">💥</div>`;
+        rogueDrone.marker.setIcon(L.divIcon({ html: boomHtml, className: '', iconSize: [32,32], iconAnchor: [16,16] }));
+        rogueDrone.marker.getTooltip().setContent(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--orange);background:#06080d;border:1px solid var(--orange);padding:3px 8px;">💥 ȚINTĂ NEUTRALIZATĂ</span>`);
+        
+        if (rogueDrone.predictionLine) rogueDrone.predictionLine.setLatLngs([]);
+        if (interceptor.marker) map.removeLayer(interceptor.marker);
+
+        logEvent(`Ținta ${rogueDrone.id} a fost INTERCEPTATĂ CINETIC cu succes.`, 'success');
+        toast('Misiune de interceptare finalizată!', 'green');
+        
+        const badge = document.getElementById('threat-badge');
+        const sysPulse = document.getElementById('sys-pulse');
+        if (badge) { badge.className = "threat-indicator green"; badge.textContent = "AMENINȚARE: NEUTRALIZATĂ"; }
+        if (sysPulse) sysPulse.className = 'pulse green';
+
+        // Resetăm drona după 12 secunde pentru a reporni demonstrația continuă
+        setTimeout(() => {
+          if (rogueDrone.marker) map.removeLayer(rogueDrone.marker);
+          if (rogueDrone.trailLine) rogueDrone.trailLine.setLatLngs([]);
+          rogueDrone.trail = [];
+          
+          rogueDrone.lat = 44.4050 + (Math.random() - 0.5) * 0.05;
+          rogueDrone.lng = 26.0200 + (Math.random() - 0.5) * 0.05;
+          rogueDrone.status = 'undetected';
+          rogueDrone.nfzState = 'outside';
+          
+          const iconHtml = `<div style="color:var(--red); filter: drop-shadow(0 0 8px var(--red)); animation: pulse .5s infinite; transform: rotate(45deg);"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21A1,1 0 0,1 20,18V16H18.82A7.04,7.04 0 0,1 13.5,19.82V21A2,2 0 0,1 15,23V24H9V23A2,2 0 0,1 10.5,21V19.82A7.04,7.04 0 0,1 5.18,16H4V18A1,1 0 0,1 3,19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M12,9A5,5 0 0,0 7,14A5,5 0 0,0 12,19A5,5 0 0,0 17,14A5,5 0 0,0 12,9Z" /></svg></div>`;
+          rogueDrone.marker = L.marker([rogueDrone.lat, rogueDrone.lng], { icon: L.divIcon({ html: iconHtml, className: '', iconSize: [24,24], iconAnchor: [12,12] }) }).addTo(map);
+          rogueDrone.marker.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--red);background:#06080d;border:1px solid var(--red);padding:3px 8px;">⚠️ UAS NECUNOSCUT<br>ALT: 120m | V: 45 km/h</span>`, {permanent: true, direction: 'right', offset: [8, 0], opacity: 0.9});
+          rogueDrone.marker.on('dblclick', (e) => { L.DomEvent.stop(e); showDroneDetails(); });
+        }, 12000);
+
+      } else {
+        // Navigare interceptor spre țintă
+        const angle = Math.atan2(dy, dx);
+        interceptor.lat += Math.cos(angle) * interceptor.speed;
+        interceptor.lng += Math.sin(angle) * interceptor.speed;
+        
+        // Rotește vizual interceptorul pentru a indica direcția corectă
+        const headingDeg = (angle * 180 / Math.PI) + 90;
+        const iconHtml = `<div style="color:var(--accent); filter: drop-shadow(0 0 10px var(--accent)); transform: rotate(${headingDeg}deg);"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg></div>`;
+        interceptor.marker.setIcon(L.divIcon({ html: iconHtml, className: '', iconSize: [28,28], iconAnchor: [14,14] }));
+        interceptor.marker.setLatLng([interceptor.lat, interceptor.lng]);
+      }
+    }
+
+    // Camera Lock (Urmărire automată a hărții)
+    if (rogueDrone.tracking && map && rogueDrone.status !== 'neutralized') {
+      map.panTo([rogueDrone.lat, rogueDrone.lng], { animate: true });
+    }
+
   }, 1500);
 }
 
-function checkProximity() {
+function checkProximity(pos) {
+  if (rogueDrone.status === 'neutralized') return;
+
   let det = false, mit = false, unit = null;
-  const pos = L.latLng(rogueDrone.lat, rogueDrone.lng);
+  
   for (const item of STATE.planItems) {
+    if (item.status === 'standby') continue; // Omitere senzori închiși!
+    
     const d = pos.distanceTo(item.latlng);
-    if (item.mitR && d <= item.mitR) { mit = true; det = true; unit = item; break; }
-    else if (item.detR && d <= item.detR) { det = true; unit = item; }
+    const bearing = getBearing(item.latlng, pos);
+    
+    let itemDetect = false;
+    let itemMit = false;
+    
+    item.sensors.forEach(sid => {
+        const s = SENSORS[sid];
+        if(!s) return;
+        
+        let r = item.radiusOverride !== 'auto' ? parseInt(item.radiusOverride) : null;
+        let detR = r ? r * 0.5 : s.detRange * 0.5;
+        let mitR = r ? Math.round(r * 0.7) * 0.5 : s.mitRange * 0.5;
+        
+        const angle = s.sectorAngle || 360;
+        let inSector = false;
+        
+        if (angle >= 360) {
+            inSector = true;
+        } else {
+            let half = angle / 2;
+            let diff = Math.abs(bearing - (item.heading || 0));
+            if (diff > 180) diff = 360 - diff;
+            if (diff <= half) inSector = true;
+        }
+        
+        if (inSector) {
+            if (mitR > 0 && d <= mitR) itemMit = true;
+            if (detR > 0 && d <= detR) itemDetect = true;
+        }
+    });
+    
+    if (itemMit) { mit = true; det = true; unit = item; break; }
+    else if (itemDetect) { det = true; if (!mit) unit = item; }
   }
+  
+  // ── Verificare Intersecție Zonă Interzisă (NFZ) ──
+  let droneInsideNFZ = false;
+  let droneApproachingNFZ = false;
+
+  for (const nfz of STATE.nfzItems) {
+      if (isPointInPolygon(pos, nfz.points)) {
+          droneInsideNFZ = true;
+          break;
+      }
+      for (const pt of nfz.points) {
+          if (pos.distanceTo(pt) < 1000) { // Prag de 1km pentru "Apropiere"
+              droneApproachingNFZ = true;
+          }
+      }
+  }
+
+  if (droneInsideNFZ) {
+      if (rogueDrone.nfzState !== 'inside') {
+          rogueDrone.nfzState = 'inside';
+          logEvent(`⚠️ ALARMĂ CRITICĂ: Ținta ${rogueDrone.id} a pătruns în ZONA INTERZISĂ!`, 'critical');
+          toast('Dronă în Zona Interzisă!', 'red');
+      }
+  } else if (droneApproachingNFZ) {
+      if (rogueDrone.nfzState !== 'approaching') {
+          rogueDrone.nfzState = 'approaching';
+          logEvent(`⚠️ AVERTISMENT: Ținta ${rogueDrone.id} se apropie de Zona Interzisă (< 1km).`, 'alert');
+          toast('Apropiere de NFZ!', 'orange');
+      }
+  } else {
+      rogueDrone.nfzState = 'outside';
+  }
+  
   const badge = document.getElementById('threat-badge');
   const sysPulse = document.getElementById('sys-pulse');
   if (mit) { 
       if (badge) { badge.className = "threat-indicator red"; badge.textContent = `AMENINȚARE IMINENTĂ · ÎN RAZA: ${unit.name.toUpperCase()}`; }
       if (sysPulse) sysPulse.className = 'pulse red'; 
+  } else if (droneInsideNFZ) {
+      if (badge) { badge.className = "threat-indicator red"; badge.textContent = `PĂTRUNDERE ÎN ZONA INTERZISĂ!`; }
+      if (sysPulse) sysPulse.className = 'pulse red';
   } else if (det) { 
       if (badge) { badge.className = "threat-indicator orange"; badge.textContent = `AMENINȚARE MEDIE · DETECTAT DE: ${unit.name.toUpperCase()}`; }
+      if (sysPulse) sysPulse.className = 'pulse yellow'; 
+  } else if (droneApproachingNFZ) {
+      if (badge) { badge.className = "threat-indicator yellow"; badge.textContent = `APROPIERE DE ZONA INTERZISĂ (< 1km)`; }
       if (sysPulse) sysPulse.className = 'pulse yellow'; 
   } else { 
       if (badge) { badge.className = "threat-indicator green"; badge.textContent = "AMENINȚARE: SCĂZUTĂ"; }
       if (sysPulse) sysPulse.className = 'pulse green'; 
+  }
+  
+  // Update threats stat counter
+  const threatCount = (rogueDrone.status !== 'neutralized' && rogueDrone.status !== 'undetected') ? 1 : 0;
+  const statThreatsEl = document.getElementById('stat-threats');
+  if (statThreatsEl) {
+    statThreatsEl.textContent = threatCount;
+    statThreatsEl.className = 'stat-value ' + (threatCount > 0 ? 'red' : 'green');
+  }
+  const statThreatsSub = document.getElementById('stat-threats-sub');
+  if (statThreatsSub) statThreatsSub.textContent = threatCount > 0 ? `${rogueDrone.id} · ${rogueDrone.status}` : 'nicio amenințare activă';
+  
+  // Sync multi-target panel
+  renderMultiTargetPanel();
+}
+
+function showDroneDetails() {
+  document.getElementById('modal-title').textContent = `DETALII ȚINTĂ · ${rogueDrone.id}`;
+  
+  let translatedStatus = 'NEDETECTAT';
+  let statusColor = 'var(--text-dim)';
+  if (rogueDrone.status === 'detected') { translatedStatus = 'DETECTAT'; statusColor = 'var(--orange)'; }
+  if (rogueDrone.status === 'mitigated') { translatedStatus = 'NEUTRALIZARE IMINENTĂ'; statusColor = 'var(--red)'; }
+  if (rogueDrone.status === 'neutralized') { translatedStatus = 'NEUTRALIZATĂ'; statusColor = 'var(--green)'; }
+  
+  const speedKmh = Math.round(rogueDrone.speed * 300000);
+  
+  const specsHtml = rogueDrone.specs.map(([k,v])=>`<div class="sensor-detail-row"><span class="sd-key">${k}</span><span class="sd-val">${v}</span></div>`).join('') +
+    `<div class="sensor-detail-row"><span class="sd-key">Viteză Curentă</span><span class="sd-val">${rogueDrone.status === 'neutralized' ? '0' : speedKmh} km/h</span></div>` +
+    `<div class="sensor-detail-row"><span class="sd-key">Altitudine Curentă</span><span class="sd-val">${rogueDrone.status === 'neutralized' ? '0m (La sol)' : rogueDrone.alt}</span></div>` +
+    `<div class="sensor-detail-row"><span class="sd-key">Coordonate Curente</span><span class="sd-val">${rogueDrone.lat.toFixed(5)}, ${rogueDrone.lng.toFixed(5)}</span></div>`;
+    
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--red);">${rogueDrone.id}</div>
+      <div style="font-family:var(--font-mono);font-size:9px;padding:2px 8px;border:1px solid ${statusColor};color:${statusColor};border-radius:2px;">${translatedStatus}</div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:12px;">PROFIL: UAS OSTIL / NECUNOSCUT</div>
+    <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Aeronavă fără pilot care a intrat în spațiul aerian monitorizat. Necesită atenție imediată. Acțiunile de neutralizare sunt recomandate dacă pătrunde în raza de acțiune a efectorilor.</div>
+    <div style="margin-bottom:12px;">
+      <div style="font-family:var(--font-display);font-size:9px;color:var(--text-secondary);letter-spacing:2px;margin-bottom:6px;">CLASIFICARE MANUALĂ AMENINȚARE:</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="threat-profile-badge low" onclick="classifyThreat('${rogueDrone.id}','low')">▼ SCĂZUT</span>
+        <span class="threat-profile-badge medium" onclick="classifyThreat('${rogueDrone.id}','medium')">▲ MEDIU</span>
+        <span class="threat-profile-badge high" onclick="classifyThreat('${rogueDrone.id}','high')">⚠ RIDICAT</span>
+        <span class="threat-profile-badge critical" onclick="classifyThreat('${rogueDrone.id}','critical')">🔴 CRITIC</span>
+      </div>
+    </div>
+    ${specsHtml}
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn btn-secondary" onclick="closeModal()">ÎNCHIDE</button>
+      <button class="btn btn-secondary" onclick="closeModal(); generateIncidentReport()">📄 RAPORT</button>
+      <button class="btn ${rogueDrone.tracking ? 'btn-danger' : 'btn-primary'}" onclick="toggleDroneTracking(); closeModal();" ${rogueDrone.status === 'neutralized' ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>${rogueDrone.tracking ? '🔒 DEBLOCARE CAMERĂ' : '🎯 URMĂREȘTE ȚINTA'}</button>
+      <button class="btn btn-danger" onclick="closeModal(); launchInterceptor();" ${rogueDrone.status === 'neutralized' ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>INTERCEPTEAZĂ</button>
+    </div>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function launchInterceptor() {
+  if (interceptor.active) {
+    toast('Interceptorul se află deja în misiune!', 'yellow');
+    return;
+  }
+  if (rogueDrone.status === 'neutralized') {
+    toast('Ținta este deja neutralizată.', 'info');
+    return;
+  }
+
+  // Căutăm cel mai apropiat punct de protecție pentru lansare, sau lansăm din centrul hărții
+  let launchLat = map.getCenter().lat;
+  let launchLng = map.getCenter().lng;
+  
+  if (STATE.planItems.length > 0) {
+    launchLat = STATE.planItems[0].latlng.lat;
+    launchLng = STATE.planItems[0].latlng.lng;
+  } else {
+    // Dacă nu avem puncte, lansăm dintr-un punct fictiv în afara ecranului sudic
+    launchLat -= 0.05;
+  }
+
+  interceptor.lat = launchLat;
+  interceptor.lng = launchLng;
+  interceptor.active = true;
+
+  const iconHtml = `<div style="color:var(--accent); filter: drop-shadow(0 0 10px var(--accent)); transform: rotate(0deg);"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg></div>`;
+  const icon = L.divIcon({ html: iconHtml, className: '', iconSize: [28,28], iconAnchor: [14,14] });
+  
+  interceptor.marker = L.marker([launchLat, launchLng], { icon }).addTo(map);
+  interceptor.marker.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:var(--accent);background:#06080d;border:1px solid var(--accent);padding:3px 8px;">🛡️ INTERCEPTOR ALIAT</span>`, {permanent: true, direction: 'right', offset: [8, 0], opacity: 0.9});
+
+  logEvent(`Misiune de interceptare lansată contra țintei ${rogueDrone.id}`, 'critical');
+  toast('Interceptor Aliat Lansat!', 'green');
+  showInterceptorPanel();
+}
+
+function toggleDroneTracking() {
+  rogueDrone.tracking = !rogueDrone.tracking;
+  if (rogueDrone.tracking) {
+    toast('Urmărire automată activată (Camera Lock)', 'green');
+    if (map) map.panTo([rogueDrone.lat, rogueDrone.lng], {animate: true});
+  } else {
+    toast('Urmărire automată oprită', 'yellow');
   }
 }
 
@@ -2126,6 +3486,14 @@ if (document.readyState === 'complete') {
 } else {
   window.addEventListener('load', initApp);
 }
+
+// Ascunde meniul contextual la click oriunde altundeva în aplicație
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('custom-context-menu');
+  if (menu && menu.style.display === 'flex' && !menu.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
 </script>
 </body>
 </html>
