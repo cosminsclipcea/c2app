@@ -454,19 +454,21 @@ textarea { resize: vertical; min-height: 70px; }
 @keyframes radarSweep { to{ transform: rotate(360deg); } }
 
 /* ── ANIMATED COVERAGE RINGS ── */
-@keyframes ringPulseDetect {
-  to { stroke-dashoffset: -40; }
+/* ── RING ANIMATIONS (consolidated) ── */
+@keyframes ringPulseDet {
+  0%,100% { stroke-opacity: 0.6; }
+  50%      { stroke-opacity: 1; }
 }
 @keyframes ringPulseMit {
-  0%, 100% { stroke-opacity: 0.8; fill-opacity: 0.12; }
-  50%  { stroke-opacity: 0.4; fill-opacity: 0.04; }
+  0%,100% { stroke-opacity: 0.7; fill-opacity: 0.10; }
+  50%      { stroke-opacity: 1;   fill-opacity: 0.18; }
 }
 .ring-detect {
-  animation: ringPulseDetect 1.5s linear infinite !important;
-  stroke-dasharray: 12 8 !important;
+  animation: ringPulseDet 3s ease-in-out infinite;
+  stroke-dasharray: 8 6;
 }
 .ring-mit {
-  animation: ringPulseMit 3s ease-in-out infinite !important;
+  animation: ringPulseMit 2.5s ease-in-out infinite;
 }
 /* NFZ polygon subtle pulse */
 .nfz-polygon {
@@ -639,6 +641,9 @@ textarea { resize: vertical; min-height: 70px; }
 }
 #audio-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
 #audio-btn.active { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+
+/* Leaflet pane z-order — keep labels above rings */
+.leaflet-marker-pane { z-index: 620 !important; }
 
 /* ── RESPONSIVE MOBILE ── */
 @media (max-width: 1200px) {
@@ -2348,33 +2353,21 @@ function addPinToMap(item) {
   });
 
   marker.on('drag', (e) => {
-    const newPos = e.target.getLatLng();
-    item.latlng = newPos;
-    
-    // Actualizare instantanee a straturilor vizuale direct din memorie (fără a recrea DOM-ul)
-    item.visuals.forEach(v => {
-      if (v._sectorParams) {
-          // Re-generăm conturul doar pe bază de noile coordonate
-          v.setLatLngs(getSectorPolygon(newPos, v._sectorParams.radius, v._sectorParams.direction, v._sectorParams.angle));
-      } else if (v.setLatLng) {
-          // Pentru cercuri complete (omni), mutăm direct centrul
-          v.setLatLng(newPos);
-      }
-    });
+    item.latlng = e.target.getLatLng();
+    // Redraw all visuals at new position (handles circles, sectors, labels, inner rings, centerlines)
+    drawVisuals(item);
   });
 
   marker.on('dragend', (e) => {
     const el = e.target.getElement();
     if(el) {
-      el.style.opacity = '1'; // Revenire la opacitate normală
-      if (el.firstChild) {
-          el.firstChild.style.transform = 'scale(1)'; // Revenire la mărimea originală
-      }
+      el.style.opacity = '1';
+      if (el.firstChild) el.firstChild.style.transform = 'scale(1)';
     }
-    const newPos = e.target.getLatLng();
-    item.latlng = newPos; // Actualizează coordonatele finale
-    updatePlanPanel(); // Actualizează coordonatele din panoul lateral
-    logEvent(`Locație "${item.name}" mutată la LAT: ${newPos.lat.toFixed(4)}, LNG: ${newPos.lng.toFixed(4)}`, 'info');
+    item.latlng = e.target.getLatLng();
+    drawVisuals(item);
+    updatePlanPanel();
+    logEvent(`Locație "${item.name}" mutată la LAT: ${item.latlng.lat.toFixed(4)}, LNG: ${item.latlng.lng.toFixed(4)}`, 'info');
   });
 
   // Eveniment pentru dublu-click (Afișare detalii unitate/punct)
@@ -2463,80 +2456,153 @@ function addPinToMap(item) {
 }
 
 function drawVisuals(item) {
-  // Curăță vizualurile vechi din memorie și hartă
+  // Clear old visuals
   if (item.visuals) {
-      item.visuals.forEach(v => {
-          if (map) map.removeLayer(v);
-          STATE.mapLayers = STATE.mapLayers.filter(l => l !== v);
-      });
+    item.visuals.forEach(v => { if (map) try{map.removeLayer(v);}catch(e){} });
+    STATE.mapLayers = STATE.mapLayers.filter(l => !item.visuals.includes(l));
   }
   item.visuals = [];
   item.heading = item.heading || 0;
-  
   const isActive = item.status !== 'standby';
 
-  // Re-randează inelele și sectoarele de acoperire
   item.sensors.forEach((sid) => {
     const s = SENSORS[sid];
     if (!s) return;
     const r = item.radiusOverride !== 'auto' ? parseInt(item.radiusOverride) : null;
-    let computedDetR = s.detRange;
-    let computedMitR = s.mitRange;
-    
-    // Use real ranges in meters — no artificial scaling
-    if (r) {
-      computedDetR = r;
-      computedMitR = r;
-    } else {
-      computedDetR = computedDetR;
-      computedMitR = computedMitR;
-    }
-    
-    item.detR = Math.max(item.detR || 0, computedDetR);
-    item.mitR = Math.max(item.mitR || 0, computedMitR);
+    const detR = r ? r : s.detRange;
+    const mitR = r ? r : s.mitRange;
+    item.detR = Math.max(item.detR || 0, detR);
+    item.mitR = Math.max(item.mitR || 0, mitR);
 
     const angle = s.sectorAngle || 360;
-    
-    // Dacă este în standby, culorile devin un gri discret și nu mai au clasele de animație CSS
-    const detColor = isActive ? (s.color || '#ff3355') : '#3d6080';
-    const mitColor = isActive ? '#00ff9d' : '#3d6080';
-    const ringClassDet = isActive ? 'ring-detect' : '';
-    const ringClassMit = isActive ? 'ring-mit' : '';
-    const fillOpac = isActive ? 0.08 : 0.03;
-    const mitOpac = isActive ? 0.1 : 0.04;
+    const is360 = angle >= 360;
+    const sensorColor = s.color || '#00d4ff';
 
-    if (s.detRange > 0) {
-      let v;
-      if (angle < 360) {
-          v = L.polygon(getSectorPolygon(item.latlng, computedDetR, item.heading, angle), {
-              color: detColor, weight: 2, fillColor: detColor, fillOpacity: fillOpac, className: ringClassDet
-          }).addTo(map);
-          v._sectorParams = { radius: computedDetR, direction: item.heading, angle: angle }; // Salvare parametrii direcționali pentru Drag
-      } else {
-          v = L.circle(item.latlng, {
-              radius: computedDetR, color: detColor, weight: 2, fillColor: detColor, fillOpacity: fillOpac, className: ringClassDet
-          }).addTo(map);
+    // ── COLORS & OPACITY based on active/standby ──
+    const detColor   = isActive ? sensorColor : '#4a6a80';
+    const mitColor   = isActive ? '#00ff9d'   : '#3d6080';
+    const detFill    = isActive ? 0.06        : 0.02;
+    const mitFill    = isActive ? 0.10        : 0.03;
+    const detWeight  = isActive ? 1.5         : 1;
+    const mitWeight  = isActive ? 2           : 1;
+    const detDash    = isActive ? '8,6'       : '4,8';
+    const mitDash    = isActive ? null        : '4,8';
+
+    const addV = (layer) => { if(map) layer.addTo(map); STATE.mapLayers.push(layer); item.visuals.push(layer); return layer; };
+
+    if (is360) {
+      // ── DETECTION RING — 360° ──
+      if (detR > 0) {
+        // Outer dashed boundary ring
+        addV(L.circle(item.latlng, {
+          radius: detR,
+          color: detColor, weight: detWeight,
+          fillColor: detColor, fillOpacity: detFill,
+          dashArray: detDash,
+          className: isActive ? 'ring-detect' : '',
+          interactive: false,
+        }));
+        // Inner half-radius subtle fill ring
+        addV(L.circle(item.latlng, {
+          radius: detR * 0.5,
+          color: detColor, weight: 0,
+          fillColor: detColor, fillOpacity: detFill * 0.6,
+          interactive: false,
+        }));
+        // Range label at top of circle
+        if (isActive && detR >= 500) {
+          const labelPt = computeOffset(item.latlng, detR * 0.98, 0);
+          addV(L.marker(labelPt, {
+            icon: L.divIcon({
+              html: `<div style="font-family:var(--font-mono);font-size:9px;color:${detColor};opacity:0.85;white-space:nowrap;background:rgba(3,6,10,0.7);padding:1px 4px;border-radius:2px;border:1px solid ${detColor}40;">${formatRange(detR)} DET</div>`,
+              className: '', iconAnchor: [0, 8]
+            }),
+            interactive: false,
+          }));
+        }
       }
-      STATE.mapLayers.push(v);
-      item.visuals.push(v);
-    }
-    
-    if (s.mitRange > 0) {
-      let v;
-      if (angle < 360) {
-          v = L.polygon(getSectorPolygon(item.latlng, computedMitR, item.heading, angle), {
-              color: mitColor, weight: 1.5, fillColor: mitColor, fillOpacity: mitOpac, className: ringClassMit
-          }).addTo(map);
-          v._sectorParams = { radius: computedMitR, direction: item.heading, angle: angle }; // Salvare parametrii direcționali pentru Drag
-      } else {
-          v = L.circle(item.latlng, {
-              radius: computedMitR, color: mitColor, weight: 1.5, fillColor: mitColor, fillOpacity: mitOpac, className: ringClassMit
-          }).addTo(map);
+
+      // ── MITIGATION RING — 360° ──
+      if (mitR > 0) {
+        // Solid mitigation ring
+        addV(L.circle(item.latlng, {
+          radius: mitR,
+          color: mitColor, weight: mitWeight,
+          fillColor: mitColor, fillOpacity: mitFill,
+          dashArray: mitDash,
+          className: isActive ? 'ring-mit' : '',
+          interactive: false,
+        }));
+        // Bright inner halo
+        addV(L.circle(item.latlng, {
+          radius: mitR * 0.25,
+          color: mitColor, weight: 0,
+          fillColor: mitColor, fillOpacity: mitFill * 1.4,
+          interactive: false,
+        }));
+        // Range label at right of circle
+        if (isActive && mitR >= 200) {
+          const labelPt = computeOffset(item.latlng, mitR * 0.98, 90);
+          addV(L.marker(labelPt, {
+            icon: L.divIcon({
+              html: `<div style="font-family:var(--font-mono);font-size:9px;color:${mitColor};opacity:0.9;white-space:nowrap;background:rgba(3,6,10,0.7);padding:1px 4px;border-radius:2px;border:1px solid ${mitColor}40;">${formatRange(mitR)} MIT</div>`,
+              className: '', iconAnchor: [0, 8]
+            }),
+            interactive: false,
+          }));
+        }
       }
-      STATE.mapLayers.push(v);
-      item.visuals.push(v);
+
+    } else {
+      // ── DIRECTIONAL SECTOR ──
+      const heading = item.heading || 0;
+
+      if (detR > 0) {
+        // Main sector fill
+        addV(L.polygon(getSectorPolygon(item.latlng, detR, heading, angle), {
+          color: detColor, weight: detWeight, dashArray: detDash,
+          fillColor: detColor, fillOpacity: detFill + 0.03,
+          className: isActive ? 'ring-detect' : '',
+          interactive: false,
+        }));
+        // Inner half-sector accent
+        addV(L.polygon(getSectorPolygon(item.latlng, detR * 0.45, heading, angle), {
+          color: detColor, weight: 0,
+          fillColor: detColor, fillOpacity: detFill * 0.7,
+          interactive: false,
+        }));
+        // Centerline
+        if (isActive) {
+          const clPt = computeOffset(item.latlng, detR, heading);
+          addV(L.polyline([item.latlng, clPt], {
+            color: detColor, weight: 1, dashArray: '4,6', opacity: 0.5, interactive: false,
+          }));
+        }
+      }
+
+      if (mitR > 0 && mitR !== detR) {
+        addV(L.polygon(getSectorPolygon(item.latlng, mitR, heading, angle), {
+          color: mitColor, weight: mitWeight, dashArray: mitDash,
+          fillColor: mitColor, fillOpacity: mitFill,
+          className: isActive ? 'ring-mit' : '',
+          interactive: false,
+        }));
+      }
     }
   });
+}
+
+// ── Helpers ──
+function formatRange(m) {
+  return m >= 1000 ? (m/1000).toFixed(1) + 'km' : m + 'm';
+}
+
+function computeOffset(latlng, meters, bearingDeg) {
+  const R = 6378137;
+  const b = bearingDeg * Math.PI / 180;
+  const dLat = (meters * Math.cos(b)) / R;
+  const dLng = (meters * Math.sin(b)) / (R * Math.cos(latlng.lat * Math.PI / 180));
+  return L.latLng(latlng.lat + dLat * 180/Math.PI, latlng.lng + dLng * 180/Math.PI);
 }
 
 // ─────────────────────────── PLAN PANEL ───────────────────────────
