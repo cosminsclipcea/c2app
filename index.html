@@ -176,7 +176,7 @@ html, body {
 .sensor-stat .label { color: var(--text-dim); }
 .sensor-stat .value { color: var(--text-secondary); }
 .sensor-status-badge {
-  display: inline-block; font-family: var(--font-mono); font-size: 9px;
+  font-family: var(--font-mono); font-size: 9px;
   padding: 1px 6px; border-radius: 2px; float: right; letter-spacing: 1px;
 }
 .sensor-status-badge.active { background: rgba(0,255,157,0.1); color: var(--green); border: 1px solid var(--green-dim); }
@@ -456,19 +456,42 @@ textarea { resize: vertical; min-height: 70px; }
 /* ── ANIMATED COVERAGE RINGS ── */
 /* ── RING ANIMATIONS (consolidated) ── */
 @keyframes ringPulseDet {
-  0%,100% { stroke-opacity: 0.6; }
-  50%      { stroke-opacity: 1; }
+  0%, 100% { stroke-opacity: 0.5; fill-opacity: 0.03; }
+  50%      { stroke-opacity: 0.9; fill-opacity: 0.07; }
 }
 @keyframes ringPulseMit {
-  0%,100% { stroke-opacity: 0.7; fill-opacity: 0.10; }
-  50%      { stroke-opacity: 1;   fill-opacity: 0.18; }
+  0%, 100% { stroke-opacity: 0.6; fill-opacity: 0.08; }
+  50%      { stroke-opacity: 0.95; fill-opacity: 0.16; }
 }
+@keyframes rotateDotted {
+  to { stroke-dashoffset: -80; }
+}
+@keyframes rotateDottedReverse {
+  to { stroke-dashoffset: 80; }
+}
+@keyframes mitPulseGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(0, 255, 157, 0.4)) drop-shadow(0 0 1px rgba(0, 255, 157, 0.2)); }
+  50%      { filter: drop-shadow(0 0 10px rgba(0, 255, 157, 0.7)) drop-shadow(0 0 2px rgba(0, 255, 157, 0.3)); }
+}
+@keyframes detPulseGlow {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(0, 212, 255, 0.3)) drop-shadow(0 0 1px rgba(0, 212, 255, 0.15)); }
+  50%      { filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6)) drop-shadow(0 0 2px rgba(0, 212, 255, 0.3)); }
+}
+
 .ring-detect {
-  animation: ringPulseDet 3s ease-in-out infinite;
-  stroke-dasharray: 8 6;
+  animation: ringPulseDet 3.5s ease-in-out infinite, rotateDotted 20s linear infinite, detPulseGlow 4s ease-in-out infinite;
+  stroke-dasharray: 10 6;
+}
+.ring-detect-reverse {
+  animation: ringPulseDet 3.5s ease-in-out infinite, rotateDottedReverse 20s linear infinite, detPulseGlow 4s ease-in-out infinite;
+  stroke-dasharray: 6 10;
 }
 .ring-mit {
-  animation: ringPulseMit 2.5s ease-in-out infinite;
+  animation: ringPulseMit 2.5s ease-in-out infinite, mitPulseGlow 3s ease-in-out infinite;
+}
+.ring-mit-dashed {
+  animation: ringPulseMit 2.5s ease-in-out infinite, rotateDotted 12s linear infinite, mitPulseGlow 3s ease-in-out infinite;
+  stroke-dasharray: 8 4;
 }
 /* NFZ polygon subtle pulse */
 .nfz-polygon {
@@ -2493,22 +2516,45 @@ function drawVisuals(item) {
     if (is360) {
       // ── DETECTION RING — 360° ──
       if (detR > 0) {
-        // Outer dashed boundary ring
+        // Sci-Fi Double Outline: crawling outer ring + crawling inner ring in opposite direction
         addV(L.circle(item.latlng, {
           radius: detR,
           color: detColor, weight: detWeight,
-          fillColor: detColor, fillOpacity: detFill,
+          fillColor: detColor, fillOpacity: detFill * 0.5,
           dashArray: detDash,
           className: isActive ? 'ring-detect' : '',
           interactive: false,
         }));
-        // Inner half-radius subtle fill ring
-        addV(L.circle(item.latlng, {
-          radius: detR * 0.5,
-          color: detColor, weight: 0,
-          fillColor: detColor, fillOpacity: detFill * 0.6,
-          interactive: false,
-        }));
+        if (isActive) {
+          // Opposite crawling dashed ring just inside the boundary
+          addV(L.circle(item.latlng, {
+            radius: detR * 0.97,
+            color: detColor, weight: 0.8,
+            fillColor: 'transparent',
+            dashArray: '6,10',
+            className: 'ring-detect-reverse',
+            interactive: false,
+          }));
+          // Faint solid concentric target rings (Radar scope grid lines)
+          [0.66, 0.33].forEach(pct => {
+            addV(L.circle(item.latlng, {
+              radius: detR * pct,
+              color: detColor, weight: 0.5,
+              fillColor: 'transparent',
+              opacity: 0.15,
+              interactive: false,
+            }));
+          });
+        } else {
+          // Standby subtle inner ring
+          addV(L.circle(item.latlng, {
+            radius: detR * 0.5,
+            color: detColor, weight: 0.5,
+            fillColor: detColor, fillOpacity: detFill * 0.5,
+            dashArray: '4,8',
+            interactive: false,
+          }));
+        }
         // Range label at top of circle
         if (isActive && detR >= 500) {
           const labelPt = computeOffset(item.latlng, detR * 0.98, 0);
@@ -2524,22 +2570,45 @@ function drawVisuals(item) {
 
       // ── MITIGATION RING — 360° ──
       if (mitR > 0) {
-        // Solid mitigation ring
-        addV(L.circle(item.latlng, {
-          radius: mitR,
-          color: mitColor, weight: mitWeight,
-          fillColor: mitColor, fillOpacity: mitFill,
-          dashArray: mitDash,
-          className: isActive ? 'ring-mit' : '',
-          interactive: false,
-        }));
-        // Bright inner halo
-        addV(L.circle(item.latlng, {
-          radius: mitR * 0.25,
-          color: mitColor, weight: 0,
-          fillColor: mitColor, fillOpacity: mitFill * 1.4,
-          interactive: false,
-        }));
+        // Sci-Fi Volumetric Dome: concentric filled circles for gradient effect
+        if (isActive) {
+          // Fast crawling boundary barrier ring
+          addV(L.circle(item.latlng, {
+            radius: mitR * 1.02,
+            color: mitColor, weight: 0.8,
+            fillColor: 'transparent',
+            dashArray: '8,4',
+            className: 'ring-mit-dashed',
+            interactive: false,
+          }));
+          // Main mitigation solid ring
+          addV(L.circle(item.latlng, {
+            radius: mitR,
+            color: mitColor, weight: mitWeight,
+            fillColor: mitColor, fillOpacity: 0.02,
+            className: 'ring-mit',
+            interactive: false,
+          }));
+          // Concentric volumetric fills
+          [0.75, 0.5, 0.25].forEach((pct, idx) => {
+            const opacities = [0.03, 0.06, 0.12];
+            addV(L.circle(item.latlng, {
+              radius: mitR * pct,
+              color: mitColor, weight: 0,
+              fillColor: mitColor, fillOpacity: opacities[idx],
+              interactive: false,
+            }));
+          });
+        } else {
+          // Standby single low-opacity circle
+          addV(L.circle(item.latlng, {
+            radius: mitR,
+            color: mitColor, weight: 1,
+            fillColor: mitColor, fillOpacity: 0.02,
+            dashArray: '4,8',
+            interactive: false,
+          }));
+        }
         // Range label at right of circle
         if (isActive && mitR >= 200) {
           const labelPt = computeOffset(item.latlng, mitR * 0.98, 90);
@@ -2565,12 +2634,26 @@ function drawVisuals(item) {
           className: isActive ? 'ring-detect' : '',
           interactive: false,
         }));
-        // Inner half-sector accent
-        addV(L.polygon(getSectorPolygon(item.latlng, detR * 0.45, heading, angle), {
-          color: detColor, weight: 0,
-          fillColor: detColor, fillOpacity: detFill * 0.7,
-          interactive: false,
-        }));
+        // Concentric sector accents for premium depth
+        if (isActive) {
+          addV(L.polygon(getSectorPolygon(item.latlng, detR * 0.66, heading, angle), {
+            color: detColor, weight: 0.5, opacity: 0.25,
+            fillColor: detColor, fillOpacity: 0.02,
+            interactive: false,
+          }));
+          addV(L.polygon(getSectorPolygon(item.latlng, detR * 0.33, heading, angle), {
+            color: detColor, weight: 0.5, opacity: 0.25,
+            fillColor: detColor, fillOpacity: 0.04,
+            interactive: false,
+          }));
+        } else {
+          // standby
+          addV(L.polygon(getSectorPolygon(item.latlng, detR * 0.45, heading, angle), {
+            color: detColor, weight: 0,
+            fillColor: detColor, fillOpacity: detFill * 0.7,
+            interactive: false,
+          }));
+        }
         // Centerline
         if (isActive) {
           const clPt = computeOffset(item.latlng, detR, heading);
@@ -2587,6 +2670,19 @@ function drawVisuals(item) {
           className: isActive ? 'ring-mit' : '',
           interactive: false,
         }));
+        if (isActive) {
+          // Concentric volumetric fills for sector
+          addV(L.polygon(getSectorPolygon(item.latlng, mitR * 0.66, heading, angle), {
+            color: mitColor, weight: 0,
+            fillColor: mitColor, fillOpacity: 0.08,
+            interactive: false,
+          }));
+          addV(L.polygon(getSectorPolygon(item.latlng, mitR * 0.33, heading, angle), {
+            color: mitColor, weight: 0,
+            fillColor: mitColor, fillOpacity: 0.15,
+            interactive: false,
+          }));
+        }
       }
     }
   });
