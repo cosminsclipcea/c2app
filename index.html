@@ -3929,26 +3929,45 @@
 
           if (detR > 0) {
             if (isActive) {
-              // 1. Draw fill sector polygon (NO stroke, NO filter)
-              addV(L.polygon(getSectorPolygon(item.latlng, detR, heading, angle), {
+              // 1. Cerc 360 de bază (pentru a arăta ca unitățile omnidirecționale)
+              const gradUrl = ensureSvgGradient(detColor, false);
+              addV(L.circle(item.latlng, {
+                radius: detR,
                 stroke: false,
-                fillColor: detColor,
-                fillOpacity: detFill + 0.03,
+                fillColor: gradUrl,
+                fillOpacity: 1.0,
                 interactive: false,
               }));
-              // 2. Draw stroke sector outline (NO fill, WITH filter)
-              addV(L.polygon(getSectorPolygon(item.latlng, detR, heading, angle), {
+              addV(L.circle(item.latlng, {
+                radius: detR,
                 color: detColor,
                 weight: detWeight,
                 fill: false,
                 className: 'ring-detect',
                 interactive: false,
               }));
-            } else {
+
+              // 2. Segmentul FOV de culoare galben
               addV(L.polygon(getSectorPolygon(item.latlng, detR, heading, angle), {
+                stroke: false,
+                fillColor: '#ffd700',
+                fillOpacity: 0.45,
+                interactive: false,
+              }));
+            } else {
+              // Cerc inactiv
+              addV(L.circle(item.latlng, {
+                radius: detR,
                 color: detColor,
                 weight: 1.2,
                 fillColor: 'transparent',
+                interactive: false,
+              }));
+              // Segment inactiv galben cu transparenta mai mare
+              addV(L.polygon(getSectorPolygon(item.latlng, detR, heading, angle), {
+                stroke: false,
+                fillColor: '#ffd700',
+                fillOpacity: 0.20,
                 interactive: false,
               }));
             }
@@ -3957,9 +3976,9 @@
             if (isActive) {
               const clPt = computeOffset(item.latlng, detR, heading);
               addV(L.polyline([item.latlng, clPt], {
-                color: detColor,
+                color: '#ffd700',
                 weight: 1,
-                opacity: 0.3,
+                opacity: 0.5,
                 interactive: false,
               }));
             }
@@ -3967,26 +3986,45 @@
 
           if (mitR > 0 && mitR !== detR) {
             if (isActive) {
-              // 1. Draw fill sector polygon (NO stroke, NO filter)
-              addV(L.polygon(getSectorPolygon(item.latlng, mitR, heading, angle), {
+              // 1. Cerc 360 de bază
+              const gradUrl = ensureSvgGradient(mitColor, true);
+              addV(L.circle(item.latlng, {
+                radius: mitR,
                 stroke: false,
-                fillColor: mitColor,
-                fillOpacity: mitFill,
+                fillColor: gradUrl,
+                fillOpacity: 1.0,
                 interactive: false,
               }));
-              // 2. Draw stroke sector outline (NO fill, WITH filter)
-              addV(L.polygon(getSectorPolygon(item.latlng, mitR, heading, angle), {
+              addV(L.circle(item.latlng, {
+                radius: mitR,
                 color: mitColor,
                 weight: mitWeight,
                 fill: false,
                 className: 'ring-mit',
                 interactive: false,
               }));
-            } else {
+
+              // 2. Segmentul FOV de culoare galben
               addV(L.polygon(getSectorPolygon(item.latlng, mitR, heading, angle), {
+                stroke: false,
+                fillColor: '#ffd700',
+                fillOpacity: 0.45,
+                interactive: false,
+              }));
+            } else {
+              // Cerc inactiv
+              addV(L.circle(item.latlng, {
+                radius: mitR,
                 color: mitColor,
                 weight: 1.2,
                 fillColor: 'transparent',
+                interactive: false,
+              }));
+              // Segment inactiv
+              addV(L.polygon(getSectorPolygon(item.latlng, mitR, heading, angle), {
+                stroke: false,
+                fillColor: '#ffd700',
+                fillOpacity: 0.20,
                 interactive: false,
               }));
             }
