@@ -478,6 +478,17 @@
       background: var(--bg-hover) !important;
     }
 
+    .leaflet-tooltip {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    .leaflet-tooltip::before {
+      display: none !important;
+    }
+
     /* Map overlay tools */
     #map-toolbar {
       position: absolute;
@@ -1866,9 +1877,11 @@
 
   <!-- ── TOP BAR ── -->
   <div id="topbar">
-    <div class="logo" style="padding:0;">
-      <img src="logo-opto-white 1.png" alt="Optoelectronica"
-        style="height: 54px; width: auto; display: block; object-fit: contain;" />
+    <div class="logo" style="padding:0; height: 100%;">
+      <a href="http://www.optoel.ro" target="_blank" style="display: block; height: 100%;">
+        <img src="SKYDOME-logo.png" alt="Optoelectronica"
+          style="height: 100%; width: auto; display: block; object-fit: contain;" />
+      </a>
     </div>
     <div class="divider"></div>
     <div class="sys-status">
@@ -1880,10 +1893,8 @@
     </div>
     <div class="divider"></div>
     <div class="top-nav">
-      <div class="nav-btn active" id="nav-map" onclick="setView('map',this)">CONȘTIINȚĂ SITUAȚIONALĂ</div>
-      <div class="nav-btn" id="nav-sensors" onclick="setView('sensors',this)">MGMT SENZORI</div>
       <div class="nav-btn" id="nav-plan" onclick="setView('plan',this)">PLAN PROTECȚIE</div>
-      <div class="nav-btn" id="nav-log" onclick="setView('log',this)">JURNAL</div>
+      <div class="nav-btn active" id="nav-log" onclick="setView('log',this)">JURNAL</div>
       <div class="nav-btn" onclick="generateIncidentReport()" title="Raport Incident">📄 RAPORT</div>
       <div class="divider" style="margin:0 4px; height:20px; align-self:center;"></div>
       <div class="nav-btn" id="btn-adsb" onclick="toggleADSB()"
@@ -1897,7 +1908,6 @@
       ⬡ HEALTH</div>
     <div class="divider"></div>
     <div id="threat-badge" class="threat-indicator green">AMENINȚARE: SCĂZUTĂ</div>
-    <div class="divider"></div>
     <div class="utc-clock">
       <div id="clock-time">--:--:--Z</div>
       <div class="date" id="clock-date">----</div>
@@ -1910,31 +1920,20 @@
     <!-- LEFT PANEL: SENSORS -->
     <div id="left-panel">
 
-      <!-- D-FEND SOLUTIONS -->
+      <!-- DETECȚIE -->
       <div class="panel-section" style="border-bottom:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('dfend-body','dfend-icon')">
-          <div class="section-title">D-FEND SOLUTIONS · ENFORCEAIR</div>
+        <div class="section-header" onclick="toggleSection('detectie-body','detectie-icon')">
+          <div class="section-title">DETECȚIE</div>
           <div style="display:flex;gap:8px;align-items:center;">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">3 UNITĂȚI</div>
-            <div id="dfend-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">5 UNITĂȚI</div>
+            <div id="detectie-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
           </div>
         </div>
       </div>
-      <div id="dfend-body" style="padding:8px 8px 0;">
-        <div class="sensor-card active" onclick="focusSensor('EA-PLUS-01')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">EnforceAir (Flagship)</div>
-          <div class="sensor-type">PRELUARE CIBERNETICĂ RF</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">4.5km</span></div>
-            <div class="sensor-stat"><span class="label">MITIGARE: </span><span class="value">4.0km</span></div>
-            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
-            <div class="sensor-stat"><span class="label">ȚINTĂ: </span><span class="value">PRELUARE</span></div>
-          </div>
-        </div>
+      <div id="detectie-body" style="padding:8px 8px 0;">
         <div class="sensor-card active" onclick="focusSensor('EA2-01')">
           <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">EnforceAir2 (Multiuse)</div>
+          <div class="sensor-name">D-FEND ENFORCEAIR 2</div>
           <div class="sensor-type">PRELUARE CIBERNETICĂ · RF NON-CINETIC</div>
           <div class="sensor-meta">
             <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">400MHz-6GHz</span></div>
@@ -1943,68 +1942,99 @@
             <div class="sensor-stat"><span class="label">UTILIZARE: </span><span class="value">PACHET SOF</span></div>
           </div>
         </div>
-        <div class="sensor-card standby" onclick="focusSensor('EA2-02')">
-          <span class="sensor-status-badge standby">AȘTEPTARE</span>
-          <div class="sensor-name">EnforceAir2 (Backpack)</div>
-          <div class="sensor-type">PRELUARE CIBERNETICĂ · PORTABIL</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">400MHz-6GHz</span></div>
-            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">ÎN MIȘCARE</span></div>
-            <div class="sensor-stat"><span class="label">TEMP: </span><span class="value">-30°C/+50°C</span></div>
-            <div class="sensor-stat"><span class="label">STARE: </span><span class="value">AȘTEPTARE</span></div>
-          </div>
-        </div>
-      </div>
+        <div class="sensor-card active" onclick="focusSensor('RF-OMNISHIELD')" style="padding: 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; background: transparent;">
+          
+          <!-- Image Top Section -->
+          <div style="background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%); position: relative; height: 160px; display: flex; justify-content: center; align-items: center;">
+            
+            <!-- Top Left: Status -->
+            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: #10b981; z-index: 10;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>
+              DETECTOR
+            </div>
+            
+            <!-- Top Center: Type Badge -->
+            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(56, 189, 248, 0.3); border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #38bdf8; z-index: 10;">
+              RF PASIV
+            </div>
+            
+            <!-- Top Right: Recording/Alert -->
+            <div id="custom-badge-RF-OMNISHIELD" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #eab308; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #eab308;"></div>
+              STANDBY
+            </div>
 
-      <!-- SKYLOCK LEGACY -->
-      <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('skylock-body','skylock-icon')">
-          <div class="section-title">SKYLOCK C-UAS · AVNON GROUP</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">2 UNITĂȚI</div>
-            <div id="skylock-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
-          </div>
-        </div>
-      </div>
-      <div id="skylock-body" style="padding:8px 8px 0;">
-        <div class="sensor-card active" onclick="focusSensor('SL-DOME-01')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Skylock Dome-01</div>
-          <div class="sensor-type">RADAR · CAMERE EO/IR · BRUIAJ</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
-            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">PORNIT</span></div>
-          </div>
-        </div>
-        <div class="sensor-card active" onclick="focusSensor('SL-DF-01')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Skylock Dir.Finder-01</div>
-          <div class="sensor-type">DETECTOR RF · LOCALIZARE OPERATOR</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">5km</span></div>
-            <div class="sensor-stat"><span class="label">ANTENE: </span><span class="value">24×DIR</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°AZ</span></div>
-            <div class="sensor-stat"><span class="label">IDENTIF: </span><span class="value">ACTIV</span></div>
-          </div>
-        </div>
-      </div>
+            <!-- Main Image -->
+            <img src="rf-detector.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5;" alt="RF Detector" />
 
-      <!-- SKYLOCK RADAR SYSTEMS -->
-      <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('radar-body','radar-icon')">
-          <div class="section-title">SKYLOCK · SISTEME RADAR</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">3 UNITĂȚI</div>
-            <div id="radar-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+            <!-- Bottom Gradient and Lat/Lng -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%); z-index: 8; padding: 0 12px; display: flex; align-items: flex-end; padding-bottom: 8px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; color: #d1d5db; letter-spacing: 1px;">LAT: 44.4268</span>
+            </div>
+          </div>
+
+          <!-- Info Bottom Section -->
+          <div style="background: #1e293b; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 20;">
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">RF DETECTOR</div>
+            <div style="font-family: var(--font-ui); font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">C-UAS SYSTEMS</div>
+            
+            <!-- Stats -->
+            <div class="sensor-meta" style="margin-top: 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; gap: 4px;">
+              <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value" style="color:#38bdf8;">15 km</span></div>
+              <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360° Az / ±90° El</span></div>
+              <div class="sensor-stat"><span class="label">ȚINTE: </span><span class="value">FPV / ROIURI</span></div>
+              <div class="sensor-stat"><span class="label">ALARME FALSE: </span><span class="value">ZERO</span></div>
+            </div>
           </div>
         </div>
-      </div>
-      <div id="radar-body" style="padding:8px 8px 0;">
+        <div class="sensor-card active" onclick="focusSensor('EO-700')" style="padding: 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; background: transparent;">
+          
+          <!-- Image Top Section -->
+          <div style="background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%); position: relative; height: 160px; display: flex; justify-content: center; align-items: center;">
+            
+            <!-- Top Left: Status -->
+            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: #10b981; z-index: 10;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>
+              CAMERA
+            </div>
+            
+            <!-- Top Center: Type Badge -->
+            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(56, 189, 248, 0.3); border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #38bdf8; z-index: 10;">
+              OPTIC/IR
+            </div>
+            
+            <!-- Top Right: Recording/Alert -->
+            <div id="custom-badge-EO-700" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #eab308; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #eab308;"></div>
+              STANDBY
+            </div>
+
+            <!-- Main Image -->
+            <img src="eoircamera.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5;" alt="EO/IR Camera" />
+
+            <!-- Bottom Gradient and Lat/Lng -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%); z-index: 8; padding: 0 12px; display: flex; align-items: flex-end; padding-bottom: 8px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; color: #d1d5db; letter-spacing: 1px;">LAT: 44.4268</span>
+            </div>
+          </div>
+
+          <!-- Info Bottom Section -->
+          <div style="background: #1e293b; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 20;">
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">IO IR CAMERA</div>
+            <div style="font-family: var(--font-ui); font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">SKYLOCK · AVNON GROUP</div>
+            
+            <!-- Stats -->
+            <div class="sensor-meta" style="margin-top: 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; gap: 4px;">
+              <div class="sensor-stat"><span class="label">AI: </span><span class="value" style="color:#38bdf8;">DEEP LEARNING</span></div>
+              <div class="sensor-stat"><span class="label">OPERARE: </span><span class="value">ZI/NOAPTE</span></div>
+              <div class="sensor-stat"><span class="label">ȚINTE: </span><span class="value">UAS / NON-UAS</span></div>
+              <div class="sensor-stat"><span class="label">SELECȚIE: </span><span class="value">AUTO/MANUAL</span></div>
+            </div>
+          </div>
+        </div>
         <div class="sensor-card active" onclick="focusSensor('RADAR-5K')">
           <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Radar 5K (3D MIMO)</div>
+          <div class="sensor-name">RADAR</div>
           <div class="sensor-type">BANDA X FMCW · SUPRAVEGHERE 3D</div>
           <div class="sensor-meta">
             <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">5.0km</span></div>
@@ -2013,136 +2043,89 @@
             <div class="sensor-stat"><span class="label">RCS: </span><span class="value">0.01m²</span></div>
           </div>
         </div>
-        <div class="sensor-card active" onclick="focusSensor('RADAR-3K')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Radar 3K (4D ESA)</div>
-          <div class="sensor-type">BANDA KU ESA · MULTI-CANAL</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
-            <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">BANDA KU</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">PRECIZIE AZ: </span><span class="value">&lt;0.5°</span></div>
+        <div class="sensor-card active" onclick="focusSensor('ACUSTIC-01')" style="padding: 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; background: transparent;">
+          
+          <!-- Image Top Section -->
+          <div style="background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%); position: relative; height: 160px; display: flex; justify-content: center; align-items: center;">
+            
+            <!-- Top Left: Status -->
+            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: #10b981; z-index: 10;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>
+              SENZOR
+            </div>
+            
+            <!-- Top Center: Type Badge -->
+            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(56, 189, 248, 0.3); border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #38bdf8; z-index: 10;">
+              ACUSTIC
+            </div>
+            
+            <!-- Top Right: Recording/Alert -->
+            <div id="custom-badge-ACUSTIC-01" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #eab308; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #eab308;"></div>
+              STANDBY
+            </div>
+
+            <!-- Main Image -->
+            <img src="acoustic-sensor.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5;" alt="Senzor Acustic" />
+
+            <!-- Bottom Gradient and Lat/Lng -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%); z-index: 8; padding: 0 12px; display: flex; align-items: flex-end; padding-bottom: 8px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; color: #d1d5db; letter-spacing: 1px;">LAT: 44.4268</span>
+            </div>
           </div>
-        </div>
-        <div class="sensor-card standby" onclick="focusSensor('RADAR-1K')">
-          <span class="sensor-status-badge standby">AȘTEPTARE</span>
-          <div class="sensor-name">Radar 1K (Tactic)</div>
-          <div class="sensor-type">24 GHz · COMPACT · CĂUTARE-URMĂRIRE</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">1.2km</span></div>
-            <div class="sensor-stat"><span class="label">GREUTATE: </span><span class="value">1.25kg</span></div>
-            <div class="sensor-stat"><span class="label">URMĂRIRI: </span><span class="value">20 ȚINTE</span></div>
-            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP67</span></div>
+
+          <!-- Info Bottom Section -->
+          <div style="background: #1e293b; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 20;">
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">SENZOR ACUSTIC</div>
+            <div style="font-family: var(--font-ui); font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">C-UAS SYSTEMS</div>
+            
+            <!-- Stats -->
+            <div class="sensor-meta" style="margin-top: 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; gap: 4px;">
+              <div class="sensor-stat"><span class="label">EMISII: </span><span class="value" style="color:#38bdf8;">ZERO (PASIV)</span></div>
+              <div class="sensor-stat"><span class="label">ȚINTE: </span><span class="value">MULTIPLE</span></div>
+              <div class="sensor-stat"><span class="label">CLASIF: </span><span class="value">AUTOMATĂ</span></div>
+              <div class="sensor-stat"><span class="label">LOCALIZARE: </span><span class="value">TIMP REAL</span></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- SKYLOCK RF DETECTION -->
+      <!-- CONTRAMĂSURI -->
       <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('rfdet-body','rfdet-icon')">
-          <div class="section-title">SKYLOCK · DETECȚIE RF</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">2 UNITĂȚI</div>
-            <div id="rfdet-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
-          </div>
-        </div>
-      </div>
-      <div id="rfdet-body" style="padding:8px 8px 0;">
-        <div class="sensor-card active" onclick="focusSensor('RF-LRF')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Detector LRF 10km</div>
-          <div class="sensor-type">RF RAZĂ LUNGĂ · 70MHz-6GHz</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">10.0km</span></div>
-            <div class="sensor-stat"><span class="label">PREC. DF: </span><span class="value">7.5°RMS</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">AI: </span><span class="value">PORNIT</span></div>
-          </div>
-        </div>
-        <div class="sensor-card standby" onclick="focusSensor('RF-WOLFPACK')">
-          <span class="sensor-status-badge standby">AȘTEPTARE</span>
-          <div class="sensor-name">Detector RF WolfPack</div>
-          <div class="sensor-type">SDR COMPACT · GĂSIRE DIRECȚIE</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">4.0km</span></div>
-            <div class="sensor-stat"><span class="label">PREC. DF: </span><span class="value">&lt;5°RMS</span></div>
-            <div class="sensor-stat"><span class="label">GREUTATE: </span><span class="value">5.0kg</span></div>
-            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP67</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SKYLOCK EO/IR SYSTEMS -->
-      <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('eoir-body','eoir-icon')">
-          <div class="section-title">SKYLOCK · SISTEME EO/IR</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">4 UNITĂȚI</div>
-            <div id="eoir-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
-          </div>
-        </div>
-      </div>
-      <div id="eoir-body" style="padding:8px 8px 0;">
-        <div class="sensor-card active" onclick="focusSensor('EO-225')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Cameră EO/IR 225mm</div>
-          <div class="sensor-type">TERMAL NERĂCIT · ZI 1080P</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">1.5km</span></div>
-            <div class="sensor-stat"><span class="label">ZOOM: </span><span class="value">9x/33x</span></div>
-            <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">640×480</span></div>
-            <div class="sensor-stat"><span class="label">OPERARE: </span><span class="value">24/7</span></div>
-          </div>
-        </div>
-        <div class="sensor-card active" onclick="focusSensor('EO-785')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Cameră EO/IR 785mm</div>
-          <div class="sensor-type">TERMAL RĂCIT InSb · SENS. ÎNALTĂ</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">3.0km</span></div>
-            <div class="sensor-stat"><span class="label">ZOOM: </span><span class="value">18x/33x</span></div>
-            <div class="sensor-stat"><span class="label">NETd: </span><span class="value">30mK</span></div>
-            <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">640×512</span></div>
-          </div>
-        </div>
-        <div class="sensor-card active" onclick="focusSensor('EO-700')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Cameră EO/IR 700mm</div>
-          <div class="sensor-type">IR RĂCIT · URMĂRIRE RAZĂ LUNGĂ</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">6.1km</span></div>
-            <div class="sensor-stat"><span class="label">CLASIF: </span><span class="value">3.3km</span></div>
-            <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">1280×720</span></div>
-            <div class="sensor-stat"><span class="label">MIL: </span><span class="value">810G</span></div>
-          </div>
-        </div>
-        <div class="sensor-card standby" onclick="focusSensor('EO-1000')">
-          <span class="sensor-status-badge standby">AȘTEPTARE</span>
-          <div class="sensor-name">Cameră EO/IR 1000mm</div>
-          <div class="sensor-type">DETECTOR CMT · RAZĂ ULTRA LUNGĂ</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">URMĂRIRE: </span><span class="value">5.0km</span></div>
-            <div class="sensor-stat"><span class="label">ZOOM: </span><span class="value">12x/60x</span></div>
-            <div class="sensor-stat"><span class="label">NETd: </span><span class="value">27.5mK</span></div>
-            <div class="sensor-stat"><span class="label">REZOL: </span><span class="value">1280×720</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SKYLOCK EFFECTORS -->
-      <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('effector-body','effector-icon')">
-          <div class="section-title">SKYLOCK · EFECTORI</div>
+        <div class="section-header" onclick="toggleSection('contramasuri-body','contramasuri-icon')">
+          <div class="section-title">CONTRAMĂSURI</div>
           <div style="display:flex;gap:8px;align-items:center;">
             <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">5 UNITĂȚI</div>
-            <div id="effector-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
+            <div id="contramasuri-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
           </div>
         </div>
       </div>
-      <div id="effector-body" style="padding:8px 8px 0;">
-        <div class="sensor-card standby" onclick="focusSensor('JAM-DIR')">
-          <span class="sensor-status-badge standby">AȘTEPTARE</span>
-          <div class="sensor-name">Bruiaj RF 5km Dir.</div>
+      <div id="contramasuri-body" style="padding:8px 8px 4px;">
+        <div class="sensor-card active" onclick="focusSensor('CYBER-3K')">
+          <span class="sensor-status-badge active">ACTIV</span>
+          <div class="sensor-name">CYBER TAKEOVER (3KM)</div>
+          <div class="sensor-type">PRELUARE CIBERNETICĂ RF</div>
+          <div class="sensor-meta">
+            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
+            <div class="sensor-stat"><span class="label">MITIGARE: </span><span class="value">3.0km</span></div>
+            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+            <div class="sensor-stat"><span class="label">ȚINTĂ: </span><span class="value">PRELUARE</span></div>
+          </div>
+        </div>
+        <div class="sensor-card active" onclick="focusSensor('JAM-OMNI-3K')">
+          <span class="sensor-status-badge active">ACTIV</span>
+          <div class="sensor-name">RF JAMMER OMNIDIRECTIONAL (3KM)</div>
+          <div class="sensor-type">BRUIAJ RF 360° · AUTO/MANUAL</div>
+          <div class="sensor-meta">
+            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">3.0km</span></div>
+            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP66</span></div>
+          </div>
+        </div>
+        <div class="sensor-card active" onclick="focusSensor('JAM-DIR-5K')">
+          <span class="sensor-status-badge active">ACTIV</span>
+          <div class="sensor-name">RF JAMMER DIRECTIONAL (5KM)</div>
           <div class="sensor-type">BRUIAJ RF DIRECȚIONAL · MIL</div>
           <div class="sensor-meta">
             <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">5.0km</span></div>
@@ -2151,138 +2134,39 @@
             <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP65</span></div>
           </div>
         </div>
-        <div class="sensor-card active" onclick="focusSensor('SPOOFER-L1')">
+        <div class="sensor-card active" onclick="focusSensor('SPOOFER-GNSS')">
           <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Spoofer GNSS L1/L2</div>
-          <div class="sensor-type">MANIPULARE GNSS · GPS/GLONASS</div>
+          <div class="sensor-name">GPS/GNSS SPOOFER</div>
+          <div class="sensor-type">MANIPULARE GNSS · SCALABIL</div>
           <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">L1/L2</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP67</span></div>
-            <div class="sensor-stat"><span class="label">PUTERE: </span><span class="value">100W</span></div>
+            <div class="sensor-stat"><span class="label">ȚINTE: </span><span class="value">MULTIPLE / ROIURI</span></div>
+            <div class="sensor-stat"><span class="label">DRONE: </span><span class="value">AUTONOME / 4G</span></div>
+            <div class="sensor-stat"><span class="label">LISTĂ ALBĂ: </span><span class="value">NU NECESITĂ</span></div>
+            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">ÎNLOCUIEȘTE</span></div>
           </div>
         </div>
-        <div class="sensor-card active" onclick="focusSensor('SKYBEAM-01')">
+        <div class="sensor-card active" onclick="focusSensor('LASER-01')">
           <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">SkyBeam Portabil</div>
-          <div class="sensor-type">BRUIAJ PORTABIL · MANUAL</div>
+          <div class="sensor-name">SKYLASER</div>
+          <div class="sensor-type">NEUTRALIZARE LASER · AI AUTO</div>
           <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">3.0km</span></div>
-            <div class="sensor-stat"><span class="label">GREUTATE: </span><span class="value">6.0kg</span></div>
-            <div class="sensor-stat"><span class="label">BATERIE: </span><span class="value">1 ORĂ</span></div>
-            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP65</span></div>
-          </div>
-        </div>
-        <div class="sensor-card standby" onclick="focusSensor('INTERCEPTOR-01')">
-          <span class="sensor-status-badge standby">AȘTEPTARE</span>
-          <div class="sensor-name">Interceptor Drone</div>
-          <div class="sensor-type">DRONĂ-vs-DRONĂ · AUTONOM</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">RAZĂ: </span><span class="value">15.0km</span></div>
-            <div class="sensor-stat"><span class="label">VITEZĂ: </span><span class="value">270km/h</span></div>
-            <div class="sensor-stat"><span class="label">AUTONOMIE: </span><span class="value">20 MIN</span></div>
-            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
-          </div>
-        </div>
-        <div class="sensor-card active" onclick="focusSensor('PORT-DOME-01')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Dom Portabil</div>
-          <div class="sensor-type">DETECȚIE RF + BRUIAJ · ALL-IN-ONE</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
-            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">3.0km</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP66</span></div>
+            <div class="sensor-stat"><span class="label">FASCICUL: </span><span class="value">ADAPTIV</span></div>
+            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO (AI)</span></div>
+            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">COMPLEXĂ</span></div>
+            <div class="sensor-stat"><span class="label">DEPLOIERE: </span><span class="value">RAPIDĂ</span></div>
           </div>
         </div>
       </div>
-
-      <!-- OJMA SYSTEMS -->
-      <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('ojma-body','ojma-icon')">
-          <div class="section-title">OJMA · SISTEME C-UAS</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">3 UNITĂȚI</div>
-            <div id="ojma-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
-          </div>
-        </div>
-      </div>
-      <div id="ojma-body" style="padding:8px 8px 0;">
-        <div class="sensor-card active" onclick="focusSensor('RF-OMNISHIELD')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Detector RF OmniShield</div>
-          <div class="sensor-type">RF PASIV · AI · GĂSIRE DIRECȚIE</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">3.0km</span></div>
-            <div class="sensor-stat"><span class="label">PREC. DF: </span><span class="value">7.5°RMS</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">AI: </span><span class="value">PORNIT</span></div>
-          </div>
-        </div>
-        <div class="sensor-card active" onclick="focusSensor('JAM-OMNI')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">Bruiaj Omni 3-5km</div>
-          <div class="sensor-type">BRUIAJ RF 360° · AUTO/MANUAL</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">3-5km</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
-            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP66</span></div>
-          </div>
-        </div>
-        <div class="sensor-card standby" onclick="focusSensor('SPOOFER-5K')">
-          <span class="sensor-status-badge standby">AȘTEPTARE</span>
-          <div class="sensor-name">Spoofer GNSS 5km</div>
-          <div class="sensor-type">RESPINGERE / NFZ · OJMA</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">5.0km</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">INVAZIE: </span><span class="value">&lt;10s</span></div>
-            <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP65</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- OPTOELECTRONICA SKYDOME -->
-      <div class="panel-section" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border);">
-        <div class="section-header" onclick="toggleSection('opto-body','opto-icon')">
-          <div class="section-title">OPTOELECTRONICA · SKY DOME</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);">2 UNITĂȚI</div>
-            <div id="opto-icon" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);">▾</div>
-          </div>
-        </div>
-      </div>
-      <div id="opto-body" style="padding:8px 8px 4px;">
-        <div class="sensor-card active" onclick="focusSensor('SKYDOME-C4I')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">SkyDome C4I</div>
-          <div class="sensor-type">COMANDĂ ȘI CONTROL · C4ISR</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">CPU: </span><span class="value">i5</span></div>
-            <div class="sensor-stat"><span class="label">RAM: </span><span class="value">16GB</span></div>
-            <div class="sensor-stat"><span class="label">OS: </span><span class="value">LINUX</span></div>
-            <div class="sensor-stat"><span class="label">API: </span><span class="value">SDK</span></div>
-          </div>
-        </div>
-        <div class="sensor-card active" onclick="focusSensor('SKYDEFENDER-5K')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">SkyDefender 5km</div>
-          <div class="sensor-type">C-UAS ALL-IN-ONE · MULTI-STRAT</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">5.0km</span></div>
-            <div class="sensor-stat"><span class="label">BRUIAJ: </span><span class="value">5.0km</span></div>
-            <div class="sensor-stat"><span class="label">STRAT: </span><span class="value">MULTI</span></div>
-            <div class="sensor-stat"><span class="label">OPERARE: </span><span class="value">24/7</span></div>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <!-- CENTER: MAP -->
     <div id="center">
       <div id="map-container">
+        <!-- SEARCH BAR -->
+        <div id="map-search-container" style="position: absolute; top: 10px; left: 60px; z-index: 9999; display: flex; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.5); pointer-events: auto;">
+          <input type="text" id="map-search-input" placeholder="Caută locație..." onkeypress="if(event.key === 'Enter') searchMapLocation()" style="background: transparent; border: none; color: var(--text-primary); padding: 8px 12px; font-family: var(--font-ui); font-size: 12px; width: 250px; outline: none;">
+          <button onclick="searchMapLocation()" style="background: var(--bg-hover); border: none; color: var(--accent); padding: 0 12px; cursor: pointer; transition: all 0.2s;">🔍</button>
+        </div>
         <div class="map-grid-overlay"></div>
         <div id="map"></div>
         <div id="map-toolbar">
@@ -2343,7 +2227,7 @@
         <div id="map-legend">
           <div class="legend-title">STRATURI ACOPERIRE</div>
           <div class="legend-item">
-            <div class="legend-dot" style="background:rgba(255,51,85,0.3);border:1px solid #ff3355;"></div><span>Zonă
+            <div class="legend-dot" style="background:rgba(255,215,0,0.3);border:1px solid #ffd700;"></div><span>Zonă
               Detecție</span>
           </div>
           <div class="legend-item">
@@ -2415,7 +2299,7 @@
 
     <!-- RIGHT PANEL: EVENT LOG + PLAN -->
     <div id="right-panel">
-      <div id="right-log-container" style="flex: 1; display: flex; flex-direction: column;">
+      <div id="right-log-container" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
         <div class="panel-section">
           <div class="section-header">
             <div class="section-title">JURNAL EVENIMENTE</div>
@@ -2439,7 +2323,7 @@
         <div class="event-log" id="event-log"></div>
       </div>
 
-      <div id="right-plan-container" style="display: none; flex: 1; flex-direction: column;">
+      <div id="right-plan-container" style="display: none; flex: 1; flex-direction: column; min-height: 0;">
         <div class="panel-section" style="border-bottom:none;">
           <div class="section-header" onclick="togglePlanPanel()">
             <div class="section-title">PLAN PROTECȚIE · <span id="plan-count">0</span> ELEMENTE</div>
@@ -2458,6 +2342,20 @@
             📍 UTILIZAȚI INSTRUMENTUL PIN PENTRU<br>A ADĂUGA LOCAȚII ÎN PLANUL DE PROTECȚIE
           </div>
         </div>
+      </div>
+
+      <!-- CONTACT FORM (ALWAYS AT BOTTOM OF RIGHT PANEL) -->
+      <div id="contact-form-container" style="padding: 12px; border-top: 1px solid var(--border); background: var(--bg-secondary); flex-shrink: 0; box-shadow: 0 -4px 12px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="font-family: var(--font-display); font-size: 11px; color: var(--accent); letter-spacing: 1px;">CONTACTEAZĂ-NE</div>
+          <img src="logo-opto-white 1.png" style="height: 60px; opacity: 1;">
+        </div>
+        <form action="mailto:OFFICE@OPTOEL.RO" method="POST" enctype="text/plain" style="display: flex; flex-direction: column; gap: 8px;">
+          <input type="text" name="Nume" placeholder="Nume Complet" required style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; font-family: var(--font-ui); font-size: 11px; outline: none;">
+          <input type="email" name="Email" placeholder="Email" required style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; font-family: var(--font-ui); font-size: 11px; outline: none;">
+          <input type="text" name="Companie" placeholder="Companie" required style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; font-family: var(--font-ui); font-size: 11px; outline: none;">
+          <button type="submit" class="ai-btn" style="width: 100%; justify-content: center; margin-top: 4px;">TRIMITE MESAJ</button>
+        </form>
       </div>
     </div>
   </div>
@@ -2807,7 +2705,7 @@
       // ── D-FEND SOLUTIONS ──
       'EA-PLUS-01': {
         name: 'EnforceAir (Flagship)', vendor: 'D-FEND SOLUTIONS',
-        type: 'Preluare Cibernetică RF', detRange: 4500, mitRange: 4000,
+        type: 'Preluare Cibernetică RF', detRange: 4500, mitRange: 2000,
         cover: '360° Omni', mode: 'AUTO', status: 'standby',
         desc: 'Soluția flagship D-Fend Solutions. Execută preluarea controlului cibernetic prin radiofrecvență (RF) a dronelor neautorizate pentru aterizare sigură. Detectare și mitigare end-to-end, fără alarme false. Nu utilizează bruiaj (non-jamming), permițând dronelor autorizate din zonă să funcționeze neîntrerupt.',
         color: '#00d4ff',
@@ -2815,7 +2713,7 @@
       },
       'EA2-01': {
         name: 'EnforceAir2 (Multiuse)', vendor: 'D-FEND SOLUTIONS',
-        type: 'Preluare Cibernetică · RF Non-Cinetic', detRange: 4500, mitRange: 4000,
+        type: 'Preluare Cibernetică · RF Non-Cinetic', detRange: 4500, mitRange: 2000,
         cover: '360° Omni', mode: 'AUTO', status: 'standby',
         desc: 'Sistem Cyber C-UAS generația a 2-a cu Flexibilitate Operațională Integrată (SOF). Oferă detecție precisă fără alarme false, urmărire GPS, extragere ID dronă (Marcă, Model, Serie) și locația pilotului (fără a depinde de recepția telecomenzii). Execută "preluare cibernetică" pentru deviere spre zone sigure.',
         color: '#00aeff',
@@ -2823,7 +2721,7 @@
       },
       'EA2-02': {
         name: 'EnforceAir2 (Backpack)', vendor: 'D-FEND SOLUTIONS',
-        type: 'Preluare Cibernetică · Portabil (Rucsac)', detRange: 4500, mitRange: 3000,
+        type: 'Preluare Cibernetică · Portabil (Rucsac)', detRange: 4500, mitRange: 1500,
         cover: '360° Omni', mode: 'MANUAL', status: 'standby',
         desc: 'Opțiune de desfășurare tip rucsac disimulat pentru forțe tactice. Asigură protecție unică în mișcare. Include funcționalitate completă de detecție și mitigare cibernetică, menținând cel mai bun echilibru SWAP (Mărime, Greutate, Putere) din clasa sa.',
         color: '#0077cc',
@@ -2832,7 +2730,7 @@
       // ── SKYLOCK LEGACY ──
       'SL-DOME-01': {
         name: 'Skylock Dome-01', vendor: 'SKYLOCK · AVNON GROUP',
-        type: 'Radar · Camere EO/IR · Bruiaj', detRange: 3000, mitRange: 2000,
+        type: 'Radar · Camere EO/IR · Bruiaj', detRange: 3000, mitRange: 1000,
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Protecție completă de tip dom cu dispozitive de monitorizare optică și termică, urmărire radar și neutralizare integrată prin bruiaj.',
         color: '#00ff9d',
@@ -2904,12 +2802,12 @@
         specs: [['Detector', 'InSb Răcit'], ['Rezoluție', '640 × 512'], ['Dimensiune Pixel', '15 μm'], ['Distanță Focală', '43.6 - 785 mm'], ['Zoom Termal', '18× Motorizat'], ['NETd', '≤ 30 mK'], ['Cameră de Zi', '1080p, zoom 33×'], ['Rază Urmărire (P4)', 'până la 3 km']],
       },
       'EO-700': {
-        name: 'Cameră EO/IR 700mm', vendor: 'SKYLOCK · AVNON GROUP',
-        type: 'IR RĂCIT · URMĂRIRE RAZĂ LUNGĂ', detRange: 6100, mitRange: 0,
-        cover: 'FOV 12° (Cameră PTZ)', sectorAngle: 12, mode: 'AUTO', status: 'standby',
-        desc: 'Infraroșu răcit de înaltă sensibilitate. 1280x720 / 10μm. Distanță focală 60-690mm. Urmărește DJI Inspire până la 6.1km, clasifică la 3.3km. MIL-STD-810G. Greutate 40kg. -20°C până la +40°C.',
+        name: 'IO IR Camera', vendor: 'SKYLOCK · AVNON GROUP', img: 'eoircamera.png',
+        type: 'SISTEM MODULAR EO/IR · AI', detRange: 6000, mitRange: 0,
+        cover: 'FOV VARIABIL (PTZ)', sectorAngle: 360, mode: 'AUTO', status: 'standby',
+        desc: 'Sistemele superioare de camere SKYLOCK sunt modulare și ușor de actualizat cu o varietate de lentile electro-optice și infraroșu, adaptate specific diferitelor amenințări. Complet integrate în C4I, capabile să fixeze și să urmărească ținte 24/7. Feedback-ul vizual ajută operatorul să înțeleagă amenințarea și dacă transportă o încărcătură utilă (payload).',
         color: '#00aa77',
-        specs: [['Detector', 'IR Răcit Sensibilitate Înaltă'], ['Rezoluție', '1280 × 720'], ['Dimensiune Pixel', '10 μm'], ['Distanță Focală', '60 - 690 mm'], ['HFOV', '1.06° - 12.2°'], ['Urmărire (DJI Inspire)', '6.1 km'], ['Clasificare', '3.3 km'], ['Standard MIL', 'MIL-STD-810G'], ['Greutate', '40 kg']],
+        specs: [['Performanță', 'Cost Redus - Performanță Înaltă'], ['AI', 'Deep Learning Integrat'], ['Selecție Ținte', 'Manuală sau Autonomă'], ['Operare', 'HD Zi și Noapte'], ['Țintire', 'UAS și non-UAS'], ['Integrare', 'Simplă']],
       },
       'EO-1000': {
         name: 'Cameră EO/IR 1000mm', vendor: 'SKYLOCK · AVNON GROUP',
@@ -2922,7 +2820,7 @@
       // ── EFFECTORS ──
       'JAM-OMNI': {
         name: 'Bruiaj Omni 3-5km', vendor: 'OJMA · C-UAS SYSTEMS',
-        type: 'BRUIAJ RF 360° · AUTO/MANUAL', detRange: 0, mitRange: 5000,
+        type: 'BRUIAJ RF 360° · AUTO/MANUAL', detRange: 0, mitRange: 2500,
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Echipament de bruiaj RF omnidirecțional. 2.4GHz 120W, 5.8GHz 100W, 900MHz 20W, 433MHz 20W + GNSS L1 20W / L2 20W. Rază de bruiaj 3-5km. IP66. MIL-STD-810G. Moduri auto/manual. Neutralizare < 5 sec.',
         color: '#ff3355',
@@ -2930,7 +2828,7 @@
       },
       'JAM-DIR': {
         name: 'Bruiaj RF 5km Dir.', vendor: 'SKYLOCK · AVNON GROUP',
-        type: 'BRUIAJ RF DIRECȚIONAL · MIL-STD', detRange: 0, mitRange: 5000,
+        type: 'BRUIAJ RF DIRECȚIONAL · MIL-STD', detRange: 0, mitRange: 2500,
         cover: 'DIRECȚIONAL 60°', sectorAngle: 60, mode: 'MANUAL', status: 'standby',
         desc: 'Sistem de bruiaj RF direcțional. Sintetizat DDS & PLL. Control de la distanță TCP/IP. Benzi: 428-437, 868-928, 1150-1300, 1559-1610, 2400-2500, 5725-5850 MHz (10W fiecare). MIL-STD-810G. IP65.',
         color: '#cc1133',
@@ -2938,7 +2836,7 @@
       },
       'SPOOFER-L1': {
         name: 'Spoofer GNSS L1/L2', vendor: 'SKYLOCK · AVNON GROUP',
-        type: 'MANIPULARE GNSS · GPS/GLONASS', detRange: 0, mitRange: 3000,
+        type: 'MANIPULARE GNSS · GPS/GLONASS', detRange: 0, mitRange: 1500,
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Manipulare GNSS împotriva tuturor receptoarelor GNSS. L1: GPS, GLONASS, BEIDOU, GALILEO. Opțional L2/L5. Eficient împotriva roiurilor, dronelor invizibile, dronelor 4G/5G. Emisii zero pe comunicațiile de urgență/celulare. IP67, răcire pasivă.',
         color: '#ff8c00',
@@ -2946,7 +2844,7 @@
       },
       'SPOOFER-5K': {
         name: 'Spoofer GNSS 5km', vendor: 'OJMA · C-UAS SYSTEMS',
-        type: 'RESPINGERE / NFZ · OJMA', detRange: 0, mitRange: 5000,
+        type: 'RESPINGERE / NFZ · OJMA', detRange: 0, mitRange: 2500,
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Manipulare GNSS cu respingere (push-back) și simulare Zonă Interzisă de Zbor (NFZ). Eficient până la 5km (push-back). Invazie de semnal < 10s. Funcționează contra roiurilor, dronelor invizibile, 4G/5G, atacurilor din direcții multiple. IP65, -30°C până la +55°C, ≤100W.',
         color: '#ff6600',
@@ -2954,7 +2852,7 @@
       },
       'SKYBEAM-01': {
         name: 'Armă Portabilă SkyBeam', vendor: 'SKYLOCK · AVNON GROUP',
-        type: 'BRUIAJ PORTABIL · MANUAL', detRange: 0, mitRange: 3000,
+        type: 'BRUIAJ PORTABIL · MANUAL', detRange: 0, mitRange: 1500,
         cover: 'DIRECȚIONAL 45°', sectorAngle: 45, mode: 'MANUAL', status: 'standby',
         desc: 'Armă anti-dronă portabilă. 6kg total. Bruiază 400MHz, 900MHz, 2.4GHz, 5.8GHz, GNSS L1/L2. Bruiaj selectiv pe benzi. Rază până la 3km. Baterie 1 oră. IP65. Ideală pentru poliție, armată, siguranță publică.',
         color: '#ff4400',
@@ -2962,7 +2860,7 @@
       },
       'INTERCEPTOR-01': {
         name: 'Interceptor Drone', vendor: 'SKYLOCK · AVNON GROUP',
-        type: 'DRONĂ-vs-DRONĂ · AUTONOM', detRange: 0, mitRange: 15000,
+        type: 'DRONĂ-vs-DRONĂ · AUTONOM', detRange: 0, mitRange: 7500,
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Dronă de interceptare autonomă. Viteză max 270 km/h. Rază operațională 15km de la locul lansării. Autonomie 20min / 8min la viteză maximă. Operează în vânturi de până la 85km/h. -20°C până la +55°C. Structură PETG-CF.',
         color: '#ff2200',
@@ -2970,7 +2868,7 @@
       },
       'PORT-DOME-01': {
         name: 'Dom Portabil', vendor: 'SKYLOCK · AVNON GROUP',
-        type: 'DETECȚIE RF + BRUIAJ · ALL-IN-ONE', detRange: 3000, mitRange: 3000,
+        type: 'DETECȚIE RF + BRUIAJ · ALL-IN-ONE', detRange: 3000, mitRange: 1500,
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Unitate portabilă completă (all-in-one). Detector RF (70MHz-6GHz, DF 7.5° RMS, 3km) integrat cu bruiaj 360° (2.4GHz 120W, 5.8GHz 100W, GNSS L1/L2). IP66. Desfășurare rapidă. Configurații de Bază/Standard/Premium.',
         color: '#ff5533',
@@ -2987,7 +2885,7 @@
       },
       'SKYDEFENDER-5K': {
         name: 'SkyDefender 5km', vendor: 'OPTOELECTRONICA-2001 S.A.',
-        type: 'C-UAS ALL-IN-ONE · MULTI-STRAT', detRange: 5000, mitRange: 5000,
+        type: 'C-UAS ALL-IN-ONE · MULTI-STRAT', detRange: 5000, mitRange: 2500,
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Soluție completă integrată Sky Dome. C-UAS multistrat: Detecție RF (3km), radar 5K, radar 1K, spoofer GNSS, tracker EO/IR 225mm, armă portabilă SkyBeam, bruiaj RF 3km + 5km, comandă și control C4I. Apărare autonomă 24/7.',
         color: '#cc33ff',
@@ -2995,18 +2893,90 @@
       },
       // ── OJMA (missing from dict) ──
       'RF-OMNISHIELD': {
-        name: 'Detector RF OmniShield', vendor: 'OJMA · C-UAS SYSTEMS',
-        type: 'RF PASIV · AI · GĂSIRE DIRECȚIE', detRange: 3000, mitRange: 0,
-        cover: '360°', mode: 'AUTO', status: 'standby',
-        desc: 'Detector RF pasiv omnidirecțional cu AI integrat. Identificare și găsire direcție pentru drone comerciale și FPV. Acuratețe DF 7.5° RMS. Detecție până la 3km. Protecție IP66. Operare -30°C până la +60°C.',
+        name: 'RF Detector', vendor: 'C-UAS SYSTEMS', img: 'rf-detector.png',
+        type: 'DETECȚIE RF PASIVĂ · AI', detRange: 15000, mitRange: 0,
+        cover: '360° Az / ±90° El', mode: 'AUTO', status: 'standby',
+        desc: 'Sistem complet pasiv, detectează drona și telecomanda înainte de decolare. Baza de date este actualizată constant (inclusiv protocoale OcuSync 3+ și 4). Ideal ca senzor complementar pentru radar (detectează și în spatele obstacolelor). AI integrat pentru amprentare digitală, detecție roiuri și direcție (până la 7.5° RMS). Timp de instalare: 5 minute. Operare on-the-move.',
         color: '#00d4ff',
-        specs: [['Tip', 'RF Pasiv Omnidirecțional'], ['Acuratețe DF', '7.5° RMS'], ['Rază Detecție', '3 km'], ['Acoperire', '360°'], ['AI', 'Clasificare automată'], ['Protecție IP', 'IP66'], ['Temp. Operare', '-30°C până la +60°C']],
+        specs: [['Rază Detecție', 'Până la 15 km'], ['Acoperire', '+-90° Elevație, 360° Azimut'], ['Găsire Direcție', 'Wi-Fi cu acuratețe 7.5° RMS'], ['Alarme False', 'Aproape zero'], ['Info Furnizate', 'Protocol, Sursă (Operator/Dronă), ID Unic'], ['Diferențiere', 'Prieten / Inamic (IFF) și Liste Albe/Negre']]
       },
+      'ACUSTIC-01': {
+        name: 'Senzor Acustic', vendor: 'C-UAS SYSTEMS', img: 'acoustic-sensor.png',
+        type: 'DETECȚIE ACUSTICĂ · PASIV', detRange: 1500, mitRange: 0,
+        cover: '360°', mode: 'AUTO', status: 'standby',
+        desc: 'Sistem de detecție acustică pasivă. Identifică semnătura sonoră a dronelor la joasă altitudine în timp real.',
+        color: '#00d4ff',
+        specs: [['Emisii', 'Zero (Pasiv)'], ['Ținte', 'Multiple'], ['Clasificare', 'Automată'], ['Localizare', 'Timp Real']]
+      },
+      'CYBER-3K': {
+        name: 'Cyber Takeover (3km)', vendor: 'C-UAS SYSTEMS',
+        type: 'PRELUARE CIBERNETICĂ RF', detRange: 3000, mitRange: 1500,
+        cover: '360°', mode: 'AUTO', status: 'active',
+        desc: 'Preluare cibernetică automată a controlului dronelor la o distanță de până la 3km.',
+        color: '#00aeff',
+        specs: [['Detecție', '3.0 km'], ['Mitigare', '3.0 km'], ['Mod', 'AUTO'], ['Țintă', 'Preluare']]
+      },
+      'JAM-OMNI-3K': {
+        name: 'RF Jammer Omnidirectional (3km)', vendor: 'C-UAS SYSTEMS',
+        type: 'BRUIAJ RF 360° · AUTO/MANUAL', detRange: 0, mitRange: 1500,
+        cover: '360°', mode: 'AUTO', status: 'active',
+        desc: 'Sistem de bruiaj omnidirecțional 360 grade cu eficiență până la 3km.',
+        color: '#ff3355',
+        specs: [['Bruiaj', '3.0 km'], ['Acoperire', '360°'], ['Mod', 'AUTO'], ['Protecție IP', 'IP66']]
+      },
+      'JAM-DIR-5K': {
+        name: 'RF Jammer Directional (5km)', vendor: 'C-UAS SYSTEMS',
+        type: 'BRUIAJ RF DIRECȚIONAL · MIL', detRange: 0, mitRange: 2500,
+        cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'active',
+        desc: 'Sistem de bruiaj direcțional de mare putere cu acoperire până la 5km. Certificat MIL-STD-810G.',
+        color: '#cc1133',
+        specs: [['Bruiaj', '5.0 km'], ['Putere', '10W × 6'], ['Standard MIL', '810G'], ['Protecție IP', 'IP65']]
+      },
+      'SPOOFER-GNSS': {
+        name: 'GPS/GNSS Spoofer', vendor: 'C-UAS SYSTEMS',
+        type: 'MANIPULARE GNSS · SCALABIL', detRange: 0, mitRange: 2500,
+        cover: 'OMNIDIRECȚIONAL', mode: 'AUTO', status: 'active',
+        desc: 'Testat pe câmpul de luptă, oferă o abordare unică C-UAS prin manipulare GNSS (GPS) avansată. Înlocuiește bruiajul tradițional și scalează eficient împotriva unui singur UAV sau a roiurilor. Neutralizează drone autonome "dark", controlate manual sau celular din direcții multiple, operând fără liste albe sau inginerie inversă.',
+        color: '#ff8c00',
+        specs: [['Ținte', 'Multiple / Roiuri'], ['Tip Drone', 'Autonome, Manuale, Celulare'], ['Abordare', 'GNSS Spoofing Avansat'], ['Operare', 'Fără liste albe / comunicații']]
+      },
+      'LASER-01': {
+        name: 'SkyLaser', vendor: 'C-UAS SYSTEMS',
+        type: 'NEUTRALIZARE LASER · AI AUTO', detRange: 0, mitRange: 1000,
+        cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'active',
+        desc: 'Sistem de neutralizare cu fascicul laser adaptiv operat de inteligență artificială, pentru detecție complexă și deploiere rapidă.',
+        color: '#ff2200',
+        specs: [['Fascicul', 'Adaptiv'], ['Mod', 'AUTO (AI)'], ['Detecție', 'Complexă'], ['Deploiere', 'Rapidă']]
+      }
     };
 
     // ─────────────────────────── MAP INIT ───────────────────────────
     let map;
     let currentTileLayer;
+
+    let searchMarker = null;
+    async function searchMapLocation() {
+      const query = document.getElementById('map-search-input').value;
+      if (!query) return;
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          const lat = parseFloat(data[0].lat);
+          const lon = parseFloat(data[0].lon);
+          map.setView([lat, lon], 14);
+          if (searchMarker) {
+            map.removeLayer(searchMarker);
+          }
+          searchMarker = L.marker([lat, lon]).addTo(map);
+          searchMarker.bindPopup(data[0].display_name).openPopup();
+        } else {
+          toast("Locația nu a fost găsită", "warn");
+        }
+      } catch (err) {
+        toast("Eroare la căutare", "red");
+      }
+    }
 
     function initApp() {
       if (typeof L === 'undefined') {
@@ -4139,6 +4109,7 @@
       <div style="font-family:var(--font-mono);font-size:9px;padding:2px 8px;border:1px solid ${statusColor};color:${statusColor};border-radius:2px;">${translatedStatus}</div>
     </div>
     <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:12px;">${s.vendor}</div>
+    ${s.img ? `<img src="${s.img}" style="width:100%; max-height:200px; object-fit:contain; margin-bottom:14px; border-radius:4px;" />` : ''}
     <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">${s.desc}</div>
     ${specsHtml}
     ${coordsHtml}
@@ -4385,6 +4356,28 @@
       }).join('');
     }
 
+    function updateLeftPanelBadge(id, status) {
+      const badge = document.getElementById('custom-badge-' + id);
+      if (badge) {
+        if (status === 'active') {
+          badge.style.color = '#10b981';
+          badge.style.background = 'rgba(16, 185, 129, 0.15)';
+          badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+          badge.innerHTML = '<div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>ON-LINE';
+        } else if (status === 'standby') {
+          badge.style.color = '#eab308';
+          badge.style.background = 'rgba(234, 179, 8, 0.15)';
+          badge.style.borderColor = 'rgba(234, 179, 8, 0.2)';
+          badge.innerHTML = '<div style="width: 6px; height: 6px; border-radius: 50%; background: #eab308;"></div>STANDBY';
+        } else {
+          badge.style.color = '#9ca3af';
+          badge.style.background = 'rgba(107, 114, 128, 0.15)';
+          badge.style.borderColor = 'rgba(107, 114, 128, 0.2)';
+          badge.innerHTML = '<div style="width: 6px; height: 6px; border-radius: 50%; background: #9ca3af;"></div>OFFLINE';
+        }
+      }
+    }
+
     function toggleSensorStatus(id, btn) {
       const s = SENSORS[id];
       if (!s) return;
@@ -4401,6 +4394,7 @@
         playAlert('info');
         toast(`${s.name} → ACTIV`, 'green');
       }
+      updateLeftPanelBadge(id, s.status);
       updateStats();
       // Refresh plan visuals for every item that uses this sensor
       STATE.planItems.forEach(item => {
@@ -4553,6 +4547,7 @@
           badge.className = `sensor-status-badge ${s.status}`;
           badge.textContent = s.status === 'active' ? 'ACTIV' : s.status === 'standby' ? 'AȘTEPTARE' : 'DECONECTAT';
         }
+        if (typeof updateLeftPanelBadge === 'function') updateLeftPanelBadge(sid, s.status);
       });
     }
 
