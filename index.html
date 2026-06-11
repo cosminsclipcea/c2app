@@ -1931,15 +1931,49 @@
         </div>
       </div>
       <div id="detectie-body" style="padding:8px 8px 0;">
-        <div class="sensor-card active" onclick="focusSensor('EA2-01')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">D-FEND ENFORCEAIR 2</div>
-          <div class="sensor-type">PRELUARE CIBERNETICĂ · RF NON-CINETIC</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">400MHz-6GHz</span></div>
-            <div class="sensor-stat"><span class="label">PUTERE: </span><span class="value">170W</span></div>
-            <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
-            <div class="sensor-stat"><span class="label">UTILIZARE: </span><span class="value">PACHET SOF</span></div>
+        <div class="sensor-card active" onclick="focusSensor('EA2-01')" style="padding: 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; background: transparent;">
+          
+          <!-- Image Top Section -->
+          <div style="background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%); position: relative; height: 160px; display: flex; justify-content: center; align-items: center;">
+            
+            <!-- Top Left: Status -->
+            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: #10b981; z-index: 10;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>
+              DETECTOR
+            </div>
+            
+            <!-- Top Center: Type Badge -->
+            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(56, 189, 248, 0.3); border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #38bdf8; z-index: 10;">
+              RF NON-CINETIC
+            </div>
+            
+            <!-- Top Right: Recording/Alert -->
+            <div id="custom-badge-EA2-01" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>
+              ACTIV
+            </div>
+
+            <!-- Main Image -->
+            <img src="enforce_air_2.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5;" alt="D-FEND ENFORCEAIR 2" />
+
+            <!-- Bottom Gradient and Lat/Lng -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%); z-index: 8; padding: 0 12px; display: flex; align-items: flex-end; padding-bottom: 8px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; color: #d1d5db; letter-spacing: 1px;">LAT: 44.4265</span>
+            </div>
+          </div>
+
+          <!-- Info Bottom Section -->
+          <div style="background: #1e293b; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 20;">
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">D-FEND ENFORCEAIR 2</div>
+            <div style="font-family: var(--font-ui); font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">PRELUARE CIBERNETICĂ</div>
+            
+            <!-- Stats -->
+            <div class="sensor-meta" style="margin-top: 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; gap: 4px;">
+              <div class="sensor-stat"><span class="label">FRECV: </span><span class="value" style="color:#38bdf8;">400MHz-6GHz</span></div>
+              <div class="sensor-stat"><span class="label">PUTERE: </span><span class="value">170W</span></div>
+              <div class="sensor-stat"><span class="label">MOD: </span><span class="value">AUTO</span></div>
+              <div class="sensor-stat"><span class="label">UTILIZARE: </span><span class="value">PACHET SOF</span></div>
+            </div>
           </div>
         </div>
         <div class="sensor-card active" onclick="focusSensor('RF-OMNISHIELD')" style="padding: 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; background: transparent;">
@@ -2032,15 +2066,49 @@
             </div>
           </div>
         </div>
-        <div class="sensor-card active" onclick="focusSensor('RADAR-5K')">
-          <span class="sensor-status-badge active">ACTIV</span>
-          <div class="sensor-name">RADAR</div>
-          <div class="sensor-type">BANDA X FMCW · SUPRAVEGHERE 3D</div>
-          <div class="sensor-meta">
-            <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value">5.0km</span></div>
-            <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">BANDA X</span></div>
-            <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
-            <div class="sensor-stat"><span class="label">RCS: </span><span class="value">0.01m²</span></div>
+        <div class="sensor-card active" onclick="focusSensor('RADAR-5K')" style="padding: 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; background: transparent;">
+          
+          <!-- Image Top Section -->
+          <div style="background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%); position: relative; height: 160px; display: flex; justify-content: center; align-items: center;">
+            
+            <!-- Top Left: Status -->
+            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: #10b981; z-index: 10;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>
+              RADAR
+            </div>
+            
+            <!-- Top Center: Type Badge -->
+            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(56, 189, 248, 0.3); border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #38bdf8; z-index: 10;">
+              SUPRAVEGHERE 3D
+            </div>
+            
+            <!-- Top Right: Recording/Alert -->
+            <div id="custom-badge-RADAR-5K" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div>
+              ACTIV
+            </div>
+
+            <!-- Main Image -->
+            <img src="radar.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5;" alt="Radar" />
+
+            <!-- Bottom Gradient and Lat/Lng -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%); z-index: 8; padding: 0 12px; display: flex; align-items: flex-end; padding-bottom: 8px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; color: #d1d5db; letter-spacing: 1px;">LAT: 44.4265</span>
+            </div>
+          </div>
+
+          <!-- Info Bottom Section -->
+          <div style="background: #1e293b; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 20;">
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">RADAR</div>
+            <div style="font-family: var(--font-ui); font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">PASSIVE RF DETECTION SYSTEM</div>
+            
+            <!-- Stats -->
+            <div class="sensor-meta" style="margin-top: 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; gap: 4px;">
+              <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value" style="color:#38bdf8;">5.0km</span></div>
+              <div class="sensor-stat"><span class="label">FRECV: </span><span class="value">BANDA X</span></div>
+              <div class="sensor-stat"><span class="label">ACOPERIRE: </span><span class="value">360°</span></div>
+              <div class="sensor-stat"><span class="label">RCS: </span><span class="value">0.01m²</span></div>
+            </div>
           </div>
         </div>
         <div class="sensor-card active" onclick="focusSensor('ACUSTIC-01')" style="padding: 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; background: transparent;">
