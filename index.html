@@ -2718,17 +2718,7 @@
         }
       },
 
-      speak(text) {
-        if (!this.enabled || !this.synth) return;
-        try {
-          this.synth.cancel();
-          const utter = new SpeechSynthesisUtterance(text);
-          utter.lang = 'ro-RO';
-          utter.rate = 1.05;
-          utter.pitch = 0.95;
-          this.synth.speak(utter);
-        } catch(e) {}
-      }
+      speak(text) {}
     };
 
     function toggleAudio() {
@@ -2741,10 +2731,8 @@
           btn.classList.add('active');
         }
         AUDIO.playBeep('success');
-        AUDIO.speak('Sistem audio activat. Alerte vocale operaționale.');
-        toast('Alerte Sonore: ACTIVE (Voce & FX)', 'green');
+        toast('Alerte Sonore: ACTIVE (FX Tactic)', 'green');
       } else {
-        if (AUDIO.synth) AUDIO.synth.cancel();
         if (btn) {
           btn.textContent = '🔇';
           btn.classList.remove('active');
@@ -2768,7 +2756,6 @@
 
       if (active) {
         toast('Mod Teatru Tactic: ACTIV (Panouri Ascunse)', 'info');
-        AUDIO.speak('Mod Teatru Tactic activat.');
       } else {
         toast('Mod Teatru Tactic: DEZACTIVAT', 'info');
       }
@@ -3024,7 +3011,6 @@
       swarmDrones.push(d);
       logEvent(`Nouă țintă detectată: ${d.id} · ALT: ${d.alt} · Origine: ${spawnLat.toFixed(3)},${spawnLng.toFixed(3)}`, 'alert');
       playAlert('warn');
-      AUDIO.speak(`Atenție! Țintă ostilă detectată: ${d.id}`);
       return d;
     }
 
@@ -4798,8 +4784,6 @@
       if (typeof AUDIO !== 'undefined' && AUDIO.enabled) {
         if (level === 'critical') {
           AUDIO.playBeep('critical');
-          const cleanText = msg.replace(/[^\w\săâîșțĂÂÎȘȚ]/gi, ' ');
-          if (cleanText.length < 80) AUDIO.speak(cleanText);
         } else if (level === 'alert' || level === 'warn') {
           AUDIO.playBeep('alert');
         } else if (level === 'success') {
