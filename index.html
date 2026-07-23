@@ -1965,8 +1965,7 @@
 
     /* ── THEATER MODE / HUD FOCUS ── */
     #main.theater-mode {
-      grid-template-columns: 0px 1fr 0px !important;
-      transition: grid-template-columns 0.4s ease;
+      grid-template-columns: 1fr !important;
     }
 
     #main.theater-mode #left-panel,
@@ -2774,9 +2773,11 @@
         toast('Mod Teatru Tactic: DEZACTIVAT', 'info');
       }
 
-      setTimeout(() => {
-        if (map) map.invalidateSize();
-      }, 350);
+      if (map) {
+        map.invalidateSize();
+        setTimeout(() => { if (map) map.invalidateSize(); }, 100);
+        setTimeout(() => { if (map) map.invalidateSize(); }, 300);
+      }
     }
     // ─────────────────────────── GEMINI API CONFIG ───────────────────────────
     const apiKey = ""; // API key will be provided at runtime
