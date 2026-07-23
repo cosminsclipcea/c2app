@@ -39,6 +39,38 @@
       --scanline: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 212, 255, 0.015) 2px, rgba(0, 212, 255, 0.015) 4px);
     }
 
+    [data-theme="light"] {
+      --bg-primary: #f0f4f8;
+      --bg-secondary: #e1e8f0;
+      --bg-panel: #d2dce6;
+      --bg-card: #ffffff;
+      --bg-hover: #c4d1e0;
+      --border: #b0c4d9;
+      --border-bright: #8aabc9;
+      --accent: #0066cc;
+      --accent-dim: #004499;
+      --accent-glow: rgba(0, 102, 204, 0.15);
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --text-dim: #718096;
+    }
+
+    [data-theme="tactical"] {
+      --bg-primary: #0a0500;
+      --bg-secondary: #140a00;
+      --bg-panel: #1a0d00;
+      --bg-card: #241300;
+      --bg-hover: #331a00;
+      --border: #4d2600;
+      --border-bright: #804000;
+      --accent: #ff8c00;
+      --accent-dim: #cc7000;
+      --accent-glow: rgba(255, 140, 0, 0.15);
+      --text-primary: #fff0e6;
+      --text-secondary: #ffb380;
+      --text-dim: #cc7a33;
+    }
+
     *,
     *::before,
     *::after {
@@ -1915,6 +1947,7 @@
       </div>
     </div>
     <div class="spacer"></div>
+    <div id="theme-btn" onclick="toggleAppTheme()" title="Schimbă Tema Aplicației" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 2px; cursor: pointer; color: var(--text-secondary); background: var(--bg-card); font-size: 14px; flex-shrink: 0; transition: all .2s;" onmouseover="this.style.color='var(--accent)'; this.style.borderColor='var(--accent-dim)';" onmouseout="this.style.color='var(--text-secondary)'; this.style.borderColor='var(--border)';">🌗</div>
     <div id="audio-btn" onclick="toggleAudio()" title="Alerte Sonore">🔇</div>
     <div class="map-tool-btn" onclick="toggleHealthDash()" title="Sănătate Sistem"
       style="width:auto;padding:0 8px;font-family:var(--font-display);font-size:9px;letter-spacing:1px;color:var(--green);">
@@ -2626,8 +2659,25 @@
       adsbActive: false,
       directPlacementSensorId: null,
       mapTheme: 'satellite', // Defaults directly to satellite view
+      appTheme: 'default',
       nfzItems: [] // Stocăm zonele interzise pentru calculul proximității
     };
+
+    function toggleAppTheme() {
+      const themes = ['default', 'light', 'tactical'];
+      let currentIndex = themes.indexOf(STATE.appTheme);
+      currentIndex = (currentIndex + 1) % themes.length;
+      STATE.appTheme = themes[currentIndex];
+
+      if (STATE.appTheme === 'default') {
+        document.documentElement.removeAttribute('data-theme');
+        toast("Temă: DEFAULT (Cyber Blue)", "info");
+      } else {
+        document.documentElement.setAttribute('data-theme', STATE.appTheme);
+        if(STATE.appTheme === 'light') toast("Temă: ZI (Light Mode)", "info");
+        if(STATE.appTheme === 'tactical') toast("Temă: TACTIC (Amber/Night)", "info");
+      }
+    }
 
     // Funcții matematice pentru Sectoare și Rulment (Bearing)
     function getBearing(start, end) {
