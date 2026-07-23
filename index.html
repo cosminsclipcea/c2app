@@ -74,6 +74,29 @@
       --card-img-header-bg: linear-gradient(180deg, #3d1f00 0%, #241300 100%);
     }
 
+    [data-theme="eccentric"] {
+      --bg-primary: #0a0118;
+      --bg-secondary: #13032d;
+      --bg-panel: #1b053e;
+      --bg-card: #250754;
+      --bg-hover: #370c7c;
+      --border: #5a189a;
+      --border-bright: #9d4edd;
+      --accent: #ff007f;
+      --accent-dim: #c70066;
+      --accent-glow: rgba(255, 0, 127, 0.25);
+      --green: #00ffcc;
+      --green-dim: #00b38f;
+      --yellow: #ffee00;
+      --orange: #ff5500;
+      --red: #ff0055;
+      --red-dim: #b3003b;
+      --text-primary: #f0e6ff;
+      --text-secondary: #c77dff;
+      --text-dim: #9d4edd;
+      --card-img-header-bg: linear-gradient(180deg, #4c0666 0%, #250754 100%);
+    }
+
     *,
     *::before,
     *::after {
@@ -2736,7 +2759,7 @@
     };
 
     function toggleAppTheme() {
-      const themes = ['default', 'light', 'tactical'];
+      const themes = ['default', 'light', 'tactical', 'eccentric'];
       let currentIndex = themes.indexOf(STATE.appTheme);
       currentIndex = (currentIndex + 1) % themes.length;
       STATE.appTheme = themes[currentIndex];
@@ -2748,6 +2771,7 @@
         document.documentElement.setAttribute('data-theme', STATE.appTheme);
         if(STATE.appTheme === 'light') toast("Temă: ZI (Light Mode)", "info");
         if(STATE.appTheme === 'tactical') toast("Temă: TACTIC (Amber/Night)", "info");
+        if(STATE.appTheme === 'eccentric') toast("Temă: EXCENTRIC (Neon Cyberpunk 🎆)", "info");
       }
     }
 
