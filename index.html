@@ -4794,9 +4794,18 @@
       eventLogStore.unshift({ time: t, level, msg });
       if (eventLogStore.length > 200) eventLogStore.pop();
 
-      // Audio
-      if (level === 'critical') playAlert('critical');
-      else if (level === 'alert' || level === 'warn') playAlert('warn');
+      // Audio trigger
+      if (typeof AUDIO !== 'undefined' && AUDIO.enabled) {
+        if (level === 'critical') {
+          AUDIO.playBeep('critical');
+          const cleanText = msg.replace(/[^\w\săâîșțĂÂÎȘȚ]/gi, ' ');
+          if (cleanText.length < 80) AUDIO.speak(cleanText);
+        } else if (level === 'alert' || level === 'warn') {
+          AUDIO.playBeep('alert');
+        } else if (level === 'success') {
+          AUDIO.playBeep('success');
+        }
+      }
 
       const log = document.getElementById('event-log');
       if (!log) return;
@@ -4864,46 +4873,13 @@
       toast('Log exportat CSV', 'green');
     }
 
-    // ─────────────────────────── AUDIO ALERTS ───────────────────────────
-    let audioEnabled = false;
-    let audioCtx = null;
-
-    function toggleAudio() {
-      audioEnabled = !audioEnabled;
-      const btn = document.getElementById('audio-btn');
-      if (audioEnabled) {
-        btn.textContent = '🔊'; btn.classList.add('active');
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        toast('Alerte sonore ACTIVE', 'green');
-      } else {
-        btn.textContent = '🔇'; btn.classList.remove('active');
-        toast('Alerte sonore OPRITE', 'yellow');
-      }
-    }
-
-    function playAlert(type) {
-      if (!audioEnabled || !audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      if (type === 'critical') {
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.15);
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-      } else if (type === 'warn') {
-        osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-      } else {
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-      }
+    // ─────────────────────────── AUDIO ALERTS HELPER ───────────────────────────
+    function playAlert(type = 'warn') {
+      if (typeof AUDIO === 'undefined' || !AUDIO.enabled) return;
+      if (type === 'critical' || type === 'red') AUDIO.playBeep('critical');
+      else if (type === 'warn' || type === 'alert' || type === 'yellow') AUDIO.playBeep('alert');
+      else if (type === 'success' || type === 'green') AUDIO.playBeep('success');
+      else AUDIO.playBeep('click');
     }
 
     // ─────────────────────────── HEALTH DASHBOARD ───────────────────────────
@@ -5894,11 +5870,17 @@
       window.addEventListener('load', initApp);
     }
 
-    // Ascunde meniul contextual la click oriunde altundeva în aplicație
+    // Ascunde meniul contextual la click oriunde altundeva în aplicație & declanșează sunete de click
     document.addEventListener('click', (e) => {
       const menu = document.getElementById('custom-context-menu');
       if (menu && menu.style.display === 'flex' && !menu.contains(e.target)) {
         menu.style.display = 'none';
+      }
+
+      if (e.target.closest('.nav-btn, .map-tool-btn, .btn, .sensor-card, .ai-btn, .radius-btn, .log-filter-btn, .catalog-item, select, button')) {
+        if (typeof AUDIO !== 'undefined' && AUDIO.enabled) {
+          AUDIO.playBeep('click');
+        }
       }
     });
   </script>
