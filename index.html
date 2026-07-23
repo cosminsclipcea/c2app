@@ -1962,6 +1962,17 @@
         width: 95vw;
       }
     }
+
+    /* ── THEATER MODE / HUD FOCUS ── */
+    #main.theater-mode {
+      grid-template-columns: 0px 1fr 0px !important;
+      transition: grid-template-columns 0.4s ease;
+    }
+
+    #main.theater-mode #left-panel,
+    #main.theater-mode #right-panel {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -2473,6 +2484,11 @@
               <path d="M6 4h4M4 6v4M12 6v4M6 12h4" stroke="currentColor" stroke-width="1.5" fill="none" />
             </svg>
           </div>
+          <div class="map-tool-btn" id="tool-theater" onclick="toggleTheaterMode()" title="Mod Teatru Tactic (Panouri Ascunse)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </div>
           <div id="nfz-finish-btn" class="map-tool-btn" onclick="finalizeNoFlyZone()" title="Finalizează Zona Interzisă"
             style="display:none;background:rgba(255,51,85,0.15);border-color:#ff3355;color:#ff3355;">
             <svg viewBox="0 0 16 16" fill="currentColor">
@@ -2642,6 +2658,126 @@
   <div id="toast-container"></div>
 
   <script>
+    // ─────────────────────────── AUDIO & TACTICAL SPEECH SYSTEM ───────────────────────────
+    const AUDIO = {
+      enabled: false,
+      ctx: null,
+      synth: window.speechSynthesis,
+      
+      init() {
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+      },
+      
+      playBeep(type = 'click') {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        const now = this.ctx.currentTime;
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(400, now + 0.04);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } else if (type === 'alert') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(950, now);
+          osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (type === 'critical') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(1400, now);
+          osc.frequency.setValueAtTime(850, now + 0.1);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'success') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        }
+      },
+
+      speak(text) {
+        if (!this.enabled || !this.synth) return;
+        try {
+          this.synth.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'ro-RO';
+          utter.rate = 1.05;
+          utter.pitch = 0.95;
+          this.synth.speak(utter);
+        } catch(e) {}
+      }
+    };
+
+    function toggleAudio() {
+      AUDIO.enabled = !AUDIO.enabled;
+      const btn = document.getElementById('audio-btn');
+      if (AUDIO.enabled) {
+        AUDIO.init();
+        if (btn) {
+          btn.textContent = '🔊';
+          btn.classList.add('active');
+        }
+        AUDIO.playBeep('success');
+        AUDIO.speak('Sistem audio activat. Alerte vocale operaționale.');
+        toast('Alerte Sonore: ACTIVE (Voce & FX)', 'green');
+      } else {
+        if (AUDIO.synth) AUDIO.synth.cancel();
+        if (btn) {
+          btn.textContent = '🔇';
+          btn.classList.remove('active');
+        }
+        toast('Alerte Sonore: DEZACTIVATE', 'yellow');
+      }
+    }
+
+    function toggleTheaterMode() {
+      const mainEl = document.getElementById('main');
+      const btn = document.getElementById('tool-theater');
+      if (!mainEl) return;
+
+      const active = mainEl.classList.toggle('theater-mode');
+      if (btn) {
+        if (active) btn.classList.add('active');
+        else btn.classList.remove('active');
+      }
+
+      AUDIO.playBeep('click');
+
+      if (active) {
+        toast('Mod Teatru Tactic: ACTIV (Panouri Ascunse)', 'info');
+        AUDIO.speak('Mod Teatru Tactic activat.');
+      } else {
+        toast('Mod Teatru Tactic: DEZACTIVAT', 'info');
+      }
+
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 350);
+    }
     // ─────────────────────────── GEMINI API CONFIG ───────────────────────────
     const apiKey = ""; // API key will be provided at runtime
 
@@ -2887,7 +3023,14 @@
       swarmDrones.push(d);
       logEvent(`Nouă țintă detectată: ${d.id} · ALT: ${d.alt} · Origine: ${spawnLat.toFixed(3)},${spawnLng.toFixed(3)}`, 'alert');
       playAlert('warn');
+      AUDIO.speak(`Atenție! Țintă ostilă detectată: ${d.id}`);
       return d;
+    }
+
+    function playAlert(type = 'warn') {
+      if (type === 'critical' || type === 'red') AUDIO.playBeep('critical');
+      else if (type === 'warn' || type === 'alert' || type === 'yellow') AUDIO.playBeep('alert');
+      else AUDIO.playBeep('click');
     }
 
     let _activeDroneRef = null; // used by threat classification badges
