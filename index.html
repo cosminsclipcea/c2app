@@ -1487,7 +1487,7 @@
     #modal-overlay {
       position: fixed;
       inset: 0;
-      z-index: 1000;
+      z-index: 10000;
       background: rgba(3, 6, 10, 0.85);
       backdrop-filter: blur(4px);
       display: none;
@@ -2486,7 +2486,7 @@
         inset: 0 !important;
         width: 100% !important;
         height: 100% !important;
-        z-index: 20 !important;
+        z-index: 2000 !important;
         background: var(--bg-primary) !important;
         display: none !important;
         overflow-y: auto !important;
@@ -3142,7 +3142,7 @@
     <div id="center">
       <div id="map-container">
         <!-- SEARCH BAR -->
-        <div style="position: absolute; top: 10px; left: 60px; z-index: 9999; pointer-events: auto; display: flex; flex-direction: column;">
+        <div style="position: absolute; top: 10px; left: 60px; z-index: 500; pointer-events: auto; display: flex; flex-direction: column;">
           <div id="map-search-container" style="display: flex; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
             <input type="text" id="map-search-input" placeholder="Caută locație..." oninput="handleSearchInput(event)" onkeypress="if(event.key === 'Enter') searchMapLocation()" style="background: transparent; border: none; color: var(--text-primary); padding: 8px 12px; font-family: var(--font-ui); font-size: 12px; width: 250px; outline: none;">
             <button id="map-search-clear" onclick="clearMapSearch()" style="display:none; background: transparent; border: none; color: var(--text-dim); padding: 0 8px; cursor: pointer; font-size: 16px; transition: color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-dim)'" title="Șterge">×</button>
