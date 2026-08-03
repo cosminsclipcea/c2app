@@ -256,13 +256,19 @@
       font-size: 12px;
       color: var(--accent);
       text-align: right;
-      line-height: 1.4;
+      line-height: 1.2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
     }
 
     .utc-clock .date {
       font-size: 10px;
       color: var(--text-dim);
       letter-spacing: 1px;
+      margin-top: 3px;
+      line-height: 1;
     }
 
     .threat-indicator {
@@ -2400,29 +2406,64 @@
     }
 
     /* ── NATIVE MOBILE APP SHELL (FULL SCREEN SCREEN-BASED NAVIGATION) ── */
+    #topbar-actions-scroll {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      gap: 10px;
+    }
+
     @media (max-width: 900px) {
       #topbar {
-        height: 48px !important;
-        padding: 4px 10px !important;
-        justify-content: space-between !important;
+        height: 50px !important;
+        padding: 4px 8px !important;
+        display: flex !important;
+        align-items: center !important;
         background: var(--bg-secondary) !important;
+        gap: 8px !important;
+        overflow: hidden !important;
+      }
+
+      #topbar .logo {
+        flex-shrink: 0 !important;
+        height: 32px !important;
+        border-right: 1px solid var(--border) !important;
+        padding-right: 8px !important;
+        margin-right: 4px !important;
+      }
+
+      #topbar .logo img {
+        height: 30px !important;
+      }
+
+      #topbar-actions-scroll {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        flex: 1 !important;
+        white-space: nowrap !important;
+        padding-right: 10px !important;
+      }
+
+      #topbar-actions-scroll::-webkit-scrollbar {
+        display: none !important;
       }
 
       #topbar .top-nav,
       #topbar .sys-status,
-      #topbar .divider,
+      #topbar .threat-indicator,
       .utc-clock {
-        display: none !important;
-      }
-
-      #topbar .logo img {
-        height: 28px !important;
+        display: flex !important;
+        flex-shrink: 0 !important;
       }
 
       #main {
         position: relative !important;
         display: block !important;
-        height: calc(100vh - 104px) !important;
+        height: calc(100vh - 106px) !important;
         width: 100vw !important;
         overflow: hidden !important;
         margin-top: 0 !important;
@@ -2520,29 +2561,71 @@
       }
 
       #map-legend {
-        bottom: 65px !important;
+        bottom: 120px !important;
         right: 10px !important;
+        left: auto !important;
       }
 
       #bottom-bar {
-        display: flex;
-        overflow-x: auto;
+        display: flex !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
         scroll-snap-type: x mandatory;
-        height: 75px !important;
-        scrollbar-width: none;
+        height: 110px !important;
+        min-height: 110px !important;
+        scrollbar-width: none !important;
         flex-shrink: 0 !important;
+        background: var(--bg-secondary) !important;
+        border-top: 1px solid var(--border-bright) !important;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.4) !important;
       }
 
       #bottom-bar::-webkit-scrollbar {
-        display: none;
+        display: none !important;
       }
 
       .stat-tile {
-        flex: 0 0 120px;
+        flex: 0 0 150px !important;
+        min-width: 150px !important;
         scroll-snap-align: start;
-        border-right: 1px solid var(--border);
-        border-bottom: none;
-        padding: 6px 10px !important;
+        border-right: 1px solid var(--border) !important;
+        border-bottom: none !important;
+        padding: 8px 10px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .stat-tile .stat-label {
+        font-family: var(--font-display) !important;
+        font-size: 10px !important;
+        letter-spacing: 1px !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        line-height: 1.3 !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        max-height: 28px !important;
+        overflow: visible !important;
+      }
+
+      .stat-tile .stat-value {
+        font-family: var(--font-display) !important;
+        font-size: 24px !important;
+        font-weight: 700 !important;
+        color: var(--accent) !important;
+        line-height: 1.1 !important;
+        margin: 2px 0 !important;
+      }
+
+      .stat-tile .stat-sub {
+        font-family: var(--font-mono) !important;
+        font-size: 9px !important;
+        color: var(--text-dim) !important;
+        white-space: nowrap !important;
+        line-height: 1.2 !important;
       }
 
       .sensor-grid {
@@ -2639,42 +2722,43 @@
 
   <!-- ── TOP BAR ── -->
   <div id="topbar">
-    <div class="logo" style="padding:0; height: 100%;">
+    <div class="logo" style="padding:0; height: 100%; flex-shrink: 0;">
       <a href="http://www.optoel.ro" target="_blank" style="display: block; height: 100%;">
         <img src="SKYDOME-logo.png" alt="Optoelectronica"
           style="height: 100%; width: auto; display: block; object-fit: contain;" />
       </a>
     </div>
-    <div class="divider"></div>
-    <div class="sys-status">
-      <div id="sys-pulse" class="pulse green"></div>SISTEME NOMINALE
-    </div>
-    <div class="divider"></div>
-    <div class="sys-status" id="active-sensors-bar">
-      <div class="pulse green"></div><span id="active-count">0</span> / <span id="total-count">0</span> SENZORI ACTIVI
-    </div>
-    <div class="divider"></div>
-    <div class="top-nav">
-      <div class="nav-btn" id="nav-plan" onclick="setView('plan',this)">PLAN PROTECȚIE</div>
-      <div class="nav-btn active" id="nav-log" onclick="setView('log',this)">JURNAL</div>
-      <div class="nav-btn" onclick="generateIncidentReport()" title="Raport Incident">📄 RAPORT</div>
-      <div class="nav-btn" onclick="openCompareModal()" title="Matrice Comparativă Unități" style="color:var(--accent); border-color:var(--accent-dim);">⚖️ COMPARĂ</div>
-      <div class="divider" style="margin:0 4px; height:20px; align-self:center;"></div>
-      <div class="nav-btn" id="btn-adsb" onclick="toggleADSB()"
-        style="color:var(--orange); border-color:rgba(255,140,0,0.4);" title="Afișează Trafic Civil (ADS-B)">ADS-B: OFF
+    <div id="topbar-actions-scroll">
+      <div class="sys-status">
+        <div id="sys-pulse" class="pulse green"></div>SISTEME NOMINALE
       </div>
-    </div>
-    <div class="spacer"></div>
-    <div id="theme-btn" onclick="toggleAppTheme()" title="Schimbă Tema Aplicației" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 2px; cursor: pointer; color: var(--text-secondary); background: var(--bg-card); font-size: 14px; flex-shrink: 0; transition: all .2s;" onmouseover="this.style.color='var(--accent)'; this.style.borderColor='var(--accent-dim)';" onmouseout="this.style.color='var(--text-secondary)'; this.style.borderColor='var(--border)';">🌗</div>
-    <div id="audio-btn" onclick="toggleAudio()" title="Alerte Sonore">🔇</div>
-    <div class="map-tool-btn" onclick="toggleHealthDash()" title="Sănătate Sistem"
-      style="width:auto;padding:0 8px;font-family:var(--font-display);font-size:9px;letter-spacing:1px;color:var(--green);">
-      ⬡ HEALTH</div>
-    <div class="divider"></div>
-    <div id="threat-badge" class="threat-indicator green">AMENINȚARE: SCĂZUTĂ</div>
-    <div class="utc-clock">
-      <div id="clock-time">--:--:--Z</div>
-      <div class="date" id="clock-date">----</div>
+      <div class="divider"></div>
+      <div class="sys-status" id="active-sensors-bar">
+        <div class="pulse green"></div><span id="active-count">0</span> / <span id="total-count">0</span> SENZORI ACTIVI
+      </div>
+      <div class="divider"></div>
+      <div class="top-nav">
+        <div class="nav-btn" id="nav-plan" onclick="setView('plan',this)">PLAN PROTECȚIE</div>
+        <div class="nav-btn" id="nav-log" onclick="setView('log',this)">JURNAL</div>
+        <div class="nav-btn" onclick="generateIncidentReport()" title="Raport Incident">📄 RAPORT</div>
+        <div class="nav-btn" onclick="openCompareModal()" title="Matrice Comparativă Unități" style="color:var(--accent); border-color:var(--accent-dim);">⚖️ COMPARĂ</div>
+        <div class="divider" style="margin:0 4px; height:20px; align-self:center;"></div>
+        <div class="nav-btn" id="btn-adsb" onclick="toggleADSB()"
+          style="color:var(--orange); border-color:rgba(255,140,0,0.4);" title="Afișează Trafic Civil (ADS-B)">ADS-B: OFF
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div id="theme-btn" onclick="toggleAppTheme()" title="Schimbă Tema Aplicației" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 2px; cursor: pointer; color: var(--text-secondary); background: var(--bg-card); font-size: 14px; flex-shrink: 0; transition: all .2s;" onmouseover="this.style.color='var(--accent)'; this.style.borderColor='var(--accent-dim)';" onmouseout="this.style.color='var(--text-secondary)'; this.style.borderColor='var(--border)';">🌗</div>
+      <div id="audio-btn" onclick="toggleAudio()" title="Alerte Sonore">🔇</div>
+      <div class="map-tool-btn" onclick="toggleHealthDash()" title="Sănătate Sistem"
+        style="width:auto;padding:0 8px;font-family:var(--font-display);font-size:9px;letter-spacing:1px;color:var(--green);">
+        ⬡ HEALTH</div>
+      <div class="divider"></div>
+      <div id="threat-badge" class="threat-indicator green">AMENINȚARE: SCĂZUTĂ</div>
+      <div class="utc-clock">
+        <div id="clock-time">--:--:--Z</div>
+        <div class="date" id="clock-date">----</div>
+      </div>
     </div>
   </div>
 
@@ -2688,13 +2772,9 @@
       <span style="font-size:16px;">📡</span>
       <span>SENZORI</span>
     </button>
-    <button class="mobile-tab-btn" id="mob-btn-right" onclick="toggleMobilePanel('right')">
-      <span style="font-size:16px;">📜</span>
-      <span>JURNAL</span>
-    </button>
-    <button class="mobile-tab-btn" onclick="openCompareModal()">
-      <span style="font-size:16px;">⚖️</span>
-      <span>COMPARĂ</span>
+    <button class="mobile-tab-btn" id="mob-btn-contact" onclick="toggleMobilePanel('contact')">
+      <span style="font-size:16px;">✉️</span>
+      <span>CONTACTEAZĂ-NE</span>
     </button>
   </div>
 
@@ -4277,11 +4357,9 @@
       setTimeout(() => { simEvent(); setInterval(simEvent, 12000); }, 2000);
       updateSensorCardBadges();
 
-      // Set initial view on mobile to ensure layout triggers correctly
+      // Set initial view on mobile to ensure only the map is displayed on load
       if (window.innerWidth <= 900) {
-        const activeNav = document.querySelector('.nav-btn.active');
-        if (activeNav) activeNav.click();
-        else setView('map');
+        toggleMobilePanel('map');
       }
     }
 
@@ -4336,19 +4414,30 @@
       const centerPanel = document.getElementById('center');
       const rightPanel = document.getElementById('right-panel');
 
+      const contactForm = document.getElementById('contact-form-container');
+
       if (v === 'plan') {
         if (logCont) logCont.style.display = 'none';
         if (planCont) planCont.style.display = 'flex';
+        if (contactForm) contactForm.style.display = 'none';
       } else if (v === 'log') {
         if (logCont) logCont.style.display = 'flex';
         if (planCont) planCont.style.display = 'none';
+        if (contactForm) contactForm.style.display = 'none';
       }
 
       if (window.innerWidth <= 900) {
-        if (leftPanel) leftPanel.style.display = (v === 'sensors') ? 'flex' : 'none';
-        if (centerPanel) centerPanel.style.display = (v === 'map') ? 'flex' : 'none';
-        if (rightPanel) rightPanel.style.display = (v === 'plan' || v === 'log') ? 'flex' : 'none';
-        if (v === 'map') setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+        if (v === 'plan' || v === 'log') {
+          if (leftPanel) leftPanel.classList.remove('mob-open');
+          if (rightPanel) rightPanel.classList.add('mob-open');
+        } else if (v === 'sensors') {
+          if (rightPanel) rightPanel.classList.remove('mob-open');
+          if (leftPanel) leftPanel.classList.add('mob-open');
+        } else if (v === 'map') {
+          if (leftPanel) leftPanel.classList.remove('mob-open');
+          if (rightPanel) rightPanel.classList.remove('mob-open');
+          setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+        }
 
         if (v === 'plan' && rightPanel) {
           const p = document.getElementById('plan-panel');
@@ -4610,25 +4699,25 @@
       body.innerHTML = `
         <div style="display:flex; height: 500px; gap: 20px;">
           <!-- Lista stânga -->
-          <div class="scroll-area" style="flex: 0 0 350px; display:flex; flex-direction:column; background: var(--bg-card); border: 1px solid var(--border); border-radius:4px; overflow-y:auto; padding:10px; gap:8px;">
+          <div class="scroll-area" style="flex: 1; min-width: 0; display:flex; flex-direction:column; background: var(--bg-card); border: 1px solid var(--border); border-radius:4px; overflow-y:auto; padding:10px; gap:8px;">
             ${sensorOptions}
           </div>
           <!-- Preview dreapta -->
-          <div id="catalog-preview" style="flex: 1; display:flex; flex-direction:column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius:4px; align-items:center; justify-content:center; padding: 20px; text-align:center;">
+          <div id="catalog-preview" style="flex: 0 0 380px; width: 380px; display:flex; flex-direction:column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius:4px; align-items:center; justify-content:center; padding: 20px; text-align:center; box-sizing:border-box;">
              <div style="color:var(--text-dim); font-family:var(--font-mono);">Selectează o unitate din listă pentru previzualizare</div>
           </div>
         </div>
 
         <input type="hidden" id="pin-notes" value="">
 
-        <div style="margin-top:20px; display:flex; gap:10px; align-items:flex-end;">
+        <div style="margin-top:20px; display:flex; gap:12px; align-items:flex-end;">
           <div style="flex:1;">
             <div class="field-label" style="font-size:10px; color:var(--text-dim); margin-bottom:4px;">Nume Locație</div>
-            <input type="text" id="pin-name" placeholder="Punct Protecție..." style="width:100%; padding:8px; background:var(--bg-primary); border:1px solid var(--border); color:var(--text-primary); border-radius:4px;">
+            <input type="text" id="pin-name" placeholder="Punct Protecție..." style="width:100%; padding:8px; background:var(--bg-primary); border:1px solid var(--border); color:var(--text-primary); border-radius:4px; box-sizing:border-box;">
           </div>
           <div style="flex:1;">
             <div class="field-label" style="font-size:10px; color:var(--text-dim); margin-bottom:4px;">Tip Obiectiv</div>
-            <select id="pin-type" style="width:100%; padding:8px; background:var(--bg-primary); border:1px solid var(--border); color:var(--text-primary); border-radius:4px;">
+            <select id="pin-type" style="width:100%; padding:8px; background:var(--bg-primary); border:1px solid var(--border); color:var(--text-primary); border-radius:4px; box-sizing:border-box;">
               <option value="custom">Personalizat</option>
               <option value="command">Post Comandă / Cartier General</option>
               <option value="critical">Infrastructură Critică</option>
@@ -4639,8 +4728,10 @@
               <option value="vip">Protecție VIP</option>
             </select>
           </div>
-          <button class="btn btn-secondary" onclick="closeModal()">ANULARE</button>
-          <button class="btn btn-primary" onclick="confirmPin()">ADAUGĂ ÎN PLAN</button>
+          <div style="display:flex; gap:8px; flex-shrink:0;">
+            <button class="btn btn-secondary" onclick="closeModal()">ANULARE</button>
+            <button class="btn btn-primary" onclick="confirmPin()">ADAUGĂ ÎN PLAN</button>
+          </div>
         </div>
       `;
 
@@ -5664,28 +5755,34 @@
       const right = document.getElementById('right-panel');
       const bLeft = document.getElementById('mob-btn-left');
       const bMap = document.getElementById('mob-btn-map');
-      const bRight = document.getElementById('mob-btn-right');
+      const bContact = document.getElementById('mob-btn-contact');
+      const contactForm = document.getElementById('contact-form-container');
 
-      [bLeft, bMap, bRight].forEach(b => { if (b) b.classList.remove('active'); });
+      [bLeft, bMap, bContact].forEach(b => { if (b) b.classList.remove('active'); });
 
       if (panelName === 'left') {
         if (left) left.classList.add('mob-open');
         if (right) right.classList.remove('mob-open');
         if (bLeft) bLeft.classList.add('active');
-      } else if (panelName === 'right') {
+        if (contactForm) contactForm.style.display = 'none';
+      } else if (panelName === 'contact') {
         if (right) right.classList.add('mob-open');
         if (left) left.classList.remove('mob-open');
-        if (bRight) bRight.classList.add('active');
+        if (bContact) bContact.classList.add('active');
 
-        // Deschide Panoul de Jurnal Evenimente
-        const logContainer = document.getElementById('right-log-container');
-        const planContainer = document.getElementById('right-plan-container');
-        if (logContainer) logContainer.style.display = 'flex';
-        if (planContainer) planContainer.style.display = 'none';
+        // Deschide Panoul de Contactează-ne direct
+        const logCont = document.getElementById('right-log-container');
+        const planCont = document.getElementById('right-plan-container');
+        if (logCont) logCont.style.display = 'none';
+        if (planCont) planCont.style.display = 'none';
+        if (contactForm) contactForm.style.display = 'block';
+        if (right) right.scrollTop = 0;
       } else { // map
+        document.querySelectorAll('.top-nav .nav-btn').forEach(b => b.classList.remove('active'));
         if (left) left.classList.remove('mob-open');
         if (right) right.classList.remove('mob-open');
         if (bMap) bMap.classList.add('active');
+        if (contactForm) contactForm.style.display = 'none';
       }
 
       if (map) {
