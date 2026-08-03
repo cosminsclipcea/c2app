@@ -2561,7 +2561,7 @@
       }
 
       #map-legend {
-        bottom: 120px !important;
+        bottom: 80px !important;
         right: 10px !important;
         left: auto !important;
       }
@@ -2571,8 +2571,8 @@
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         scroll-snap-type: x mandatory;
-        height: 110px !important;
-        min-height: 110px !important;
+        height: 70px !important;
+        min-height: 70px !important;
         scrollbar-width: none !important;
         flex-shrink: 0 !important;
         background: var(--bg-secondary) !important;
@@ -2585,12 +2585,12 @@
       }
 
       .stat-tile {
-        flex: 0 0 150px !important;
-        min-width: 150px !important;
+        flex: 0 0 140px !important;
+        min-width: 140px !important;
         scroll-snap-align: start;
         border-right: 1px solid var(--border) !important;
         border-bottom: none !important;
-        padding: 8px 10px !important;
+        padding: 6px 10px !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
@@ -2600,32 +2600,30 @@
 
       .stat-tile .stat-label {
         font-family: var(--font-display) !important;
-        font-size: 10px !important;
+        font-size: 9px !important;
         letter-spacing: 1px !important;
         color: var(--text-secondary) !important;
         text-transform: uppercase !important;
-        line-height: 1.3 !important;
-        white-space: normal !important;
-        word-break: break-word !important;
-        max-height: 28px !important;
-        overflow: visible !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
       }
 
       .stat-tile .stat-value {
         font-family: var(--font-display) !important;
-        font-size: 24px !important;
+        font-size: 20px !important;
         font-weight: 700 !important;
         color: var(--accent) !important;
-        line-height: 1.1 !important;
-        margin: 2px 0 !important;
+        line-height: 1 !important;
+        margin: 1px 0 !important;
       }
 
       .stat-tile .stat-sub {
         font-family: var(--font-mono) !important;
-        font-size: 9px !important;
+        font-size: 8px !important;
         color: var(--text-dim) !important;
         white-space: nowrap !important;
-        line-height: 1.2 !important;
+        line-height: 1 !important;
       }
 
       .sensor-grid {
@@ -4699,11 +4697,11 @@
       body.innerHTML = `
         <div style="display:flex; height: 500px; gap: 20px;">
           <!-- Lista stânga -->
-          <div class="scroll-area" style="flex: 1; min-width: 0; display:flex; flex-direction:column; background: var(--bg-card); border: 1px solid var(--border); border-radius:4px; overflow-y:auto; padding:10px; gap:8px;">
+          <div class="scroll-area" style="flex: 0 0 350px; width: 350px; display:flex; flex-direction:column; background: var(--bg-card); border: 1px solid var(--border); border-radius:4px; overflow-y:auto; padding:10px; gap:8px;">
             ${sensorOptions}
           </div>
           <!-- Preview dreapta -->
-          <div id="catalog-preview" style="flex: 0 0 380px; width: 380px; display:flex; flex-direction:column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius:4px; align-items:center; justify-content:center; padding: 20px; text-align:center; box-sizing:border-box;">
+          <div id="catalog-preview" style="flex: 1; display:flex; flex-direction:column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius:4px; align-items:center; justify-content:center; padding: 20px; text-align:center; box-sizing:border-box;">
              <div style="color:var(--text-dim); font-family:var(--font-mono);">Selectează o unitate din listă pentru previzualizare</div>
           </div>
         </div>
