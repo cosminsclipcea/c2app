@@ -2421,14 +2421,18 @@
         position: relative !important;
         display: block !important;
         height: calc(100vh - 105px) !important;
+        width: 100vw !important;
         overflow: hidden !important;
       }
 
-      #center {
+      #center,
+      #map-container,
+      #map {
         position: absolute !important;
         inset: 0 !important;
         width: 100% !important;
         height: 100% !important;
+        min-height: 100% !important;
         z-index: 10 !important;
       }
 
@@ -2443,7 +2447,7 @@
         z-index: 2000 !important;
         background: var(--bg-panel) !important;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8) !important;
-        display: none;
+        display: none !important;
         overflow-y: auto !important;
       }
 
@@ -2458,8 +2462,13 @@
         z-index: 2000 !important;
         background: var(--bg-panel) !important;
         box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8) !important;
-        display: none;
+        display: none !important;
         overflow-y: auto !important;
+      }
+
+      #left-panel.mob-open,
+      #right-panel.mob-open {
+        display: block !important;
       }
 
       #mobile-nav-bar {
@@ -5582,23 +5591,31 @@
       [bLeft, bMap, bRight].forEach(b => { if (b) b.classList.remove('active'); });
 
       if (panelName === 'left') {
-        const isVis = left && left.style.display === 'block';
-        if (left) left.style.display = isVis ? 'none' : 'block';
-        if (right) right.style.display = 'none';
+        const isVis = left && left.classList.contains('mob-open');
+        if (left) left.classList.toggle('mob-open', !isVis);
+        if (right) right.classList.remove('mob-open');
         if (!isVis && bLeft) bLeft.classList.add('active');
         else if (bMap) bMap.classList.add('active');
       } else if (panelName === 'right') {
-        const isVis = right && right.style.display === 'block';
-        if (right) right.style.display = isVis ? 'none' : 'block';
-        if (left) left.style.display = 'none';
+        const isVis = right && right.classList.contains('mob-open');
+        if (right) right.classList.toggle('mob-open', !isVis);
+        if (left) left.classList.remove('mob-open');
         if (!isVis && bRight) bRight.classList.add('active');
         else if (bMap) bMap.classList.add('active');
       } else { // map
-        if (left) left.style.display = 'none';
-        if (right) right.style.display = 'none';
+        if (left) left.classList.remove('mob-open');
+        if (right) right.classList.remove('mob-open');
         if (bMap) bMap.classList.add('active');
       }
+
+      if (map) {
+        setTimeout(() => { map.invalidateSize(); }, 150);
+      }
     }
+
+    window.addEventListener('resize', () => {
+      if (map) map.invalidateSize();
+    });
 
     // ─────────────────────────── MAP TARGET HIGHLIGHT ───────────────────────────
     let highlightLayers = [];
