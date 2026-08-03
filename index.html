@@ -451,7 +451,427 @@
       color: var(--text-secondary) !important;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    /* ── KEY STRENGTHS CHIPS (INSIGNE DE CALITATE) ── */
+    .strength-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 4px 0 8px 0;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-family: var(--font-ui);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .chip-green {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--green);
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.15);
+    }
+    .chip-accent {
+      background: var(--accent-glow);
+      border: 1px solid var(--accent-dim);
+      color: var(--accent);
+      box-shadow: 0 0 6px var(--accent-glow);
+    }
+    .chip-orange {
+      background: rgba(255, 140, 0, 0.15);
+      border: 1px solid rgba(255, 140, 0, 0.4);
+      color: var(--orange);
+      box-shadow: 0 0 6px rgba(255, 140, 0, 0.15);
+    }
+    .chip-red {
+      background: rgba(255, 51, 85, 0.15);
+      border: 1px solid rgba(255, 51, 85, 0.4);
+      color: var(--red);
+      box-shadow: 0 0 6px rgba(255, 51, 85, 0.15);
+    }
+
+    /* ── LIVE SIGNAL EQUALIZER / WAVEFORM (MICRO-ANIMAȚII) ── */
+    .live-equalizer {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 12px;
+      vertical-align: middle;
+    }
+    .eq-bar {
+      width: 2.5px;
+      background: var(--accent);
+      border-radius: 1px;
+      animation: eqBounce 1s infinite ease-in-out alternate;
+    }
+    .eq-bar:nth-child(1) { height: 30%; animation-delay: 0.1s; }
+    .eq-bar:nth-child(2) { height: 85%; animation-delay: 0.35s; }
+    .eq-bar:nth-child(3) { height: 50%; animation-delay: 0.18s; }
+    .eq-bar:nth-child(4) { height: 100%; animation-delay: 0.42s; }
+    .eq-bar:nth-child(5) { height: 40%; animation-delay: 0.25s; }
+
+    .eq-bar-green { background: var(--green) !important; }
+    .eq-bar-orange { background: var(--orange) !important; }
+    .eq-bar-red { background: var(--red) !important; }
+
+    @keyframes eqBounce {
+      0% { height: 20%; opacity: 0.4; }
+      50% { height: 100%; opacity: 1; filter: drop-shadow(0 0 4px currentColor); }
+      100% { height: 35%; opacity: 0.6; }
+    }
+
+    /* ── SENSOR CARD IMAGE HEADER FLEXBAR ── */
+    .sensor-card-img-topbar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      z-index: 10;
+    }
+    .sensor-type-pill {
+      background: var(--accent-glow);
+      border: 1px solid var(--accent-dim);
+      border-radius: 12px;
+      padding: 2px 9px;
+      font-family: var(--font-ui);
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+      letter-spacing: 0.4px;
+    }
+
+    /* ── MAP TARGET HIGHLIGHT (RECOMMENDATION #4 - FIXED & PINPOINT ACCURATE) ── */
+    .radar-ping-marker {
+      pointer-events: none !important;
+    }
+    .radar-ping-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 110px;
+      height: 110px;
+      margin-left: -55px;
+      margin-top: -55px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.25) 0%, rgba(0, 212, 255, 0.05) 60%, transparent 100%);
+      animation: radarPingPulse 1.2s infinite ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes radarPingPulse {
+      0% {
+        transform: scale(0.2);
+        opacity: 1;
+        box-shadow: 0 0 10px var(--accent);
+      }
+      50% {
+        opacity: 0.8;
+        box-shadow: 0 0 25px var(--accent), 0 0 45px var(--green);
+      }
+      100% {
+        transform: scale(2.2);
+        opacity: 0;
+        box-shadow: 0 0 50px transparent;
+      }
+    }
+
+    .highlight-marker-glow {
+      filter: drop-shadow(0 0 12px var(--accent)) drop-shadow(0 0 24px var(--green)) !important;
+      z-index: 1000 !important;
+    }
+
+    .highlight-marker-glow > div {
+      animation: markerIconBounce 0.7s infinite alternate ease-in-out !important;
+    }
+
+    @keyframes markerIconBounce {
+      0% {
+        transform: scale(1);
+      }
+      100% {
+        transform: scale(1.35);
+        filter: brightness(1.3);
+      }
+    }
+
+    /* ── LIGHT TACTICAL THEME ── */
+    body.theme-light {
+      --bg-primary: #f0f4f8;
+      --bg-secondary: #e2e8f0;
+      --bg-panel: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-hover: #e2e8f0;
+      --card-img-header-bg: radial-gradient(circle at center, rgba(2, 132, 199, 0.15) 0%, #cbd5e1 100%);
+      --border: #cbd5e1;
+      --border-bright: #94a3b8;
+      --accent: #0284c7;
+      --accent-dim: #0369a1;
+      --accent-glow: rgba(2, 132, 199, 0.15);
+      --green: #16a34a;
+      --green-dim: #15803d;
+      --yellow: #ca8a04;
+      --orange: #ea580c;
+      --red: #dc2626;
+      --red-dim: #b91c1c;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-dim: #64748b;
+    }
+
+    /* ── EMERALD DEFENSE MATRIX (TACTICAL GREEN) ── */
+    body.theme-matrix {
+      --bg-primary: #030d07;
+      --bg-secondary: #06180e;
+      --bg-panel: #082213;
+      --bg-card: #0b2e1a;
+      --bg-hover: #103e23;
+      --card-img-header-bg: radial-gradient(circle at center, rgba(0, 255, 102, 0.2) 0%, #06180e 100%);
+      --border: #14522e;
+      --border-bright: #1c7542;
+      --accent: #00ff66;
+      --accent-dim: #00cc52;
+      --accent-glow: rgba(0, 255, 102, 0.18);
+      --green: #00ff66;
+      --green-dim: #00b347;
+      --yellow: #a3e635;
+      --orange: #facc15;
+      --red: #ff3355;
+      --red-dim: #cc1133;
+      --text-primary: #e6ffe9;
+      --text-secondary: #80e699;
+      --text-dim: #3d8052;
+    }
+
+    /* ── AMBER NIGHT-VISION COMMAND (TACTICAL AMBER) ── */
+    body.theme-amber {
+      --bg-primary: #0d0802;
+      --bg-secondary: #180f04;
+      --bg-panel: #221506;
+      --bg-card: #2e1c08;
+      --bg-hover: #3e260b;
+      --card-img-header-bg: radial-gradient(circle at center, rgba(255, 183, 0, 0.2) 0%, #180f04 100%);
+      --border: #52330e;
+      --border-bright: #754814;
+      --accent: #ffb700;
+      --accent-dim: #cc9200;
+      --accent-glow: rgba(255, 183, 0, 0.18);
+      --green: #00ff9d;
+      --green-dim: #00b870;
+      --yellow: #ffb700;
+      --orange: #ff7700;
+      --red: #ff3355;
+      --red-dim: #cc1133;
+      --text-primary: #fff8e6;
+      --text-secondary: #e6c380;
+      --text-dim: #80663d;
+    }
+
+    /* ── 🪟 WINDOWS 95 RETRO COMMAND THEME ── */
+    body.theme-win95 {
+      --bg-primary: #008080 !important; /* Classic Win95 Teal Desktop */
+      --bg-secondary: #c0c0c0 !important; /* Win95 Gray */
+      --bg-panel: #c0c0c0 !important;
+      --bg-card: #c0c0c0 !important;
+      --bg-hover: #dfdfdf !important;
+      --card-img-header-bg: #808080 !important;
+      --border: #808080 !important;
+      --border-bright: #000080 !important;
+      --accent: #000080 !important; /* Win95 Active Title Bar Navy Blue */
+      --accent-dim: #000080 !important;
+      --accent-glow: rgba(0, 0, 128, 0.2) !important;
+      --green: #008000 !important;
+      --green-dim: #006000 !important;
+      --yellow: #808000 !important;
+      --orange: #804000 !important;
+      --red: #800000 !important;
+      --red-dim: #600000 !important;
+      --text-primary: #000000 !important;
+      --text-secondary: #000080 !important;
+      --text-dim: #444444 !important;
+    }
+
+    body.theme-win95 * {
+      font-family: "MS Sans Serif", "Tahoma", "Arial", sans-serif !important;
+      border-radius: 0px !important;
+    }
+
+    body.theme-win95 #topbar {
+      background: #c0c0c0 !important;
+      border-bottom: 2px solid #808080 !important;
+      box-shadow: inset 1px 1px #ffffff, inset -1px -1px #808080 !important;
+    }
+
+    body.theme-win95 .sensor-card,
+    body.theme-win95 .panel-section,
+    body.theme-win95 #left-panel,
+    body.theme-win95 #right-panel {
+      background: #c0c0c0 !important;
+      border-style: solid !important;
+      border-width: 2px !important;
+      border-color: #ffffff #808080 #808080 #ffffff !important; /* Win95 3D Outset Bevel */
+      color: #000000 !important;
+    }
+
+    /* Win95 Interactive Button & Input States */
+    body.theme-win95 .btn,
+    body.theme-win95 .nav-btn,
+    body.theme-win95 .map-tool-btn,
+    body.theme-win95 button,
+    body.theme-win95 select {
+      background: #c0c0c0 !important;
+      border-style: solid !important;
+      border-width: 2px !important;
+      border-color: #ffffff #808080 #808080 #ffffff !important; /* 3D Raised Bevel */
+      color: #000000 !important;
+      box-shadow: 1px 1px 0px #000000 !important;
+      cursor: pointer !important;
+      transition: none !important;
+    }
+
+    body.theme-win95 .btn:hover,
+    body.theme-win95 .nav-btn:hover,
+    body.theme-win95 .map-tool-btn:hover,
+    body.theme-win95 button:hover,
+    body.theme-win95 select:hover {
+      background: #e0e0e0 !important;
+      border-color: #ffffff #555555 #555555 #ffffff !important;
+      outline: 1px dotted #000000 !important;
+      outline-offset: -4px !important; /* Dotted Win95 Focus Outline */
+    }
+
+    body.theme-win95 .btn:active,
+    body.theme-win95 .nav-btn:active,
+    body.theme-win95 .map-tool-btn:active,
+    body.theme-win95 button:active,
+    body.theme-win95 select:active,
+    body.theme-win95 .nav-btn.active {
+      background: #b5b5b5 !important;
+      border-color: #808080 #ffffff #ffffff #808080 !important; /* 3D Sunken Inset Bevel */
+      box-shadow: none !important;
+      transform: translate(1px, 1px) !important; /* Classic 1px Win95 Click Shift */
+      outline: 1px dotted #000000 !important;
+      outline-offset: -4px !important;
+    }
+
+    body.theme-win95 input[type="text"],
+    body.theme-win95 textarea {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border-style: solid !important;
+      border-width: 2px !important;
+      border-color: #808080 #ffffff #ffffff #808080 !important; /* Sunken Text Box */
+    }
+
+    /* Win95 Straturi Acoperire (#map-legend) & Legendă & Bottom Bar */
+    body.theme-win95 #map-legend,
+    body.theme-win95 #bottom-bar,
+    body.theme-win95 .stat-tile,
+    body.theme-win95 #map-search-container {
+      background: #c0c0c0 !important;
+      border-style: solid !important;
+      border-width: 2px !important;
+      border-color: #ffffff #808080 #808080 #ffffff !important; /* Win95 3D Raised Bevel Box */
+      color: #000000 !important;
+      box-shadow: 1px 1px 0px #000000 !important;
+    }
+
+    body.theme-win95 #map-legend .legend-title {
+      background: linear-gradient(90deg, #000080, #1084d0) !important; /* Navy Title Bar */
+      color: #ffffff !important;
+      font-weight: bold !important;
+      padding: 3px 6px !important;
+      font-family: "Tahoma", "Arial", sans-serif !important;
+      font-size: 10px !important;
+      letter-spacing: 1px !important;
+      margin: -6px -8px 6px -8px !important;
+    }
+
+    body.theme-win95 #map-legend .legend-item span,
+    body.theme-win95 .stat-label,
+    body.theme-win95 .stat-sub {
+      color: #000000 !important;
+      font-family: "MS Sans Serif", "Tahoma", sans-serif !important;
+    }
+
+    body.theme-win95 .stat-value {
+      color: #000080 !important;
+      font-weight: bold !important;
+    }
+
+    body.theme-win95 .coverage-bar {
+      background: #ffffff !important;
+      border: 2px solid !important;
+      border-color: #808080 #ffffff #ffffff #808080 !important; /* Inset Sunken Bar */
+    }
+
+    body.theme-win95 .coverage-fill {
+      background: #000080 !important; /* Navy Blue Progress Fill */
+    }
+
+    body.theme-win95 .sensor-card-img-header {
+      background: #808080 !important;
+      border: 2px solid !important;
+      border-color: #808080 #ffffff #ffffff #808080 !important; /* Win95 Inset Sunken Bevel */
+    }
+
+    /* ── 🤡 TEMA CATASTROFĂ VISUALĂ 1995 (ABSOLUT NE-RECOMANDATĂ!) ── */
+    body.theme-ugly {
+      --bg-primary: #ff00ff !important;
+      --bg-secondary: #00ffff !important;
+      --bg-panel: #ffff00 !important;
+      --bg-card: #ff6600 !important;
+      --bg-hover: #00ff00 !important;
+      --border: #ff0000 !important;
+      --border-bright: #0000ff !important;
+      --accent: #ff0000 !important;
+      --accent-dim: #9900cc !important;
+      --green: #00ff00 !important;
+      --yellow: #ffff00 !important;
+      --orange: #ff3300 !important;
+      --red: #ff0000 !important;
+      --text-primary: #000000 !important;
+      --text-secondary: #0000ff !important;
+      --text-dim: #cc0000 !important;
+    }
+
+    body.theme-ugly * {
+      font-family: "Comic Sans MS", "Comic Sans", cursive, sans-serif !important;
+      text-shadow: 1px 1px 0px #ffff00, -1px -1px 0px #ff00ff !important;
+    }
+
+    body.theme-ugly .sensor-card,
+    body.theme-ugly #topbar,
+    body.theme-ugly .panel-section,
+    body.theme-ugly #left-panel,
+    body.theme-ugly #right-panel {
+      border: 4px dashed #ff0000 !important;
+      animation: uglyBlink 0.6s infinite alternate !important;
+    }
+
+    @keyframes uglyBlink {
+      0% { background-color: #ff00ff !important; color: #ffff00 !important; }
+      50% { background-color: #00ffff !important; color: #ff0000 !important; }
+      100% { background-color: #ffff00 !important; color: #0000ff !important; }
     }
     .sensor-card-img-meta {
       margin-top: 0 !important;
@@ -2025,6 +2445,19 @@
     </div>
   </div>
 
+  <!-- ── UNIT COMPARISON MATRIX MODAL ── -->
+  <div id="compare-modal-overlay" class="modal-overlay" style="position:fixed; inset:0; z-index:1100; background:rgba(3,6,10,0.88); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center;">
+    <div id="compare-modal-box" style="background:var(--bg-panel); border:1px solid var(--border-bright); border-radius:8px; width:1000px; max-width:95vw; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 0 40px rgba(0,212,255,0.2); overflow:hidden;">
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-bottom:1px solid var(--border); background:var(--bg-secondary);">
+        <div style="font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--accent); letter-spacing:2px;">⚖️ MATRICE COMPARATIVĂ UNITĂȚI Anti-UAS</div>
+        <div onclick="closeCompareModal()" style="cursor:pointer; color:var(--text-dim); font-size:20px; transition:color 0.2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-dim)'">×</div>
+      </div>
+      <div id="compare-modal-body" style="padding:20px; overflow-y:auto; flex:1;">
+        <!-- Dynamic Table Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
   <!-- ── TOP BAR ── -->
   <div id="topbar">
     <div class="logo" style="padding:0; height: 100%;">
@@ -2046,6 +2479,7 @@
       <div class="nav-btn" id="nav-plan" onclick="setView('plan',this)">PLAN PROTECȚIE</div>
       <div class="nav-btn active" id="nav-log" onclick="setView('log',this)">JURNAL</div>
       <div class="nav-btn" onclick="generateIncidentReport()" title="Raport Incident">📄 RAPORT</div>
+      <div class="nav-btn" onclick="openCompareModal()" title="Matrice Comparativă Unități" style="color:var(--accent); border-color:var(--accent-dim);">⚖️ COMPARĂ</div>
       <div class="divider" style="margin:0 4px; height:20px; align-self:center;"></div>
       <div class="nav-btn" id="btn-adsb" onclick="toggleADSB()"
         style="color:var(--orange); border-color:rgba(255,140,0,0.4);" title="Afișează Trafic Civil (ADS-B)">ADS-B: OFF
@@ -2082,26 +2516,17 @@
         </div>
       </div>
       <div id="detectie-body" style="padding:8px 8px 0;">
-        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('EA2-01')">
+        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('EA2-01')" onmouseenter="highlightSensorOnMap('EA2-01')" onmouseleave="clearSensorHighlight()">
           
           <!-- Image Top Section -->
           <div class="sensor-card-img-header">
             
-            <!-- Top Left: Status -->
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: var(--green); z-index: 10;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              DETECTOR
-            </div>
-            
-            <!-- Top Center: Type Badge -->
-            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--accent); z-index: 10;">
-              RF NON-CINETIC
-            </div>
-            
-            <!-- Top Right: Recording/Alert -->
-            <div id="custom-badge-EA2-01" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--green); background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              ACTIV
+            <div class="sensor-card-img-topbar">
+              <div class="sensor-type-pill">RF NON-CINETIC</div>
+              <div id="custom-badge-EA2-01" class="custom-status-badge" style="display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; transition: all 0.3s;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+                STANDBY
+              </div>
             </div>
 
             <!-- Main Image -->
@@ -2118,6 +2543,13 @@
             <div class="sensor-card-img-title">D-FEND ENFORCEAIR 2</div>
             <div class="sensor-card-img-subtitle">PRELUARE CIBERNETICĂ</div>
             
+            <!-- Key Strengths Chips -->
+            <div class="strength-chips">
+              <span class="chip chip-green">⚡ ZERO ALARME FALSE</span>
+              <span class="chip chip-accent">🎯 100% NON-CINETIC</span>
+              <span class="chip chip-accent">🛡️ MIL-STD-810H</span>
+            </div>
+
             <!-- Stats -->
             <div class="sensor-meta sensor-card-img-meta">
               <div class="sensor-stat"><span class="label">FRECV: </span><span class="value" style="color:var(--accent);">400MHz-6GHz</span></div>
@@ -2127,26 +2559,17 @@
             </div>
           </div>
         </div>
-        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('RF-OMNISHIELD')">
+        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('RF-OMNISHIELD')" onmouseenter="highlightSensorOnMap('RF-OMNISHIELD')" onmouseleave="clearSensorHighlight()">
           
           <!-- Image Top Section -->
           <div class="sensor-card-img-header">
             
-            <!-- Top Left: Status -->
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: var(--green); z-index: 10;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              DETECTOR
-            </div>
-            
-            <!-- Top Center: Type Badge -->
-            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--accent); z-index: 10;">
-              RF PASIV
-            </div>
-            
-            <!-- Top Right: Recording/Alert -->
-            <div id="custom-badge-RF-OMNISHIELD" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
-              STANDBY
+            <div class="sensor-card-img-topbar">
+              <div class="sensor-type-pill">RF PASIV</div>
+              <div id="custom-badge-RF-OMNISHIELD" class="custom-status-badge" style="display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; transition: all 0.3s;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+                STANDBY
+              </div>
             </div>
 
             <!-- Main Image -->
@@ -2163,6 +2586,13 @@
             <div class="sensor-card-img-title">RF DETECTOR</div>
             <div class="sensor-card-img-subtitle">C-UAS SYSTEMS</div>
             
+            <!-- Key Strengths Chips -->
+            <div class="strength-chips">
+              <span class="chip chip-accent">📡 360° PASIV</span>
+              <span class="chip chip-green">🎯 IFF PRIETEN/INAMIC</span>
+              <span class="chip chip-orange">🚀 15KM RAZĂ</span>
+            </div>
+
             <!-- Stats -->
             <div class="sensor-meta sensor-card-img-meta">
               <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value" style="color:var(--accent);">15 km</span></div>
@@ -2172,26 +2602,17 @@
             </div>
           </div>
         </div>
-        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('EO-700')">
+        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('EO-700')" onmouseenter="highlightSensorOnMap('EO-700')" onmouseleave="clearSensorHighlight()">
           
           <!-- Image Top Section -->
           <div class="sensor-card-img-header">
             
-            <!-- Top Left: Status -->
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: var(--green); z-index: 10;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              CAMERA
-            </div>
-            
-            <!-- Top Center: Type Badge -->
-            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--accent); z-index: 10;">
-              OPTIC/IR
-            </div>
-            
-            <!-- Top Right: Recording/Alert -->
-            <div id="custom-badge-EO-700" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
-              STANDBY
+            <div class="sensor-card-img-topbar">
+              <div class="sensor-type-pill">OPTIC / IR</div>
+              <div id="custom-badge-EO-700" class="custom-status-badge" style="display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; transition: all 0.3s;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+                STANDBY
+              </div>
             </div>
 
             <!-- Main Image -->
@@ -2208,6 +2629,13 @@
             <div class="sensor-card-img-title">IO IR CAMERA</div>
             <div class="sensor-card-img-subtitle">SKYLOCK · AVNON GROUP</div>
             
+            <!-- Key Strengths Chips -->
+            <div class="strength-chips">
+              <span class="chip chip-accent">🤖 AI DEEP LEARNING</span>
+              <span class="chip chip-green">👁️ ZI / NOAPTE HD</span>
+              <span class="chip chip-accent">🎯 TRACKING 24/7</span>
+            </div>
+
             <!-- Stats -->
             <div class="sensor-meta sensor-card-img-meta">
               <div class="sensor-stat"><span class="label">AI: </span><span class="value" style="color:var(--accent);">DEEP LEARNING</span></div>
@@ -2217,26 +2645,17 @@
             </div>
           </div>
         </div>
-        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('RADAR-5K')">
+        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('RADAR-5K')" onmouseenter="highlightSensorOnMap('RADAR-5K')" onmouseleave="clearSensorHighlight()">
           
           <!-- Image Top Section -->
           <div class="sensor-card-img-header">
             
-            <!-- Top Left: Status -->
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: var(--green); z-index: 10;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              RADAR
-            </div>
-            
-            <!-- Top Center: Type Badge -->
-            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--accent); z-index: 10;">
-              SUPRAVEGHERE 3D
-            </div>
-            
-            <!-- Top Right: Recording/Alert -->
-            <div id="custom-badge-RADAR-5K" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--green); background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              ACTIV
+            <div class="sensor-card-img-topbar">
+              <div class="sensor-type-pill">SUPRAVEGHERE 3D</div>
+              <div id="custom-badge-RADAR-5K" class="custom-status-badge" style="display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; transition: all 0.3s;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+                STANDBY
+              </div>
             </div>
 
             <!-- Main Image -->
@@ -2253,6 +2672,13 @@
             <div class="sensor-card-img-title">RADAR</div>
             <div class="sensor-card-img-subtitle">PASSIVE RF DETECTION SYSTEM</div>
             
+            <!-- Key Strengths Chips -->
+            <div class="strength-chips">
+              <span class="chip chip-accent">🛰️ 3D MIMO FMCW</span>
+              <span class="chip chip-green">🎯 MICRO-DOPPLER</span>
+              <span class="chip chip-accent">🛡️ IP67 MIL</span>
+            </div>
+
             <!-- Stats -->
             <div class="sensor-meta sensor-card-img-meta">
               <div class="sensor-stat"><span class="label">DETECȚIE: </span><span class="value" style="color:var(--accent);">5.0km</span></div>
@@ -2262,26 +2688,17 @@
             </div>
           </div>
         </div>
-        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('ACUSTIC-01')">
+        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('ACUSTIC-01')" onmouseenter="highlightSensorOnMap('ACUSTIC-01')" onmouseleave="clearSensorHighlight()">
           
           <!-- Image Top Section -->
           <div class="sensor-card-img-header">
             
-            <!-- Top Left: Status -->
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: var(--green); z-index: 10;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              SENZOR
-            </div>
-            
-            <!-- Top Center: Type Badge -->
-            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--accent); z-index: 10;">
-              ACUSTIC
-            </div>
-            
-            <!-- Top Right: Recording/Alert -->
-            <div id="custom-badge-ACUSTIC-01" class="custom-status-badge" style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; z-index: 10; transition: all 0.3s;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
-              STANDBY
+            <div class="sensor-card-img-topbar">
+              <div class="sensor-type-pill">SENZOR ACUSTIC</div>
+              <div id="custom-badge-ACUSTIC-01" class="custom-status-badge" style="display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; transition: all 0.3s;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+                STANDBY
+              </div>
             </div>
 
             <!-- Main Image -->
@@ -2298,6 +2715,13 @@
             <div class="sensor-card-img-title">SENZOR ACUSTIC</div>
             <div class="sensor-card-img-subtitle">C-UAS SYSTEMS</div>
             
+            <!-- Key Strengths Chips -->
+            <div class="strength-chips">
+              <span class="chip chip-green">🔇 EMISII ZERO (PASIV)</span>
+              <span class="chip chip-accent">⚡ CLASIFICARE AI</span>
+              <span class="chip chip-accent">⏱️ TIMP REAL</span>
+            </div>
+
             <!-- Stats -->
             <div class="sensor-meta sensor-card-img-meta">
               <div class="sensor-stat"><span class="label">EMISII: </span><span class="value" style="color:var(--accent);">ZERO (PASIV)</span></div>
@@ -2353,24 +2777,21 @@
             <div class="sensor-stat"><span class="label">IP: </span><span class="value">IP65</span></div>
           </div>
         </div>
-        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('SPOOFER-GNSS')">
+        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('SPOOFER-GNSS')" onmouseenter="highlightSensorOnMap('SPOOFER-GNSS')" onmouseleave="clearSensorHighlight()">
           
           <!-- Image Top Section -->
           <div class="sensor-card-img-header">
             
-            <!-- Top Left: Status -->
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: var(--green); z-index: 10;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              ACTIV
-            </div>
-            
-            <!-- Top Center: Type Badge -->
-            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(255, 140, 0, 0.2); border: 1px solid rgba(255, 140, 0, 0.5); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--orange); z-index: 10;">
-              GNSS SPOOFER
+            <div class="sensor-card-img-topbar">
+              <div class="sensor-type-pill" style="background: rgba(255, 140, 0, 0.15); border-color: rgba(255, 140, 0, 0.4); color: var(--orange);">GNSS SPOOFER</div>
+              <div id="custom-badge-SPOOFER-GNSS" class="custom-status-badge" style="display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; transition: all 0.3s;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+                STANDBY
+              </div>
             </div>
 
             <!-- Main Image -->
-            <img src="gps-gnss-spoofer.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5; margin-top: 20px;" alt="GPS/GNSS SPOOFER" />
+            <img src="gps-gnss-spoofer.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5; margin-top: 15px;" alt="GPS/GNSS SPOOFER" />
           </div>
           
           <!-- Info Bottom Section -->
@@ -2378,6 +2799,13 @@
             <div class="sensor-card-img-title">GPS/GNSS SPOOFER</div>
             <div class="sensor-card-img-subtitle">MANIPULARE GNSS · SCALABIL</div>
             
+            <!-- Key Strengths Chips -->
+            <div class="strength-chips">
+              <span class="chip chip-orange">📡 MANIPULARE GNSS</span>
+              <span class="chip chip-red">🐝 PROTECȚIE ROIURI</span>
+              <span class="chip chip-accent">🛡️ FĂRĂ LISTĂ ALBĂ</span>
+            </div>
+
             <!-- Stats -->
             <div class="sensor-meta sensor-card-img-meta">
               <div class="sensor-stat"><span class="label">ȚINTE: </span><span class="value" style="color:var(--orange);">MULTIPLE / ROIURI</span></div>
@@ -2387,31 +2815,35 @@
             </div>
           </div>
         </div>
-        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('LASER-01')">
+        <div class="sensor-card active sensor-card-custom" onclick="focusSensor('LASER-01')" onmouseenter="highlightSensorOnMap('LASER-01')" onmouseleave="clearSensorHighlight()">
           
           <!-- Image Top Section -->
           <div class="sensor-card-img-header">
             
-            <!-- Top Left: Status -->
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: bold; color: var(--green); z-index: 10;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
-              ACTIV
-            </div>
-            
-            <!-- Top Center: Type Badge -->
-            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(255, 51, 85, 0.2); border: 1px solid rgba(255, 51, 85, 0.5); border-radius: 12px; padding: 2px 10px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--red); z-index: 10;">
-              LASER
+            <div class="sensor-card-img-topbar">
+              <div class="sensor-type-pill" style="background: rgba(255, 51, 85, 0.15); border-color: rgba(255, 51, 85, 0.4); color: var(--red);">SKYLASER AI</div>
+              <div id="custom-badge-LASER-01" class="custom-status-badge" style="display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 10px; font-weight: bold; color: var(--yellow); background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 4px; padding: 4px 8px; transition: all 0.3s;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+                STANDBY
+              </div>
             </div>
 
             <!-- Main Image -->
-            <img src="laser.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5; margin-top: 20px;" alt="SKYLASER" />
+            <img src="laser.png" style="height: 130px; width: auto; max-width: 100%; object-fit: contain; z-index: 5; margin-top: 15px;" alt="SKYLASER" />
           </div>
           
           <!-- Info Bottom Section -->
           <div class="sensor-card-img-body">
             <div class="sensor-card-img-title">SKYLASER</div>
-            <div class="sensor-card-img-subtitle">NEUTRALIZARE LASER · AI AUTO</div>
+            <div class="sensor-card-img-subtitle">C-UAS SYSTEMS</div>
             
+            <!-- Key Strengths Chips -->
+            <div class="strength-chips">
+              <span class="chip chip-red">🔥 FASCICUL ADAPTIV</span>
+              <span class="chip chip-red">🤖 NEUTRALIZARE AI</span>
+              <span class="chip chip-orange">⚡ DEPLOIERE RAPIDĂ</span>
+            </div>
+
             <!-- Stats -->
             <div class="sensor-meta sensor-card-img-meta">
               <div class="sensor-stat"><span class="label">FASCICUL: </span><span class="value" style="color:var(--red);">ADAPTIV</span></div>
@@ -3143,6 +3575,11 @@
         cover: '360° Omni', mode: 'AUTO', status: 'standby',
         desc: 'Soluția flagship D-Fend Solutions. Execută preluarea controlului cibernetic prin radiofrecvență (RF) a dronelor neautorizate pentru aterizare sigură. Detectare și mitigare end-to-end, fără alarme false. Nu utilizează bruiaj (non-jamming), permițând dronelor autorizate din zonă să funcționeze neîntrerupt.',
         color: '#00d4ff',
+        strengths: [
+          { text: '⚡ ZERO ALARME FALSE', type: 'green' },
+          { text: '🎯 CYBER TAKEOVER', type: 'accent' },
+          { text: '🛡️ FĂRĂ BRUIAJ', type: 'green' }
+        ],
         specs: [['Frecvențe Operare', '400MHz - 6Ghz'], ['Metodă Mitigare', 'Cyber Takeover / Aterizare Sigură'], ['Alarme False', 'Zero (Identificare precisă)'], ['Interferență', 'Fără bruiaj, Non-cinetic']]
       },
       'EA2-01': {
@@ -3152,6 +3589,11 @@
         cover: '360° Omni', mode: 'AUTO', status: 'standby',
         desc: 'Sistem Cyber C-UAS generația a 2-a cu Flexibilitate Operațională Integrată (SOF). Oferă detecție precisă fără alarme false, urmărire GPS, extragere ID dronă (Marcă, Model, Serie) și locația pilotului (fără a depinde de recepția telecomenzii). Execută "preluare cibernetică" pentru deviere spre zone sigure.',
         color: '#00aeff',
+        strengths: [
+          { text: '⚡ ZERO ALARME FALSE', type: 'green' },
+          { text: '🎯 100% NON-CINETIC', type: 'accent' },
+          { text: '🛡️ MIL-STD-810H', type: 'accent' }
+        ],
         specs: [['Frecvențe Operare', '400MHz - 6GHz'], ['Putere Transmisie', 'Până la 36 dBm'], ['Consum Curent', '150W (Detecție) / 170W (Mitigare)'], ['Dimensiuni SDR', '39 x 52 x 12 cm'], ['Greutate SDR', '12.8 kg / 28.2 lb'], ['Standarde Mediu', 'MIL STD 810H, MIL STD 461'], ['Protecție IP', 'IP67'], ['Temp. Operare', '-30°C până la +50°C']]
       },
       'EA2-02': {
@@ -3161,6 +3603,11 @@
         cover: '360° Omni', mode: 'MANUAL', status: 'standby',
         desc: 'Opțiune de desfășurare tip rucsac disimulat pentru forțe tactice. Asigură protecție unică în mișcare. Include funcționalitate completă de detecție și mitigare cibernetică, menținând cel mai bun echilibru SWAP (Mărime, Greutate, Putere) din clasa sa.',
         color: '#0077cc',
+        strengths: [
+          { text: '🎒 RUCSAC TACTIC', type: 'orange' },
+          { text: '🎯 CYBER TAKEOVER', type: 'accent' },
+          { text: '🛡️ MIL-STD-810H', type: 'accent' }
+        ],
         specs: [['Tip Desfășurare', 'Rucsac Covert / Tactic în mișcare'], ['Frecvențe Operare', '400MHz - 6GHz'], ['Metodă Mitigare', 'Cyber Takeover / Aterizare Sigură'], ['Standarde Mediu', 'MIL STD 810H, MIL STD 461'], ['Protecție IP', 'IP67'], ['Temp. Operare', '-30°C până la +50°C']]
       },
       // ── SKYLOCK LEGACY ──
@@ -3186,6 +3633,11 @@
         cover: 'FOV 90° (Fațetă Individuală)', sectorAngle: 90, mode: 'AUTO', status: 'standby',
         desc: 'Radar 3D MIMO X-band FMCW. Detecție până la 5km (0.01 RCS). Micro-Doppler pentru drone cu viteză redusă/zbor la punct fix. Putere 80W/19dBW. IP66/67. Desfășurare rapidă < 30 min. 53kg pe fațetă. -20°C până la +50°C.',
         color: '#00d4ff',
+        strengths: [
+          { text: '🛰️ 3D MIMO FMCW', type: 'accent' },
+          { text: '🎯 MICRO-DOPPLER', type: 'green' },
+          { text: '🛡️ IP67 MIL', type: 'accent' }
+        ],
         specs: [['Arhitectură', '3D MIMO'], ['Tip Radar', 'FMCW'], ['Bandă Frecv.', 'Banda X 9.8–9.9 GHz'], ['Rază Detecție (0.01RCS)', 'Până la 5 km'], ['Putere Ieșire', '80 W / 19 dBW'], ['Câmp Vizual (FOV)', '90°/20° pe fațetă'], ['Protecție IP', 'IP66/IP67'], ['Dimensiuni', '645×360×180 mm'], ['Greutate', '53 kg/fațetă']],
       },
       'RADAR-3K': {
@@ -3195,6 +3647,11 @@
         cover: 'FOV 130° (Fațetă Individuală)', sectorAngle: 130, mode: 'AUTO', status: 'standby',
         desc: 'Radar 4D ESA, multi-canal bandă Ku. Detecție până la 3km (0.01 RCS). Acuratețe azimut < 0.5°. Răcire pasivă, IP66. -40°C până la +65°C. 17.8kg pe fațetă.',
         color: '#0097c4',
+        strengths: [
+          { text: '📡 4D ESA KU-BAND', type: 'accent' },
+          { text: '🎯 ACURATEȚE < 0.5°', type: 'green' },
+          { text: '🛡️ IP66 MIL', type: 'accent' }
+        ],
         specs: [['Arhitectură', '4D ESA'], ['Bandă Frecv.', 'Banda Ku 15.4–16.6 GHz'], ['Rază Detecție (0.01RCS)', 'Până la 3 km'], ['Acuratețe Az/El', '< 0.5°'], ['Câmp Vizual (FOV)', '130°Az × 90°El/fațetă'], ['Protecție IP', 'IP66'], ['Consum', '< 250 W max'], ['Greutate', '17.8 kg/fațetă']],
       },
       'RADAR-1K': {
@@ -3204,6 +3661,11 @@
         cover: 'FOV 120°', sectorAngle: 120, mode: 'AUTO', status: 'standby',
         desc: 'Radar tactic ultra-compact (1.25kg). Multi-canal 24.45-24.65 GHz. Căutare și urmărire simultană (10Hz). Urmărește până la 20 de ținte simultan. Ținte noi < 1 sec. IP67, -40°C până la +75°C.',
         color: '#0077bb',
+        strengths: [
+          { text: '⚡ ULTRA-COMPACT 1.25KG', type: 'green' },
+          { text: '🎯 20 ȚINTE SIMULTAN', type: 'orange' },
+          { text: '⏱️ UPDATE < 1 SEC', type: 'accent' }
+        ],
         specs: [['Rază (Phantom 4)', '900 m'], ['Rază (Matrice 600)', '> 1.2 km'], ['Câmp Vizual (FOV)', '120°Az × 80°El'], ['Ținte Maxime', '20 simultan'], ['Actualizare Urmărire', 'Până la 10 Hz'], ['Dimensiuni', '20.3×16.3×4 cm'], ['Greutate', '1.25 kg'], ['Protecție IP', 'IP67'], ['Temp. Operare', '-40°C până la +75°C']],
       },
       // ── SKYLOCK RF DETECTION ──
@@ -3246,6 +3708,11 @@
         cover: 'FOV VARIABIL (PTZ)', sectorAngle: 360, mode: 'AUTO', status: 'standby',
         desc: 'Sistemele superioare de camere SKYLOCK sunt modulare și ușor de actualizat cu o varietate de lentile electro-optice și infraroșu, adaptate specific diferitelor amenințări. Complet integrate în C4I, capabile să fixeze și să urmărească ținte 24/7. Feedback-ul vizual ajută operatorul să înțeleagă amenințarea și dacă transportă o încărcătură utilă (payload).',
         color: '#00aa77',
+        strengths: [
+          { text: '🤖 AI DEEP LEARNING', type: 'accent' },
+          { text: '👁️ ZI / NOAPTE HD', type: 'green' },
+          { text: '🎯 TRACKING 24/7', type: 'accent' }
+        ],
         specs: [['Performanță', 'Cost Redus - Performanță Înaltă'], ['AI', 'Deep Learning Integrat'], ['Selecție Ținte', 'Manuală sau Autonomă'], ['Operare', 'HD Zi și Noapte'], ['Țintire', 'UAS și non-UAS'], ['Integrare', 'Simplă']],
       },
       'EO-1000': {
@@ -3337,6 +3804,11 @@
         cover: '360° Az / ±90° El', mode: 'AUTO', status: 'standby',
         desc: 'Sistem complet pasiv, detectează drona și telecomanda înainte de decolare. Baza de date este actualizată constant (inclusiv protocoale OcuSync 3+ și 4). Ideal ca senzor complementar pentru radar (detectează și în spatele obstacolelor). AI integrat pentru amprentare digitală, detecție roiuri și direcție (până la 7.5° RMS). Timp de instalare: 5 minute. Operare on-the-move.',
         color: '#00d4ff',
+        strengths: [
+          { text: '📡 360° PASIV', type: 'accent' },
+          { text: '🎯 IFF PRIETEN/INAMIC', type: 'green' },
+          { text: '🚀 15KM RAZĂ', type: 'orange' }
+        ],
         specs: [['Rază Detecție', 'Până la 15 km'], ['Acoperire', '+-90° Elevație, 360° Azimut'], ['Găsire Direcție', 'Wi-Fi cu acuratețe 7.5° RMS'], ['Alarme False', 'Aproape zero'], ['Info Furnizate', 'Protocol, Sursă (Operator/Dronă), ID Unic'], ['Diferențiere', 'Prieten / Inamic (IFF) și Liste Albe/Negre']]
       },
       'ACUSTIC-01': {
@@ -3345,48 +3817,78 @@
         cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Sistem de detecție acustică pasivă. Identifică semnătura sonoră a dronelor la joasă altitudine în timp real.',
         color: '#00d4ff',
+        strengths: [
+          { text: '🔇 EMISII ZERO (PASIV)', type: 'green' },
+          { text: '⚡ CLASIFICARE AI', type: 'accent' },
+          { text: '⏱️ TIMP REAL', type: 'accent' }
+        ],
         specs: [['Emisii', 'Zero (Pasiv)'], ['Ținte', 'Multiple'], ['Clasificare', 'Automată'], ['Localizare', 'Timp Real']]
       },
       'CYBER-3K': {
         name: 'Cyber Takeover (3km)', vendor: 'C-UAS SYSTEMS',
         type: 'PRELUARE CIBERNETICĂ RF', detRange: 3000, mitRange: 1500,
-        cover: '360°', mode: 'AUTO', status: 'active',
+        cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Preluare cibernetică automată a controlului dronelor la o distanță de până la 3km.',
         color: '#00aeff',
+        strengths: [
+          { text: '⚡ PRELUARE CIBERNETICĂ', type: 'accent' },
+          { text: '🎯 RAZĂ 3.0 KM', type: 'green' },
+          { text: '🤖 AUTO TAKEOVER', type: 'accent' }
+        ],
         specs: [['Detecție', '3.0 km'], ['Mitigare', '3.0 km'], ['Mod', 'AUTO'], ['Țintă', 'Preluare']]
       },
       'JAM-OMNI-3K': {
         name: 'RF Jammer Omnidirectional (3km)', vendor: 'C-UAS SYSTEMS',
         type: 'BRUIAJ RF 360° · AUTO/MANUAL', detRange: 0, mitRange: 1500,
-        cover: '360°', mode: 'AUTO', status: 'active',
+        cover: '360°', mode: 'AUTO', status: 'standby',
         desc: 'Sistem de bruiaj omnidirecțional 360 grade cu eficiență până la 3km.',
         color: '#ff3355',
+        strengths: [
+          { text: '📡 BRUIAJ 360° OMNI', type: 'red' },
+          { text: '🛡️ PROTECȚIE IP66', type: 'accent' },
+          { text: '⚡ MOD AUTO/MANUAL', type: 'green' }
+        ],
         specs: [['Bruiaj', '3.0 km'], ['Acoperire', '360°'], ['Mod', 'AUTO'], ['Protecție IP', 'IP66']]
       },
       'JAM-DIR-5K': {
         name: 'RF Jammer Directional (5km)', vendor: 'C-UAS SYSTEMS',
         type: 'BRUIAJ RF DIRECȚIONAL · MIL', detRange: 0, mitRange: 2500,
-        cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'active',
+        cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'standby',
         desc: 'Sistem de bruiaj direcțional de mare putere cu acoperire până la 5km. Certificat MIL-STD-810G.',
         color: '#cc1133',
+        strengths: [
+          { text: '🎯 BRUIAJ DIRECȚIONAL 5KM', type: 'red' },
+          { text: '🛡️ CERTIFICAT MIL 810G', type: 'accent' },
+          { text: '⚡ PUTERE 10W x 6', type: 'orange' }
+        ],
         specs: [['Bruiaj', '5.0 km'], ['Putere', '10W × 6'], ['Standard MIL', '810G'], ['Protecție IP', 'IP65']]
       },
       'SPOOFER-GNSS': {
         img: 'gps-gnss-spoofer_full.png',
         name: 'GPS/GNSS Spoofer', vendor: 'C-UAS SYSTEMS',
         type: 'MANIPULARE GNSS · SCALABIL', detRange: 0, mitRange: 2500,
-        cover: 'OMNIDIRECȚIONAL', mode: 'AUTO', status: 'active',
+        cover: 'OMNIDIRECȚIONAL', mode: 'AUTO', status: 'standby',
         desc: 'Testat pe câmpul de luptă, oferă o abordare unică C-UAS prin manipulare GNSS (GPS) avansată. Înlocuiește bruiajul tradițional și scalează eficient împotriva unui singur UAV sau a roiurilor. Neutralizează drone autonome "dark", controlate manual sau celular din direcții multiple, operând fără liste albe sau inginerie inversă.',
         color: '#ff8c00',
+        strengths: [
+          { text: '📡 MANIPULARE GNSS', type: 'orange' },
+          { text: '🐝 PROTECȚIE ROIURI', type: 'red' },
+          { text: '🛡️ FĂRĂ LISTĂ ALBĂ', type: 'accent' }
+        ],
         specs: [['Ținte', 'Multiple / Roiuri'], ['Tip Drone', 'Autonome, Manuale, Celulare'], ['Abordare', 'GNSS Spoofing Avansat'], ['Operare', 'Fără liste albe / comunicații']]
       },
       'LASER-01': {
         img: 'laser_full.png',
         name: 'SkyLaser', vendor: 'C-UAS SYSTEMS',
         type: 'NEUTRALIZARE LASER · AI AUTO', detRange: 0, mitRange: 1000,
-        cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'active',
+        cover: 'DIRECȚIONAL', mode: 'AUTO', status: 'standby',
         desc: 'SkyLaser offers a lightweight, rapidly deployable, and easily integrated solution for counter-drone operations. Its advanced AI capabilities enable autonomous detection and neutralization of low-altitude, small-sized drones, providing adaptable and immediate threat mitigation.',
         color: '#ff2200',
+        strengths: [
+          { text: '🔥 FASCICUL ADAPTIV', type: 'red' },
+          { text: '🤖 NEUTRALIZARE AI', type: 'red' },
+          { text: '⚡ DEPLOIERE RAPIDĂ', type: 'orange' }
+        ],
         specs: [
           ['Adaptive Laser', 'Reliable operation in challenging conditions including snow, sand, mold, and lightning'],
           ['Autonomous AI', 'Autonomous search, detection, identification, and interception of targets'],
@@ -3569,6 +4071,7 @@
 
       setInterval(fetchADSB, 10000);
       setTimeout(() => { simEvent(); setInterval(simEvent, 12000); }, 2000);
+      updateSensorCardBadges();
 
       // Set initial view on mobile to ensure layout triggers correctly
       if (window.innerWidth <= 900) {
@@ -3945,9 +4448,13 @@
       if (!s) return;
       const preview = document.getElementById('catalog-preview');
       if (!preview) return;
+
+      const strengthsHtml = s.strengths ? `<div class="strength-chips" style="justify-content:center; margin:10px 0 16px 0;">${s.strengths.map(c => `<span class="chip chip-${c.type}">${c.text}</span>`).join('')}</div>` : '';
+
       preview.innerHTML = `
-        ${s.img ? `<img src="${s.img}" style="max-width:100%; max-height:280px; object-fit:contain; margin-bottom:20px; filter: drop-shadow(0 0 20px rgba(0,212,255,0.2));" />` : `<div style="height:200px;display:flex;align-items:center;color:var(--text-dim);font-family:var(--font-mono);">(Fără imagine)</div>`}
-        <div style="font-family:var(--font-display); font-size:20px; color:${s.color || 'var(--accent)'}; margin-bottom:8px; letter-spacing:1px;">${s.name}</div>
+        ${s.img ? `<img src="${s.img}" style="max-width:100%; max-height:260px; object-fit:contain; margin-bottom:14px; filter: drop-shadow(0 0 20px rgba(0,212,255,0.2));" />` : `<div style="height:180px;display:flex;align-items:center;color:var(--text-dim);font-family:var(--font-mono);">(Fără imagine)</div>`}
+        <div style="font-family:var(--font-display); font-size:20px; color:${s.color || 'var(--accent)'}; margin-bottom:4px; letter-spacing:1px;">${s.name}</div>
+        ${strengthsHtml}
         <div style="color:var(--text-secondary); font-size:12px; max-width:90%; line-height:1.5;">${s.desc}</div>
         <div style="display:flex; gap:20px; margin-top:30px;">
           <div style="background:var(--bg-primary); padding:10px 20px; border-radius:4px; border:1px solid var(--border);">
@@ -3971,7 +4478,29 @@
       el.classList.add('sel');
     }
 
-    // Funcție nouă pentru plasarea directă a unui singur senzor
+    function applySmartOffset(item) {
+      if (!map || !STATE.planItems) return;
+      let countAtPos = 0;
+      STATE.planItems.forEach(existing => {
+        if (existing.id !== item.id && existing.latlng) {
+          const dLat = Math.abs(existing.latlng.lat - item.latlng.lat);
+          const dLng = Math.abs(existing.latlng.lng - item.latlng.lng);
+          if (dLat < 0.0003 && dLng < 0.0003) {
+            countAtPos++;
+          }
+        }
+      });
+
+      if (countAtPos > 0) {
+        const angle = countAtPos * (2 * Math.PI / 5);
+        const distance = 0.0006 * Math.ceil(countAtPos / 5);
+        const newLat = item.latlng.lat + Math.cos(angle) * distance;
+        const newLng = item.latlng.lng + Math.sin(angle) * distance * 1.3;
+        item.latlng = L.latLng(newLat, newLng);
+      }
+    }
+
+    // Funcție pentru plasarea directă a unui singur senzor
     function placeDirectSensor(sensorId, latlng) {
       const s = SENSORS[sensorId];
       if (!s) return;
@@ -3984,10 +4513,12 @@
         typeLabel: s.vendor.split(' ')[0],
         notes: 'Plasare rapidă din panou',
         sensors: [sensorId],
-        latlng,
+        latlng: L.latLng(latlng.lat, latlng.lng),
         radiusOverride: 'auto',
+        heading: 0,
         status: 'active'
       };
+      applySmartOffset(item);
       STATE.planItems.push(item);
       addPinToMap(item);
       updatePlanPanel();
@@ -4017,23 +4548,47 @@
       const selectedSensors = [...document.querySelectorAll('.sensor-checkbox-card.selected')].map(el => el.dataset.sid);
       const radiusEl = document.querySelector('.radius-btn.sel');
       const radiusOverride = radiusEl ? radiusEl.dataset.r : 'auto';
-      const latlng = STATE.pendingLatlng;
-      if (!latlng) return;
+      const originLatlng = STATE.pendingLatlng;
+      if (!originLatlng) return;
 
-      // Create plan item
-      const id = 'pin-' + Date.now();
       const typeLabels = { command: 'POST CMD', critical: 'INFRA CRITICĂ', airfield: 'AERODROM', convoy: 'CONVOI', event: 'EVENIMENT', border: 'FRONTIERĂ', vip: 'PROT. VIP', custom: 'PERSONALIZAT' };
-      // Activate all selected sensors when placed on map
-      selectedSensors.forEach(sid => { if (SENSORS[sid]) SENSORS[sid].status = 'active'; });
-      const item = { id, name, type, typeLabel: typeLabels[type] || type, notes, sensors: selectedSensors, latlng, radiusOverride, heading: 0, status: 'active' };
-      STATE.planItems.push(item);
 
-      // Add map marker
-      addPinToMap(item);
+      if (selectedSensors.length === 0) {
+        const id = 'pin-' + Date.now();
+        const item = { id, name, type, typeLabel: typeLabels[type] || type, notes, sensors: [], latlng: L.latLng(originLatlng.lat, originLatlng.lng), radiusOverride, heading: 0, status: 'active' };
+        applySmartOffset(item);
+        STATE.planItems.push(item);
+        addPinToMap(item);
+      } else {
+        // Fiecare senzor selectat devine un marker individual pe hartă cu offset inteligent anti-suprapunere
+        selectedSensors.forEach((sid, idx) => {
+          if (SENSORS[sid]) SENSORS[sid].status = 'active';
+          const sObj = SENSORS[sid];
+          const sName = selectedSensors.length === 1 ? name : `${name} · ${sObj ? sObj.name : sid}`;
+          const id = 'pin-' + Date.now() + '-' + idx;
+          const item = {
+            id,
+            name: sName,
+            type,
+            typeLabel: typeLabels[type] || type,
+            notes,
+            sensors: [sid],
+            latlng: L.latLng(originLatlng.lat, originLatlng.lng),
+            radiusOverride,
+            heading: 0,
+            status: 'active'
+          };
+          applySmartOffset(item);
+          STATE.planItems.push(item);
+          addPinToMap(item);
+        });
+      }
+
       updatePlanPanel();
+      updateSensorCardBadges();
       updateStats();
-      logEvent(`Punct protecție "${name}" (${typeLabels[type] || type}) adăugat. Senzori: ${selectedSensors.length > 0 ? selectedSensors.map(s => SENSORS[s].name.split('-')[0]).join(', ') : 'NICIUNUL'}.`, 'success');
-      toast(`"${name}" adăugat în plan`, 'green');
+      logEvent(`Adăugat în plan: ${selectedSensors.length > 0 ? selectedSensors.length + ' unități pe hartă' : name}`, 'success');
+      toast(`Unitățile au fost plasate individual pe hartă`, 'green');
       closeModal();
     }
 
@@ -4143,6 +4698,7 @@
       // Eveniment pentru click dreapta (Context Menu)
       marker.on('contextmenu', (e) => {
         L.DomEvent.stop(e); // Oprește meniul de browser nativ
+        clearSensorHighlight(); // Curăță orice efect de evidențiere activ
         const menu = document.getElementById('custom-context-menu');
 
         const isActive = item.status !== 'standby';
@@ -4171,9 +4727,16 @@
         document.getElementById('ctx-menu-toggle-status').onclick = () => {
           menu.style.display = 'none';
           item.status = isActive ? 'standby' : 'active';
+          if (item.sensors) {
+            item.sensors.forEach(sid => {
+              if (SENSORS[sid]) SENSORS[sid].status = item.status;
+            });
+          }
           updateMarkerIcon(item);
           drawVisuals(item);
           updatePlanPanel();
+          updateSensorCardBadges();
+          updateStats();
           toast(`Unitatea ${item.name} este acum ${item.status.toUpperCase()}`, isActive ? 'yellow' : 'green');
         };
 
@@ -4644,8 +5207,14 @@
       const item = STATE.planItems[idx];
       if (item.marker && map) { try { map.removeLayer(item.marker); } catch (e) { } }
       if (item.visuals && map) { item.visuals.forEach(v => { try { map.removeLayer(v); } catch (e) { } }); }
+      if (item.sensors) {
+        item.sensors.forEach(sid => {
+          if (SENSORS[sid]) SENSORS[sid].status = 'standby';
+        });
+      }
       STATE.planItems.splice(idx, 1);
       updatePlanPanel();
+      updateSensorCardBadges();
       updateStats();
       logEvent(`Punct protecție "${item.name}" eliminat din plan.`, 'warn');
     }
@@ -4656,6 +5225,197 @@
       if (!panel) return;
       panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
       if (icon) icon.textContent = panel.style.display === 'none' ? '▸' : '▾';
+    }
+
+    // ─────────────────────────── UNIT COMPARISON MATRIX ───────────────────────────
+    const LEFT_PANEL_SENSORS = [
+      'EA2-01',
+      'RF-OMNISHIELD',
+      'EO-700',
+      'RADAR-5K',
+      'ACUSTIC-01',
+      'CYBER-3K',
+      'JAM-OMNI-3K',
+      'JAM-DIR-5K',
+      'SPOOFER-GNSS',
+      'LASER-01'
+    ];
+
+    STATE.compareSensors = ['EA2-01', 'RF-OMNISHIELD', 'LASER-01'];
+
+    function openCompareModal() {
+      renderCompareMatrix();
+      document.getElementById('compare-modal-overlay').style.display = 'flex';
+    }
+
+    function closeCompareModal() {
+      document.getElementById('compare-modal-overlay').style.display = 'none';
+    }
+
+    function changeCompareSensor(colIdx, newSensorId) {
+      STATE.compareSensors[colIdx] = newSensorId;
+      renderCompareMatrix();
+    }
+
+    function renderCompareMatrix() {
+      const container = document.getElementById('compare-modal-body');
+      if (!container) return;
+
+      const sensorKeys = LEFT_PANEL_SENSORS.filter(k => SENSORS[k]);
+      const selectedIds = STATE.compareSensors;
+
+      let html = `
+        <table class="compare-table" style="width:100%; border-collapse:collapse; font-family:var(--font-ui); font-size:12px;">
+          <thead>
+            <tr>
+              <th style="width:20%; text-align:left; padding:12px; border-bottom:2px solid var(--border-bright); color:var(--text-dim); font-family:var(--font-mono); font-size:11px;">CARACTERISTICĂ</th>
+      `;
+
+      selectedIds.forEach((sid, idx) => {
+        const options = sensorKeys.map(k => `<option value="${k}" ${k === sid ? 'selected' : ''}>${SENSORS[k].name}</option>`).join('');
+        html += `
+          <th style="width:26.6%; text-align:center; padding:12px; border-bottom:2px solid var(--border-bright); background:var(--bg-card);">
+            <div style="font-family:var(--font-mono); font-size:9px; color:var(--text-dim); margin-bottom:4px;">COLOANA ${idx + 1}</div>
+            <select onchange="changeCompareSensor(${idx}, this.value)" style="width:100%; padding:6px 8px; background:var(--bg-primary); border:1px solid var(--accent-dim); color:var(--accent); font-family:var(--font-ui); font-size:11px; font-weight:bold; border-radius:4px; cursor:pointer;">
+              ${options}
+            </select>
+          </th>
+        `;
+      });
+
+      html += `</tr></thead><tbody>`;
+
+      const addRow = (label, getValHtml, bgAlt = false) => {
+        let rHtml = `<tr style="${bgAlt ? 'background:rgba(255,255,255,0.02);' : ''} border-bottom:1px solid var(--border);">`;
+        rHtml += `<td style="padding:10px 12px; font-weight:bold; color:var(--text-secondary); font-size:11px;">${label}</td>`;
+        selectedIds.forEach(sid => {
+          const s = SENSORS[sid];
+          rHtml += `<td style="padding:10px 12px; text-align:center;">${getValHtml(s, sid)}</td>`;
+        });
+        rHtml += `</tr>`;
+        return rHtml;
+      };
+
+      // 1. Image & Title
+      html += addRow('Echipament', (s) => `
+        ${s.img ? `<img src="${s.img}" style="height:90px; max-width:100%; object-fit:contain; margin-bottom:6px;" />` : ''}
+        <div style="font-family:var(--font-display); font-size:13px; font-weight:bold; color:${s.color || 'var(--accent)'};">${s.name}</div>
+        <div style="font-family:var(--font-mono); font-size:9px; color:var(--text-dim);">${s.vendor}</div>
+      `);
+
+      // 2. Strengths Badges
+      html += addRow('Puncte Forte & Calități', (s) => {
+        if (!s.strengths || s.strengths.length === 0) return '<span style="color:var(--text-dim);">-</span>';
+        return `<div class="strength-chips" style="justify-content:center; gap:4px;">${s.strengths.map(c => `<span class="chip chip-${c.type}" style="font-size:8.5px; padding:2px 6px;">${c.text}</span>`).join('')}</div>`;
+      }, true);
+
+      // 3. Tip / Tehnologie
+      html += addRow('Tip Tehnologie', (s) => `<span style="font-family:var(--font-mono); font-size:10px; color:var(--accent); font-weight:bold;">${s.type}</span>`);
+
+      // 4. Rază Detecție
+      html += addRow('Rază Detecție', (s) => {
+        const val = s.detRange > 0 ? (s.detRange >= 1000 ? (s.detRange/1000).toFixed(1) + ' km' : s.detRange + ' m') : 'N/D (Doar Mitigare)';
+        return `<div style="font-family:var(--font-mono); font-size:12px; font-weight:bold; color:var(--green);">${val}</div>`;
+      }, true);
+
+      // 5. Rază Neutralizare / Bruiaj
+      html += addRow('Rază Neutralizare', (s) => {
+        const val = s.mitRange > 0 ? (s.mitRange >= 1000 ? (s.mitRange/1000).toFixed(1) + ' km' : s.mitRange + ' m') : 'N/D (Pasiv / Fără Bruiaj)';
+        return `<div style="font-family:var(--font-mono); font-size:12px; font-weight:bold; color:${s.mitRange > 0 ? 'var(--red)' : 'var(--text-dim)'};">${val}</div>`;
+      });
+
+      // 6. Acoperire
+      html += addRow('Acoperire Spațială', (s) => `<span style="font-family:var(--font-mono); font-size:10px;">${s.cover || '360°'}</span>`, true);
+
+      // 7. Mod Operare
+      html += addRow('Mod Operare', (s) => `<span style="font-family:var(--font-mono); font-size:10px; color:var(--yellow); font-weight:bold;">${s.mode || 'AUTO'}</span>`);
+
+      // 8. Status Curent
+      html += addRow('Status Sistem', (s) => {
+        const isAct = s.status === 'active';
+        return `<span style="font-family:var(--font-mono); font-size:9.5px; padding:2px 8px; border-radius:3px; border:1px solid ${isAct ? 'var(--green)' : 'var(--yellow)'}; color:${isAct ? 'var(--green)' : 'var(--yellow)'}; background:${isAct ? 'rgba(16,185,129,0.15)' : 'rgba(234,179,8,0.15)'}; font-weight:bold;">${isAct ? 'ACTIV' : 'STANDBY'}</span>`;
+      }, true);
+
+      // 9. Acțiune rapidă
+      html += addRow('Acțiune', (s, sid) => `
+        <button class="btn btn-secondary" style="font-size:9px; padding:4px 10px;" onclick="closeCompareModal(); focusSensor('${sid}')">🔍 VEZI DETALII</button>
+      `);
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    // ─────────────────────────── APP THEMES SWITCHER ───────────────────────────
+    let currentThemeIndex = 0;
+    const APP_THEMES = [
+      { id: 'dark', icon: '🌗', name: 'Dark Cyber Tactical (Implicită)', toastType: 'info' },
+      { id: 'matrix', icon: '🟢', name: 'Emerald Defense Matrix (Verde CRT)', toastType: 'green' },
+      { id: 'amber', icon: '🟠', name: 'Amber Night-Vision Command (Chihlimbar)', toastType: 'yellow' },
+      { id: 'win95', icon: '🪟', name: 'Windows 95 Retro Command (Retro Win95)', toastType: 'info' },
+      { id: 'light', icon: '☀️', name: 'Light Ops Command (Zi)', toastType: 'green' },
+      { id: 'ugly', icon: '🤡', name: '🤡 CATASTROFĂ VISUALĂ 1995 (NE-RECOMANDATĂ!)', toastType: 'red' }
+    ];
+
+    function toggleAppTheme() {
+      currentThemeIndex = (currentThemeIndex + 1) % APP_THEMES.length;
+      const theme = APP_THEMES[currentThemeIndex];
+
+      document.body.classList.remove('theme-light', 'theme-matrix', 'theme-amber', 'theme-win95', 'theme-ugly');
+      if (theme.id !== 'dark') {
+        document.body.classList.add('theme-' + theme.id);
+      }
+
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = theme.icon;
+
+      if (theme.id === 'ugly') {
+        toast('⚠️ ATENȚIE: Ați activat tema "Catastrofă Visuală 1995"! Vă recomandăm insistent să nu o folosiți! 🤡', 'red');
+        logEvent('⚠️ Avertisment: Tema "Catastrofă Visuală 1995" (Comic Sans & Magenta Neon) a fost activată. Ergonomie vizuală compromisă.', 'critical');
+      } else {
+        toast(`Temă comutată: ${theme.name}`, theme.toastType);
+        logEvent(`Temă schimbată în "${theme.name}".`, 'info');
+      }
+    }
+
+    // ─────────────────────────── MAP TARGET HIGHLIGHT ───────────────────────────
+    let highlightLayers = [];
+
+    function highlightSensorOnMap(sensorId, smoothPan = false) {
+      clearSensorHighlight();
+
+      const matchingItems = STATE.planItems.filter(item => item.sensors.includes(sensorId));
+      if (matchingItems.length === 0) return;
+
+      matchingItems.forEach(item => {
+        if (item.marker && item.marker._icon) {
+          item.marker._icon.classList.add('highlight-marker-glow');
+        }
+
+        // Ancorăm un marker cu divIcon animat exact pe coordonatele GPS item.latlng
+        const pingIcon = L.divIcon({
+          className: 'radar-ping-marker',
+          html: '<div class="radar-ping-ring"></div>',
+          iconSize: [0, 0],
+          iconAnchor: [0, 0]
+        });
+
+        const pingMarker = L.marker(item.latlng, { icon: pingIcon, interactive: false, zIndexOffset: -100 }).addTo(map);
+        highlightLayers.push(pingMarker);
+      });
+
+      if (smoothPan && matchingItems.length > 0 && map) {
+        map.flyTo(matchingItems[0].latlng, Math.max(map.getZoom(), 14), { duration: 1.2 });
+      }
+    }
+
+    function clearSensorHighlight() {
+      highlightLayers.forEach(l => { if (map) try { map.removeLayer(l); } catch (e) {} });
+      highlightLayers = [];
+      STATE.planItems.forEach(item => {
+        if (item.marker && item.marker._icon) {
+          item.marker._icon.classList.remove('highlight-marker-glow');
+        }
+      });
     }
 
     // ─────────────────────────── SENSOR FOCUS ───────────────────────────
@@ -4682,12 +5442,30 @@
         coordsHtml = `<div class="sensor-detail-row" style="border-top: 1px dashed var(--accent-dim); margin-top: 4px; padding-top: 8px;"><span class="sd-key">Coordonate GPS</span><span class="sd-val" style="color: var(--accent);">${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}</span></div>`;
       }
 
+      const modalStrengthsHtml = s.strengths ? `<div class="strength-chips" style="margin-bottom:12px;">${s.strengths.map(c => `<span class="chip chip-${c.type}">${c.text}</span>`).join('')}</div>` : '';
+
+      const liveMonitorHtml = s.status === 'active' ? `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-primary);border:1px solid var(--border);padding:8px 12px;border-radius:4px;margin-bottom:12px;">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;">
+          <span style="color:var(--accent);font-weight:bold;">📡 MONITORIZARE SEMNAL LIVE:</span> <span style="color:var(--green);">ONLINE · NOMINAL</span>
+        </div>
+        <div class="live-equalizer">
+          <div class="eq-bar eq-bar-green"></div>
+          <div class="eq-bar eq-bar-green"></div>
+          <div class="eq-bar eq-bar-green"></div>
+          <div class="eq-bar eq-bar-green"></div>
+          <div class="eq-bar eq-bar-green"></div>
+        </div>
+      </div>` : '';
+
       document.getElementById('modal-body').innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
       <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:${s.color || 'var(--accent)'};">${s.name}</div>
       <div style="font-family:var(--font-mono);font-size:9px;padding:2px 8px;border:1px solid ${statusColor};color:${statusColor};border-radius:2px;">${translatedStatus}</div>
     </div>
-    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:12px;">${s.vendor}</div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:8px;">${s.vendor}</div>
+    ${modalStrengthsHtml}
+    ${liveMonitorHtml}
     ${s.img ? `<img src="${s.img}" style="width:100%; max-height:200px; object-fit:contain; margin-bottom:14px; border-radius:4px; cursor:zoom-in; transition: transform 0.2s;" onclick="openFullscreenImage('${s.img}')" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" title="Click pentru mărire" />` : ''}
     <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">${s.desc}</div>
     ${specsHtml}
@@ -4701,7 +5479,7 @@
     }
 
     // ─────────────────────────── MODAL ───────────────────────────
-    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; document.getElementById('modal').style.width = ''; }
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; document.getElementById('modal').style.width = ''; clearSensorHighlight(); }
     function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 
     function openFullscreenImage(src) {
@@ -4898,8 +5676,7 @@
 
       const list = document.getElementById('health-sensors-list');
       if (placedEntries.length === 0) { list.innerHTML = ''; return; }
-
-      // Show all placed plan items and their sensors
+      
       const rows = [];
       STATE.planItems.forEach(item => {
         item.sensors.forEach(id => {
@@ -4914,6 +5691,11 @@
         const label = { active: 'ACTIV', standby: 'STANDBY', offline: 'OFFLINE' }[s.status];
         const pct = s.status === 'active' ? 100 : s.status === 'standby' ? 40 : 0;
         const bgColor = s.status === 'active' ? 'var(--green)' : s.status === 'standby' ? 'var(--yellow)' : 'var(--text-dim)';
+        const btnStyle = s.status === 'active' 
+          ? 'background:rgba(234,179,8,0.15);color:var(--yellow);border:1px solid rgba(234,179,8,0.4);' 
+          : 'background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.4);';
+        const btnLabel = s.status === 'active' ? '⏸ STANDBY' : '▶ ACTIVEAZĂ';
+
         return `<div class="health-sensor-row">
       <div>
         <div style="font-weight:600;font-size:11px;color:var(--text-primary);">${s.name}</div>
@@ -4921,13 +5703,61 @@
         <div class="health-sensor-bar" style="width:120px;background:var(--border);margin-top:3px;"><div style="width:${pct}%;height:100%;background:${bgColor};border-radius:2px;"></div></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <div style="font-family:var(--font-mono);font-size:9px;color:${color};border:1px solid ${color};padding:1px 5px;border-radius:2px;">${label}</div>
-        <button class="sensor-toggle-btn ${s.status === 'active' ? 'standby' : 'activate'}" onclick="toggleSensorStatus('${id}',this)">
-          ${s.status === 'active' ? '⏸ STANDBY' : '▶ ACTIVEAZĂ'}
+        <span style="font-family:var(--font-mono);font-size:9px;color:${color};font-weight:700;padding:2px 6px;border:1px solid ${color};border-radius:2px;">${label}</span>
+        <button onclick="toggleSensorStatus('${id}',this); renderHealthDash();" style="${btnStyle}font-family:var(--font-ui);font-size:9px;font-weight:bold;padding:3px 8px;border-radius:3px;cursor:pointer;transition:all 0.2s;">
+          ${btnLabel}
         </button>
       </div>
     </div>`;
       }).join('');
+    }
+
+    // ─────────────────────────── DYNAMIC SENSOR BADGE SYNC ───────────────────────────
+    function updateSensorCardBadges() {
+      const cardIds = ['EA2-01', 'RF-OMNISHIELD', 'EO-700', 'RADAR-5K', 'ACUSTIC-01', 'SPOOFER-GNSS', 'LASER-01'];
+      cardIds.forEach(id => {
+        const badge = document.getElementById('custom-badge-' + id);
+        if (!badge) return;
+        const s = SENSORS[id];
+        if (!s) return;
+
+        const isActive = s.status === 'active';
+        if (isActive) {
+          badge.style.color = 'var(--green)';
+          badge.style.background = 'rgba(16, 185, 129, 0.15)';
+          badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+          badge.innerHTML = `
+            <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></div>
+            ACTIV
+            <div class="live-equalizer"><div class="eq-bar eq-bar-green"></div><div class="eq-bar eq-bar-green"></div><div class="eq-bar eq-bar-green"></div><div class="eq-bar eq-bar-green"></div></div>
+          `;
+        } else {
+          badge.style.color = 'var(--yellow)';
+          badge.style.background = 'rgba(234, 179, 8, 0.15)';
+          badge.style.borderColor = 'rgba(234, 179, 8, 0.2)';
+          badge.innerHTML = `
+            <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--yellow);"></div>
+            STANDBY
+          `;
+        }
+      });
+    }
+
+    function toggleSensorStatus(id, btnEl) {
+      const s = SENSORS[id];
+      if (!s) return;
+      s.status = s.status === 'active' ? 'standby' : 'active';
+      STATE.planItems.forEach(item => {
+        if (item.sensors.includes(id)) {
+          item.status = s.status;
+          updateMarkerIcon(item);
+          drawVisuals(item);
+        }
+      });
+      updateSensorCardBadges();
+      updatePlanPanel();
+      updateStats();
+      toast(`Senzorul ${s.name} este acum ${s.status.toUpperCase()}`, s.status === 'active' ? 'green' : 'yellow');
     }
 
     function updateLeftPanelBadge(id, status) {
