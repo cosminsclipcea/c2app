@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SKY DOME C2 · Comandă și Control Anti-UAS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2399,60 +2399,129 @@
       }
     }
 
+    /* ── RESPONSIVE MOBILE & TABLET (DESIGNS PREMIUM & TOUCH FRIENDLY) ── */
     @media (max-width: 900px) {
-      #main {
-        display: block;
-        position: relative;
-        overflow: hidden;
-      }
-
-      #left-panel,
-      #center,
-      #right-panel {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        background: var(--bg-panel);
-      }
-
-      #left-panel,
-      #right-panel {
-        display: none;
-        z-index: 50;
-        overflow-y: auto;
-        padding-bottom: 20px;
-      }
-
-      #center {
-        display: flex;
-        flex-direction: column;
-        z-index: 10;
-        background: var(--bg-primary);
-      }
-
       #topbar {
-        overflow-x: auto;
-        scrollbar-width: none;
-        padding-right: 20px;
+        height: auto !important;
+        flex-wrap: wrap !important;
+        padding: 6px 10px !important;
+        gap: 6px !important;
       }
 
-      #topbar::-webkit-scrollbar {
-        display: none;
+      #topbar .divider,
+      .utc-clock {
+        display: none !important;
       }
 
       #topbar .logo img {
-        height: 36px !important;
+        height: 32px !important;
+      }
+
+      #main {
+        position: relative !important;
+        display: block !important;
+        height: calc(100vh - 105px) !important;
+        overflow: hidden !important;
+      }
+
+      #center {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 10 !important;
+      }
+
+      #left-panel {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: 88vw !important;
+        max-width: 360px !important;
+        height: 100% !important;
+        z-index: 2000 !important;
+        background: var(--bg-panel) !important;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8) !important;
+        display: none;
+        overflow-y: auto !important;
+      }
+
+      #right-panel {
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 88vw !important;
+        max-width: 360px !important;
+        height: 100% !important;
+        z-index: 2000 !important;
+        background: var(--bg-panel) !important;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8) !important;
+        display: none;
+        overflow-y: auto !important;
+      }
+
+      #mobile-nav-bar {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 52px !important;
+        background: var(--bg-secondary) !important;
+        border-top: 1px solid var(--border-bright) !important;
+        z-index: 3000 !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6) !important;
+      }
+
+      .mobile-tab-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--text-secondary);
+        font-family: var(--font-ui);
+        font-size: 10px;
+        font-weight: 700;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .mobile-tab-btn:active,
+      .mobile-tab-btn.active {
+        color: var(--accent);
+        background: var(--accent-glow);
+      }
+
+      #map-search-container {
+        width: calc(100vw - 80px) !important;
+      }
+
+      #map-search-input {
+        width: 100% !important;
+      }
+
+      #map-toolbar {
+        top: 55px !important;
+      }
+
+      #map-legend {
+        bottom: 60px !important;
+        right: 10px !important;
       }
 
       #bottom-bar {
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
-        height: 110px;
+        height: 90px;
         scrollbar-width: none;
       }
 
@@ -2461,7 +2530,7 @@
       }
 
       .stat-tile {
-        flex: 0 0 140px;
+        flex: 0 0 130px;
         scroll-snap-align: start;
         border-right: 1px solid var(--border);
         border-bottom: none;
@@ -2471,8 +2540,16 @@
         grid-template-columns: 1fr;
       }
 
-      #modal {
-        width: 95vw;
+      .modal-box,
+      #compare-modal-box {
+        width: 96vw !important;
+        max-height: 85vh !important;
+      }
+    }
+
+    @media (min-width: 901px) {
+      #mobile-nav-bar {
+        display: none !important;
       }
     }
 
@@ -2590,6 +2667,26 @@
       <div id="clock-time">--:--:--Z</div>
       <div class="date" id="clock-date">----</div>
     </div>
+  </div>
+
+  <!-- ── MOBILE BOTTOM NAVIGATION BAR ── -->
+  <div id="mobile-nav-bar">
+    <button class="mobile-tab-btn" id="mob-btn-left" onclick="toggleMobilePanel('left')">
+      <span style="font-size:15px;">📡</span>
+      <span>DETECȚIE</span>
+    </button>
+    <button class="mobile-tab-btn active" id="mob-btn-map" onclick="toggleMobilePanel('map')">
+      <span style="font-size:15px;">🗺️</span>
+      <span>HARTĂ</span>
+    </button>
+    <button class="mobile-tab-btn" id="mob-btn-right" onclick="toggleMobilePanel('right')">
+      <span style="font-size:15px;">⚡</span>
+      <span>MITIGARE</span>
+    </button>
+    <button class="mobile-tab-btn" onclick="openCompareModal()">
+      <span style="font-size:15px;">⚖️</span>
+      <span>COMPARĂ</span>
+    </button>
   </div>
 
   <!-- ── MAIN ── -->
@@ -5471,6 +5568,35 @@
       } else {
         toast(`Temă comutată: ${theme.name}`, theme.toastType);
         logEvent(`Temă schimbată în "${theme.name}".`, 'info');
+      }
+    }
+
+    // ─────────────────────────── MOBILE PANEL TOGGLER ───────────────────────────
+    function toggleMobilePanel(panelName) {
+      const left = document.getElementById('left-panel');
+      const right = document.getElementById('right-panel');
+      const bLeft = document.getElementById('mob-btn-left');
+      const bMap = document.getElementById('mob-btn-map');
+      const bRight = document.getElementById('mob-btn-right');
+
+      [bLeft, bMap, bRight].forEach(b => { if (b) b.classList.remove('active'); });
+
+      if (panelName === 'left') {
+        const isVis = left && left.style.display === 'block';
+        if (left) left.style.display = isVis ? 'none' : 'block';
+        if (right) right.style.display = 'none';
+        if (!isVis && bLeft) bLeft.classList.add('active');
+        else if (bMap) bMap.classList.add('active');
+      } else if (panelName === 'right') {
+        const isVis = right && right.style.display === 'block';
+        if (right) right.style.display = isVis ? 'none' : 'block';
+        if (left) left.style.display = 'none';
+        if (!isVis && bRight) bRight.classList.add('active');
+        else if (bMap) bMap.classList.add('active');
+      } else { // map
+        if (left) left.style.display = 'none';
+        if (right) right.style.display = 'none';
+        if (bMap) bMap.classList.add('active');
       }
     }
 
