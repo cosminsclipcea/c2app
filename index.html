@@ -2399,73 +2399,60 @@
       }
     }
 
-    /* ── RESPONSIVE MOBILE & TABLET (DESIGNS PREMIUM & TOUCH FRIENDLY) ── */
+    /* ── NATIVE MOBILE APP SHELL (FULL SCREEN SCREEN-BASED NAVIGATION) ── */
     @media (max-width: 900px) {
       #topbar {
-        height: auto !important;
-        flex-wrap: wrap !important;
-        padding: 6px 10px !important;
-        gap: 6px !important;
+        height: 48px !important;
+        padding: 4px 10px !important;
+        justify-content: space-between !important;
+        background: var(--bg-secondary) !important;
       }
 
+      #topbar .top-nav,
+      #topbar .sys-status,
       #topbar .divider,
       .utc-clock {
         display: none !important;
       }
 
       #topbar .logo img {
-        height: 32px !important;
+        height: 28px !important;
       }
 
       #main {
         position: relative !important;
         display: block !important;
-        height: calc(100vh - 105px) !important;
+        height: calc(100vh - 104px) !important;
         width: 100vw !important;
         overflow: hidden !important;
+        margin-top: 0 !important;
       }
 
-      #center,
-      #map-container,
-      #map {
+      /* Native Mobile Screen Views */
+      #center {
         position: absolute !important;
         inset: 0 !important;
         width: 100% !important;
         height: 100% !important;
-        min-height: 100% !important;
         z-index: 10 !important;
+        display: flex !important;
+        flex-direction: column !important;
       }
 
-      #left-panel {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        bottom: 0 !important;
-        width: 88vw !important;
-        max-width: 360px !important;
-        height: 100% !important;
-        z-index: 2000 !important;
-        background: var(--bg-panel) !important;
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8) !important;
-        display: none !important;
-        overflow-y: auto !important;
-      }
-
+      #left-panel,
       #right-panel {
         position: absolute !important;
-        top: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 88vw !important;
-        max-width: 360px !important;
+        inset: 0 !important;
+        width: 100% !important;
         height: 100% !important;
-        z-index: 2000 !important;
-        background: var(--bg-panel) !important;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8) !important;
+        z-index: 20 !important;
+        background: var(--bg-primary) !important;
         display: none !important;
         overflow-y: auto !important;
+        padding: 12px 12px 60px 12px !important;
       }
 
+      /* Active Mobile View */
       #left-panel.mob-open,
       #right-panel.mob-open {
         display: block !important;
@@ -2477,13 +2464,13 @@
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
-        height: 52px !important;
+        height: 56px !important;
         background: var(--bg-secondary) !important;
         border-top: 1px solid var(--border-bright) !important;
-        z-index: 3000 !important;
+        z-index: 9999 !important;
         justify-content: space-around !important;
         align-items: center !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.8) !important;
       }
 
       .mobile-tab-btn {
@@ -2501,16 +2488,27 @@
         border: none;
         cursor: pointer;
         transition: all 0.2s ease;
+        position: relative;
       }
 
-      .mobile-tab-btn:active,
       .mobile-tab-btn.active {
-        color: var(--accent);
-        background: var(--accent-glow);
+        color: var(--accent) !important;
+        background: var(--accent-glow) !important;
+      }
+
+      .mobile-tab-btn.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 20%;
+        right: 20%;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 0 0 4px 4px;
       }
 
       #map-search-container {
-        width: calc(100vw - 80px) !important;
+        width: calc(100vw - 70px) !important;
       }
 
       #map-search-input {
@@ -2522,7 +2520,7 @@
       }
 
       #map-legend {
-        bottom: 60px !important;
+        bottom: 65px !important;
         right: 10px !important;
       }
 
@@ -2530,8 +2528,9 @@
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
-        height: 90px;
+        height: 75px !important;
         scrollbar-width: none;
+        flex-shrink: 0 !important;
       }
 
       #bottom-bar::-webkit-scrollbar {
@@ -2539,10 +2538,11 @@
       }
 
       .stat-tile {
-        flex: 0 0 130px;
+        flex: 0 0 120px;
         scroll-snap-align: start;
         border-right: 1px solid var(--border);
         border-bottom: none;
+        padding: 6px 10px !important;
       }
 
       .sensor-grid {
@@ -2678,22 +2678,22 @@
     </div>
   </div>
 
-  <!-- ── MOBILE BOTTOM NAVIGATION BAR ── -->
+  <!-- ── NATIVE MOBILE BOTTOM NAVIGATION BAR ── -->
   <div id="mobile-nav-bar">
-    <button class="mobile-tab-btn" id="mob-btn-left" onclick="toggleMobilePanel('left')">
-      <span style="font-size:15px;">📡</span>
-      <span>DETECȚIE</span>
-    </button>
     <button class="mobile-tab-btn active" id="mob-btn-map" onclick="toggleMobilePanel('map')">
-      <span style="font-size:15px;">🗺️</span>
+      <span style="font-size:16px;">🗺️</span>
       <span>HARTĂ</span>
     </button>
+    <button class="mobile-tab-btn" id="mob-btn-left" onclick="toggleMobilePanel('left')">
+      <span style="font-size:16px;">📡</span>
+      <span>SENZORI</span>
+    </button>
     <button class="mobile-tab-btn" id="mob-btn-right" onclick="toggleMobilePanel('right')">
-      <span style="font-size:15px;">⚡</span>
-      <span>MITIGARE</span>
+      <span style="font-size:16px;">📜</span>
+      <span>JURNAL</span>
     </button>
     <button class="mobile-tab-btn" onclick="openCompareModal()">
-      <span style="font-size:15px;">⚖️</span>
+      <span style="font-size:16px;">⚖️</span>
       <span>COMPARĂ</span>
     </button>
   </div>
@@ -4208,11 +4208,16 @@
 
       // Filter only the tile layer pane so markers keep their colors
       setTimeout(() => {
+        if (map) map.invalidateSize();
         const tilePane = map.getPane('tilePane');
         if (tilePane) tilePane.style.filter = 'none'; // Clear filters so satellite image displays in full color
         const attr = document.querySelector('.leaflet-control-attribution');
         if (attr) { attr.style.background = 'rgba(6,10,15,0.7)'; attr.style.color = '#3d6080'; attr.style.fontSize = '8px'; }
       }, 300);
+
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 800);
 
       map.on('contextmenu', (e) => {
         openMapContextMenu(e);
@@ -4388,6 +4393,11 @@
       if (el) el.classList.add('active');
       const label = document.getElementById('map-mode-label');
       const finishBtn = document.getElementById('nfz-finish-btn');
+
+      if (window.innerWidth <= 900) {
+        toggleMobilePanel('map');
+      }
+
       if (t === 'pin') {
         label.textContent = '📍 CLICK PE HARTĂ PENTRU SENZOR / PUNCT DE PROTECȚIE';
         label.classList.add('visible');
@@ -4671,6 +4681,64 @@
       if (activeItem) activeItem.style.background = 'var(--bg-hover)';
     }
 
+    // Modal Detalii Senzor
+    function openSensorDetailsModal(sensorId) {
+      const s = SENSORS[sensorId];
+      if (!s) return;
+
+      document.getElementById('modal-title').textContent = `DETALII TEHNICE · ${s.name.toUpperCase()}`;
+      
+      const strengthsHtml = s.strengths ? `<div class="strength-chips" style="justify-content:center; margin:10px 0 16px 0;">${s.strengths.map(c => `<span class="chip chip-${c.type}">${c.text}</span>`).join('')}</div>` : '';
+
+      const specsHtml = s.specs ? `
+        <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px; text-align:left;">
+          <div style="font-family:var(--font-display); font-size:10px; color:var(--accent); letter-spacing:2px; margin-bottom:8px;">SPECIFICAȚII TEHNICE OPERAȚIONALE</div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            ${s.specs.map(sp => `
+              <div style="background:var(--bg-card); padding:6px 10px; border:1px solid var(--border); border-radius:4px;">
+                <div style="font-size:9px; color:var(--text-dim); font-family:var(--font-mono);">${sp[0]}</div>
+                <div style="font-size:11px; color:var(--text-primary); font-family:var(--font-ui); font-weight:bold;">${sp[1]}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : '';
+
+      document.getElementById('modal-body').innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px;">
+          ${s.img ? `<img src="${s.img}" style="max-width:100%; max-height:220px; object-fit:contain; margin-bottom:14px; filter: drop-shadow(0 0 20px rgba(0,212,255,0.3));" />` : ''}
+          <div style="font-family:var(--font-display); font-size:22px; font-weight:bold; color:${s.color || 'var(--accent)'}; margin-bottom:4px; letter-spacing:1px;">${s.name}</div>
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); letter-spacing:1px; margin-bottom:8px;">PRODUCĂTOR: ${s.vendor}</div>
+          ${strengthsHtml}
+          <div style="color:var(--text-secondary); font-size:12px; max-width:95%; line-height:1.6; background:rgba(0,0,0,0.3); padding:12px; border-radius:6px; border:1px solid var(--border);">${s.desc}</div>
+          
+          <div style="display:flex; gap:16px; margin-top:20px; width:100%; justify-content:center;">
+            <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:6px; border:1px solid var(--border);">
+              <div style="font-size:9px; color:var(--text-dim); font-family:var(--font-mono);">RAZĂ DETECȚIE</div>
+              <div style="font-weight:bold; color:var(--accent); font-family:var(--font-mono); font-size:16px;">${s.detRange > 0 ? s.detRange + 'm (' + (s.detRange/1000).toFixed(1) + 'km)' : '—'}</div>
+            </div>
+            <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:6px; border:1px solid var(--border);">
+              <div style="font-size:9px; color:var(--text-dim); font-family:var(--font-mono);">RAZĂ MITIGARE</div>
+              <div style="font-weight:bold; color:var(--red); font-family:var(--font-mono); font-size:16px;">${s.mitRange > 0 ? s.mitRange + 'm (' + (s.mitRange/1000).toFixed(1) + 'km)' : '—'}</div>
+            </div>
+          </div>
+
+          ${specsHtml}
+
+          <div style="display:flex; gap:10px; width:100%; margin-top:20px; justify-content:flex-end;">
+            <button class="btn btn-secondary" onclick="closeModal()">ÎNCHIDE</button>
+            <button class="btn btn-primary" style="background:var(--accent); color:#000; font-weight:bold;" onclick="closeModal(); placeDirectSensor('${sensorId}', {lat: 44.4268, lng: 26.1025});">📍 PLASEAZĂ PE HARTĂ</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+
+    function focusSensor(sensorId) {
+      openSensorDetailsModal(sensorId);
+    }
+
     function toggleSC(el) { el.classList.toggle('selected'); }
     function selectRadius(el) {
       document.querySelectorAll('.radius-btn').forEach(b => b.classList.remove('sel'));
@@ -4723,6 +4791,11 @@
       updatePlanPanel();
       updateStats();
       updateSensorCardBadges();
+
+      if (window.innerWidth <= 900) {
+        toggleMobilePanel('map');
+      }
+
       logEvent(`Senzor "${s.name}" plasat direct pe hartă.`, 'success');
       toast(`"${s.name}" plasat pe hartă`, 'green');
     }
@@ -4786,6 +4859,11 @@
       updatePlanPanel();
       updateSensorCardBadges();
       updateStats();
+
+      if (window.innerWidth <= 900) {
+        toggleMobilePanel('map');
+      }
+
       logEvent(`Adăugat în plan: ${selectedSensors.length > 0 ? selectedSensors.length + ' unități pe hartă' : name}`, 'success');
       toast(`Unitățile au fost plasate individual pe hartă`, 'green');
       closeModal();
@@ -5580,7 +5658,7 @@
       }
     }
 
-    // ─────────────────────────── MOBILE PANEL TOGGLER ───────────────────────────
+    // ─────────────────────────── NATIVE MOBILE PANEL TOGGLER ───────────────────────────
     function toggleMobilePanel(panelName) {
       const left = document.getElementById('left-panel');
       const right = document.getElementById('right-panel');
@@ -5591,17 +5669,19 @@
       [bLeft, bMap, bRight].forEach(b => { if (b) b.classList.remove('active'); });
 
       if (panelName === 'left') {
-        const isVis = left && left.classList.contains('mob-open');
-        if (left) left.classList.toggle('mob-open', !isVis);
+        if (left) left.classList.add('mob-open');
         if (right) right.classList.remove('mob-open');
-        if (!isVis && bLeft) bLeft.classList.add('active');
-        else if (bMap) bMap.classList.add('active');
+        if (bLeft) bLeft.classList.add('active');
       } else if (panelName === 'right') {
-        const isVis = right && right.classList.contains('mob-open');
-        if (right) right.classList.toggle('mob-open', !isVis);
+        if (right) right.classList.add('mob-open');
         if (left) left.classList.remove('mob-open');
-        if (!isVis && bRight) bRight.classList.add('active');
-        else if (bMap) bMap.classList.add('active');
+        if (bRight) bRight.classList.add('active');
+
+        // Deschide Panoul de Jurnal Evenimente
+        const logContainer = document.getElementById('right-log-container');
+        const planContainer = document.getElementById('right-plan-container');
+        if (logContainer) logContainer.style.display = 'flex';
+        if (planContainer) planContainer.style.display = 'none';
       } else { // map
         if (left) left.classList.remove('mob-open');
         if (right) right.classList.remove('mob-open');
