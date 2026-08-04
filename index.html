@@ -3301,28 +3301,28 @@
         </div>
         <div id="log-filter-bar">
           <button class="log-filter-btn active" data-filter="all" onclick="setLogFilter('all',this)">TOATE</button>
-          <button class="log-filter-btn f-critical" data-filter="critical"
-            onclick="setLogFilter('critical',this)">CRITIC</button>
+          <button class="log-filter-btn f-critical" data-filter="critical" onclick="setLogFilter('critical',this)">CRITIC</button>
           <button class="log-filter-btn f-warn" data-filter="warn" onclick="setLogFilter('warn',this)">ALERTĂ</button>
-          <button class="log-filter-btn f-success" data-filter="success"
-            onclick="setLogFilter('success',this)">OK</button>
+          <button class="log-filter-btn f-success" data-filter="success" onclick="setLogFilter('success',this)">OK</button>
           <button class="log-filter-btn" data-filter="info" onclick="setLogFilter('info',this)">INFO</button>
         </div>
         <div class="event-log" id="event-log"></div>
       </div>
 
       <div id="right-plan-container" style="display: none; flex: 1; flex-direction: column; min-height: 0;">
-        <div class="panel-section" style="border-bottom:none;">
-          <div class="section-header" onclick="togglePlanPanel()">
-            <div class="section-title">PLAN PROTECȚIE · <span id="plan-count">0</span> ELEMENTE</div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <button class="ai-btn" onclick="generateMissionReport(event)" title="Generare Raport Misiune">RAPORT IA
-                ✨</button>
-              <button class="ai-btn" onclick="generateIncidentReport()" title="Raport Incident Operațional"
-                style="margin-left:2px;">📄</button>
-              <div style="font-family:var(--font-mono);font-size:9px;color:var(--accent); cursor:pointer;"
-                id="plan-toggle-icon">▾</div>
-            </div>
+        <div class="panel-section" style="border-bottom:1px solid var(--border); padding-bottom: 8px;">
+          <div class="section-header" onclick="togglePlanPanel()" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+            <div class="section-title" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">PLAN PROTECȚIE · <span id="plan-count">0</span> ELEMENTE</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);" id="plan-toggle-icon">▾</div>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:6px 4px; margin-top:8px; padding:0 2px;">
+            <button class="ai-btn" onclick="exportUserSettingsJSON()" title="Exportă Configurația pe disc (.json)" style="font-size:10px; padding:6px 8px; text-align:center; justify-content:center; white-space:nowrap;">💾 EXPORT PLAN</button>
+            <label class="ai-btn" style="font-size:10px; padding:6px 8px; text-align:center; justify-content:center; cursor:pointer; margin:0; white-space:nowrap;" title="Importă Configurație din fișier (.json)">
+              📂 IMPORT PLAN
+              <input type="file" accept=".json" onchange="importUserSettingsJSON(event)" style="display:none;">
+            </label>
+            <button class="ai-btn" onclick="generateMissionReport(event)" title="Generare Raport Misiune IA" style="font-size:10px; padding:6px 8px; text-align:center; justify-content:center; white-space:nowrap;">✨ RAPORT IA</button>
+            <button class="ai-btn" onclick="generateIncidentReport()" title="Raport Incident Operațional" style="font-size:10px; padding:6px 8px; text-align:center; justify-content:center; white-space:nowrap;">📄 RAPORT INCIDENT</button>
           </div>
         </div>
         <div id="plan-panel">
@@ -3341,8 +3341,15 @@
         <form action="mailto:OFFICE@OPTOEL.RO" method="POST" enctype="text/plain" style="display: flex; flex-direction: column; gap: 8px;">
           <input type="text" name="Nume" placeholder="Nume Complet" required style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; font-family: var(--font-ui); font-size: 11px; outline: none;">
           <input type="email" name="Email" placeholder="Email" required style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; font-family: var(--font-ui); font-size: 11px; outline: none;">
-          <input type="text" name="Companie" placeholder="Companie" required style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; font-family: var(--font-ui); font-size: 11px; outline: none;">
+          <input type="text" name="Companie" placeholder="Companie / Instituție" required style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; font-family: var(--font-ui); font-size: 11px; outline: none;">
+          <label style="display:flex; align-items:flex-start; gap:6px; font-size:9px; color:var(--text-dim); margin-top:2px; cursor:pointer;">
+            <input type="checkbox" required style="accent-color:var(--accent); margin-top:2px;">
+            <span>Sunt de acord cu prelucrarea datelor conform <a href="#" onclick="openGdprModal(event)" style="color:var(--accent); text-decoration:underline;">Politicii GDPR / Confidențialitate</a>.</span>
+          </label>
           <button type="submit" class="ai-btn" style="width: 100%; justify-content: center; margin-top: 4px;">TRIMITE MESAJ</button>
+          <div style="text-align:center; margin-top:4px;">
+            <a href="#" onclick="openGdprModal(event)" style="font-family:var(--font-mono); font-size:9px; color:var(--text-dim); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dim)'">🔒 Protecția Datelor (GDPR) & Stocare Locală</a>
+          </div>
         </form>
       </div>
     </div>
@@ -3579,7 +3586,7 @@
     }
 
 
-    // ─────────────────────────── STATE ───────────────────────────
+    // ─────────────────────────── STATE & LOCAL PERSISTENCE ───────────────────────────
     const STATE = {
       view: 'map',
       tool: 'view',
@@ -3593,8 +3600,217 @@
       directPlacementSensorId: null,
       mapTheme: 'satellite', // Defaults directly to satellite view
       appTheme: 'default',
-      nfzItems: [] // Stocăm zonele interzise pentru calculul proximității
+      compareSensors: ['EA2-01', 'RF-OMNISHIELD', 'LASER-01'],
+      nfzItems: []
     };
+
+    function saveUserSettings() {
+      try {
+        const config = {
+          appTheme: STATE.appTheme,
+          mapTheme: STATE.mapTheme,
+          audioEnabled: typeof AUDIO !== 'undefined' ? AUDIO.enabled : false,
+          compareSensors: STATE.compareSensors,
+          planItems: STATE.planItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            type: item.type,
+            typeLabel: item.typeLabel,
+            latlng: { lat: item.latlng.lat, lng: item.latlng.lng },
+            sensors: item.sensors,
+            radiusOverride: item.radiusOverride || 'auto',
+            notes: item.notes || ''
+          })),
+          nfzItems: STATE.nfzItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            points: item.points.map(p => ({ lat: p.lat, lng: p.lng })),
+            altMax: item.altMax || '0',
+            priority: item.priority || 'critical',
+            notes: item.notes || ''
+          }))
+        };
+        localStorage.setItem('skydome_user_config', JSON.stringify(config));
+      } catch (e) {
+        console.warn('Nu s-a putut salva în localStorage:', e);
+      }
+    }
+
+    function loadUserSettings() {
+      try {
+        const raw = localStorage.getItem('skydome_user_config');
+        if (!raw) return;
+        const config = JSON.parse(raw);
+
+        // 1. Restaurare Tema Aplicației
+        if (config.appTheme && config.appTheme !== 'default') {
+          STATE.appTheme = config.appTheme;
+          document.body.classList.remove('theme-light', 'theme-matrix', 'theme-amber', 'theme-win95', 'theme-cs', 'theme-ugly');
+          document.body.classList.add('theme-' + config.appTheme);
+          const btn = document.getElementById('theme-btn');
+          const themeObj = APP_THEMES.find(t => t.id === config.appTheme);
+          if (btn && themeObj) btn.textContent = themeObj.icon;
+        }
+
+        // 2. Restaurare Temă Hartă (Carto / Satellite)
+        if (config.mapTheme && config.mapTheme !== STATE.mapTheme) {
+          STATE.mapTheme = config.mapTheme;
+          if (map && currentTileLayer) map.removeLayer(currentTileLayer);
+          const btn = document.getElementById('tool-theme');
+          if (STATE.mapTheme === 'dark') {
+            currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+              attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 19
+            }).addTo(map);
+            const tilePane = map.getPane('tilePane');
+            if (tilePane) tilePane.style.filter = 'brightness(1.6) contrast(1.1)';
+            if (btn) btn.classList.remove('active');
+          } else {
+            currentTileLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+              attribution: '© Google', maxZoom: 20
+            }).addTo(map);
+            const tilePane = map.getPane('tilePane');
+            if (tilePane) tilePane.style.filter = 'none';
+            if (btn) btn.classList.add('active');
+          }
+        }
+
+        // 3. Restaurare Audio
+        if (typeof config.audioEnabled === 'boolean' && typeof AUDIO !== 'undefined') {
+          AUDIO.enabled = config.audioEnabled;
+          const audioBtn = document.getElementById('audio-btn');
+          if (audioBtn) audioBtn.textContent = AUDIO.enabled ? '🔊' : '🔇';
+        }
+
+        // 4. Restaurare Matrice Comparativă
+        if (Array.isArray(config.compareSensors)) {
+          STATE.compareSensors = config.compareSensors;
+        }
+
+        // 5. Restaurare Elemente Plan Protecție pe Hartă
+        if (Array.isArray(config.planItems) && config.planItems.length > 0) {
+          config.planItems.forEach(itemData => {
+            restorePlanItemOnMap(itemData);
+          });
+          updatePlanPanel();
+          updateStats();
+        }
+
+        // 6. Restaurare Zone Interzise (NFZ)
+        if (Array.isArray(config.nfzItems) && config.nfzItems.length > 0) {
+          config.nfzItems.forEach(nfzData => {
+            restoreNFZOnMap(nfzData);
+          });
+          updateStats();
+        }
+
+        logEvent('Configurație și Plan de Protecție restaurate din stocarea locală.', 'success');
+      } catch (e) {
+        console.warn('Eroare la încărcarea setărilor din localStorage:', e);
+      }
+    }
+
+    function restorePlanItemOnMap(itemData) {
+      if (!map || !itemData.latlng) return;
+      const latlng = L.latLng(itemData.latlng.lat, itemData.latlng.lng);
+      if (itemData.sensors) {
+        itemData.sensors.forEach(sid => { if (SENSORS[sid]) SENSORS[sid].status = 'active'; });
+      }
+
+      const item = {
+        id: itemData.id,
+        name: itemData.name,
+        type: itemData.type || 'custom',
+        typeLabel: itemData.typeLabel || 'PERSONALIZAT',
+        notes: itemData.notes || '',
+        sensors: itemData.sensors || [],
+        latlng: latlng,
+        radiusOverride: itemData.radiusOverride || 'auto',
+        heading: 0,
+        status: 'active'
+      };
+
+      STATE.planItems.push(item);
+      addPinToMap(item);
+    }
+
+    function restoreNFZOnMap(nfzData) {
+      if (!map || !nfzData.points || nfzData.points.length < 3) return;
+      const pts = nfzData.points.map(p => L.latLng(p.lat, p.lng));
+      const poly = L.polygon(pts, {
+        color: '#ff3355', weight: 1.5, fillColor: '#ff3355',
+        fillOpacity: 0.12, dashArray: '6,4', className: 'nfz-polygon'
+      }).addTo(map);
+      poly.bindTooltip(`<span style="font-family:var(--font-mono);font-size:10px;color:#ff3355;background:#06080d;border:1px solid #ff3355;padding:3px 8px;">${nfzData.name || 'ZONĂ INTERZISĂ'}</span>`, { permanent: true, direction: 'center', opacity: 1 });
+      poly.nfzId = nfzData.id;
+      const nfzItem = { id: nfzData.id, polygon: poly, points: pts, name: nfzData.name || 'Zonă Interzisă', altMax: nfzData.altMax || '0', priority: nfzData.priority || 'critical', notes: nfzData.notes || '' };
+      STATE.nfzItems.push(nfzItem);
+      STATE.mapLayers.push(poly);
+    }
+
+    function exportUserSettingsJSON() {
+      try {
+        const config = {
+          appTheme: STATE.appTheme,
+          mapTheme: STATE.mapTheme,
+          audioEnabled: typeof AUDIO !== 'undefined' ? AUDIO.enabled : false,
+          compareSensors: STATE.compareSensors,
+          planItems: STATE.planItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            type: item.type,
+            typeLabel: item.typeLabel,
+            latlng: { lat: item.latlng.lat, lng: item.latlng.lng },
+            sensors: item.sensors,
+            radiusOverride: item.radiusOverride,
+            notes: item.notes
+          })),
+          nfzItems: STATE.nfzItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            points: item.points.map(p => ({ lat: p.lat, lng: p.lng })),
+            altMax: item.altMax,
+            priority: item.priority,
+            notes: item.notes
+          }))
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `skydome_plan_config_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        toast('Configurație exportată în fișier JSON', 'success');
+      } catch (e) {
+        toast('Eroare la exportarea fișierului', 'red');
+      }
+    }
+
+    function importUserSettingsJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const config = JSON.parse(e.target.result);
+          localStorage.setItem('skydome_user_config', JSON.stringify(config));
+          clearAllLayers();
+          loadUserSettings();
+          toast('Configurație importată cu succes!', 'success');
+        } catch (err) {
+          toast('Fișier JSON nevalid', 'red');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetUserSettings() {
+      if (confirm('Sigur doriți să resetați toate configurările salvate la valorile implicite?')) {
+        localStorage.removeItem('skydome_user_config');
+        clearAllLayers();
+        location.reload();
+      }
+    }
 
     function toggleAppTheme() {
       const themes = ['default', 'light', 'tactical', 'eccentric'];
@@ -4358,7 +4574,8 @@
 
       setInterval(fetchADSB, 10000);
       setTimeout(() => { simEvent(); setInterval(simEvent, 12000); }, 2000);
-      updateSensorCardBadges();
+      // Încărcare configurări salvate local (Tema, Plan Protecție, Audio, etc.)
+      loadUserSettings();
 
       // Set initial view on mobile to ensure only the map is displayed on load
       if (window.innerWidth <= 900) {
@@ -4390,6 +4607,7 @@
         if (btn) btn.classList.add('active');
         toast('Hartă: Mod Satelit', 'info');
       }
+      saveUserSettings();
     }
 
     // ─────────────────────────── SECTION TOGGLE & VIEW NAV ───────────────────────────
@@ -4674,6 +4892,7 @@
       updateStats();
       logEvent('Toate straturile hărții au fost șterse de operator.', 'warn');
       toast('Hartă Ștearsă', 'yellow');
+      saveUserSettings();
     }
 
     // ─────────────────────────── PIN MODAL ───────────────────────────
@@ -4960,6 +5179,7 @@
 
       logEvent(`Adăugat în plan: ${selectedSensors.length > 0 ? selectedSensors.length + ' unități pe hartă' : name}`, 'success');
       toast(`Unitățile au fost plasate individual pe hartă`, 'green');
+      saveUserSettings();
       closeModal();
     }
 
@@ -5588,6 +5808,7 @@
       updateSensorCardBadges();
       updateStats();
       logEvent(`Punct protecție "${item.name}" eliminat din plan.`, 'warn');
+      saveUserSettings();
     }
 
     function togglePlanPanel() {
@@ -5596,6 +5817,48 @@
       if (!panel) return;
       panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
       if (icon) icon.textContent = panel.style.display === 'none' ? '▸' : '▾';
+    }
+
+    // ─────────────────────────── GDPR & PRIVACY POLICY MODAL ───────────────────────────
+    function openGdprModal(e) {
+      if (e) e.preventDefault();
+      document.getElementById('modal-title').textContent = 'NOTĂ DE INFORMARE GDPR · REGULAMENTUL (UE) 2016/679';
+      document.getElementById('modal').style.width = '700px';
+      document.getElementById('modal-body').innerHTML = `
+        <div style="font-size:12px; color:var(--text-primary); line-height:1.6; max-height:480px; overflow-y:auto; padding:12px; background:rgba(0,0,0,0.3); border-radius:4px; border:1px solid var(--border);">
+          <div style="font-family:var(--font-display); font-size:14px; color:var(--accent); margin-bottom:10px; font-weight:bold;">🔒 POLITICA PRIVIND PROTECȚIA DATELOR (GDPR)</div>
+          
+          <p style="margin-bottom:12px;">Conform Regulamentului (UE) 2016/679 (GDPR), Optoelectronica C4I Systems respectă dreptul dumneavoastră la securitatea și confidențialitatea datelor cu caracter personal.</p>
+          
+          <div style="background:var(--bg-primary); padding:10px 14px; border-left:3px solid var(--accent); margin-bottom:14px; border-radius:0 4px 4px 0;">
+            <strong style="color:var(--text-primary); font-family:var(--font-mono); font-size:11px;">1. SECURITATE & STOCARE 100% LOCALĂ</strong>
+            <p style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Aplicația SkyDome C4I stochează datele tactice (planuri de protecție, coordonate senzori, zone interzise și setări de interfață) <strong>exclusiv pe dispozitivul dumneavoastră</strong> prin intermediul tehnologiei <code>localStorage</code> din browser sau prin export de fișiere <code>.JSON</code>. Nicio dată tactică nu este transmisă către servere externe terțe fără acordul dumneavoastră.</p>
+          </div>
+
+          <div style="background:var(--bg-primary); padding:10px 14px; border-left:3px solid var(--blue); margin-bottom:14px; border-radius:0 4px 4px 0;">
+            <strong style="color:var(--text-primary); font-family:var(--font-mono); font-size:11px;">2. PRELUCRAREA DATELOR DE CONTACT OPERAȚIONAL</strong>
+            <p style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Datele furnizate voluntar în formularul de contact (Nume, Adresă Email, Companie/Organizație) sunt utilizate direct de către reprezentanții Optoelectronica exclusiv în scopul furnizării de suport tehnic, oferte comerciale și consultanță C4I Anti-UAS.</p>
+          </div>
+
+          <div style="background:var(--bg-primary); padding:10px 14px; border-left:3px solid var(--green); margin-bottom:14px; border-radius:0 4px 4px 0;">
+            <strong style="color:var(--text-primary); font-family:var(--font-mono); font-size:11px;">3. DREPTURILE DUMNEAVOASTRĂ (GDPR)</strong>
+            <ul style="font-size:11px; color:var(--text-secondary); margin-top:4px; padding-left:18px;">
+              <li><strong>Dreptul la Ștergere ("Dreptul de a fi uitat"):</strong> Puteți reseta instantaneu toate datele salvate local apăsând butonul <em>Șterge Datele Salvate</em> de mai jos sau curățând memoria cache a browserului.</li>
+              <li><strong>Dreptul la Portabilitate:</strong> Puteți exporta și descărca datele în format structurat <code>.JSON</code> oricând.</li>
+              <li><strong>Dreptul de Acces & Rectificare:</strong> Aveți dreptul să solicitați informații privind datele stocate contactând Responsabilul cu Protecția Datelor.</li>
+            </ul>
+          </div>
+
+          <div style="font-size:11px; color:var(--text-dim); font-family:var(--font-mono); margin-top:10px; text-align:center; border-top:1px dashed var(--border); padding-top:10px;">
+            Responsabil Protecția Datelor (DPO): <span style="color:var(--accent);">OFFICE@OPTOEL.RO</span> · Optoelectronica C4I Security Office
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
+          <button class="btn btn-secondary" onclick="resetUserSettings()" style="color:var(--red); border-color:var(--red);">🗑️ ȘTERGE DATELE SALVATE</button>
+          <button class="btn btn-primary" onclick="closeModal()">AM ÎNȚELES</button>
+        </div>
+      `;
+      document.getElementById('modal-overlay').style.display = 'flex';
     }
 
     // ─────────────────────────── UNIT COMPARISON MATRIX ───────────────────────────
@@ -5750,6 +6013,7 @@
         toast(`Temă comutată: ${theme.name}`, theme.toastType);
         logEvent(`Temă schimbată în "${theme.name}".`, 'info');
       }
+      saveUserSettings();
     }
 
     // ─────────────────────────── NATIVE MOBILE PANEL TOGGLER ───────────────────────────
