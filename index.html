@@ -3654,10 +3654,14 @@
         STATE.nfzItems = [];
 
         // 1. Restaurare Tema Aplicației
-        if (config.appTheme && config.appTheme !== 'default') {
+        if (config.appTheme) {
           STATE.appTheme = config.appTheme;
+          const idx = APP_THEMES.findIndex(t => t.id === config.appTheme);
+          if (idx >= 0) currentThemeIndex = idx;
           document.body.classList.remove('theme-light', 'theme-matrix', 'theme-amber', 'theme-win95', 'theme-cs', 'theme-ugly');
-          document.body.classList.add('theme-' + config.appTheme);
+          if (config.appTheme !== 'dark' && config.appTheme !== 'default') {
+            document.body.classList.add('theme-' + config.appTheme);
+          }
           const btn = document.getElementById('theme-btn');
           const themeObj = APP_THEMES.find(t => t.id === config.appTheme);
           if (btn && themeObj) btn.textContent = themeObj.icon;
@@ -6028,6 +6032,7 @@
     function toggleAppTheme() {
       currentThemeIndex = (currentThemeIndex + 1) % APP_THEMES.length;
       const theme = APP_THEMES[currentThemeIndex];
+      STATE.appTheme = theme.id;
 
       document.body.classList.remove('theme-light', 'theme-matrix', 'theme-amber', 'theme-win95', 'theme-cs', 'theme-ugly');
       if (theme.id !== 'dark') {
