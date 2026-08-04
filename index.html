@@ -4830,6 +4830,7 @@
           STATE.nfzItems = STATE.nfzItems.filter(n => n.id !== poly.nfzId);
           toast('Zonă interzisă ștearsă', 'warn');
           logEvent('Zonă interzisă ștearsă de pe hartă.', 'warn');
+          saveUserSettings();
         };
       });
 
@@ -4837,6 +4838,7 @@
       nfzPoints = []; nfzPolyline = null;
       logEvent(`Zonă interzisă de zbor stabilită pe hartă (${pts} puncte).`, 'warn');
       toast('Zonă Interzisă Adăugată', 'yellow');
+      saveUserSettings();
       setTool('view');
     }
 
@@ -4850,6 +4852,7 @@
         const nfzItem = STATE.nfzItems.find(n => n.id === poly.nfzId);
         if (nfzItem) nfzItem.points = [...updatedPoints];
         toast('Dimensiuni salvate', 'success');
+        saveUserSettings();
       } else {
         poly.isEditing = true;
         const latlngs = poly.getLatLngs()[0]; // Extrage punctele poligonului
@@ -5140,6 +5143,7 @@
 
       logEvent(`Senzor "${s.name}" plasat direct pe hartă.`, 'success');
       toast(`"${s.name}" plasat pe hartă`, 'green');
+      saveUserSettings();
     }
 
     function filterSensors() {
@@ -5286,6 +5290,7 @@
         drawVisuals(item);
         updatePlanPanel();
         logEvent(`Locație "${item.name}" mutată la LAT: ${item.latlng.lat.toFixed(4)}, LNG: ${item.latlng.lng.toFixed(4)}`, 'info');
+        saveUserSettings();
       });
 
       // Eveniment pentru dublu-click (Afișare detalii unitate/punct)
