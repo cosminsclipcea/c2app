@@ -3642,6 +3642,17 @@
         if (!raw) return;
         const config = JSON.parse(raw);
 
+        // Curățare straturi curente înainte de încărcare
+        STATE.mapLayers.forEach(l => { if (map && map.hasLayer(l)) { try { map.removeLayer(l); } catch(e){} } });
+        STATE.mapLayers = [];
+        STATE.planItems.forEach(i => {
+          if (i.marker && map) map.removeLayer(i.marker);
+          if (i.visuals && map) i.visuals.forEach(v => map.removeLayer(v));
+        });
+        STATE.planItems = [];
+        STATE.nfzItems.forEach(i => { if (i.polygon && map) map.removeLayer(i.polygon); });
+        STATE.nfzItems = [];
+
         // 1. Restaurare Tema Aplicației
         if (config.appTheme && config.appTheme !== 'default') {
           STATE.appTheme = config.appTheme;
@@ -3687,9 +3698,11 @@
         }
 
         // 5. Restaurare Elemente Plan Protecție pe Hartă
+        const bounds = [];
         if (Array.isArray(config.planItems) && config.planItems.length > 0) {
           config.planItems.forEach(itemData => {
             restorePlanItemOnMap(itemData);
+            if (itemData.latlng) bounds.push([itemData.latlng.lat, itemData.latlng.lng]);
           });
           updatePlanPanel();
           updateStats();
@@ -3699,11 +3712,24 @@
         if (Array.isArray(config.nfzItems) && config.nfzItems.length > 0) {
           config.nfzItems.forEach(nfzData => {
             restoreNFZOnMap(nfzData);
+            if (nfzData.points) nfzData.points.forEach(p => bounds.push([p.lat, p.lng]));
           });
           updateStats();
         }
 
-        logEvent('Configurație și Plan de Protecție restaurate din stocarea locală.', 'success');
+        // Centrare automată pe hartă a elementelor restaurate
+        if (bounds.length > 0 && map) {
+          setTimeout(() => {
+            if (bounds.length === 1) {
+              map.panTo(bounds[0]);
+              map.setZoom(14);
+            } else {
+              map.fitBounds(bounds, { padding: [50, 50] });
+            }
+          }, 200);
+        }
+
+        logEvent(`Configurație încărcată (${STATE.planItems.length} unități, ${STATE.nfzItems.length} zone).`, 'success');
       } catch (e) {
         console.warn('Eroare la încărcarea setărilor din localStorage:', e);
       }
@@ -3794,14 +3820,15 @@
         try {
           const config = JSON.parse(e.target.result);
           localStorage.setItem('skydome_user_config', JSON.stringify(config));
-          clearAllLayers();
+          clearAllLayers(true);
           loadUserSettings();
-          toast('Configurație importată cu succes!', 'success');
+          toast('Configurație importată și afișată pe hartă!', 'green');
         } catch (err) {
-          toast('Fișier JSON nevalid', 'red');
+          toast('Fișier JSON nevalid sau corupt', 'red');
         }
       };
       reader.readAsText(file);
+      event.target.value = '';
     }
 
     function resetUserSettings() {
@@ -4872,7 +4899,7 @@
       }
     }
 
-    function clearAllLayers() {
+    function clearAllLayers(skipSave = false) {
       STATE.mapLayers.forEach(l => {
         // Curăță handle-urile de editare dacă poligoanele erau în mod edit
         if (l.editHandles) { l.editHandles.forEach(h => { if (map) try { map.removeLayer(h); } catch (e) { } }); }
@@ -4890,9 +4917,11 @@
       nfzDotMarkers = []; nfzPoints = [];
       updatePlanPanel();
       updateStats();
-      logEvent('Toate straturile hărții au fost șterse de operator.', 'warn');
-      toast('Hartă Ștearsă', 'yellow');
-      saveUserSettings();
+      if (!skipSave) {
+        logEvent('Toate straturile hărții au fost șterse de operator.', 'warn');
+        toast('Hartă Ștearsă', 'yellow');
+        saveUserSettings();
+      }
     }
 
     // ─────────────────────────── PIN MODAL ───────────────────────────
